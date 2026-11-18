@@ -1,0 +1,67 @@
+======================================================================
+PANDUAN MENJALANKAN & CHECKLIST UJI MANUAL — NOVA LIVE MVC
+======================================================================
+
+A. LANGKAH INSTALASI
+----------------------------------------------------------------------
+1. Pastikan Apache & MySQL pada XAMPP Control Panel sudah aktif.
+2. Impor Database:
+   - Buka phpMyAdmin (http://localhost/phpmyadmin/)
+   - Buat database `db_novalive` (atau impor langsung file database/novalive.sql)
+   - Atau lewat CLI:
+     php bin/seed-admin.php
+3. Salin konfigurasi lingkungan:
+   - File `.env` sudah disiapkan dari `.env.example`.
+4. Jalankan Server Pengembangan:
+   Buka terminal di folder project C:\xampp\htdocs\NOVALIVE\novalive-mvc, lalu ketik:
+     php -S localhost:8000 -t public public/router.php
+5. Buka browser ke alamat:
+     http://localhost:8000
+
+======================================================================
+B. CHECKLIST UJI MANUAL
+======================================================================
+
+[✓] 1. Beranda (http://localhost:8000/)
+       - Tampil Banner, 10 Kartu Event Seru, 8 Kategori, 4 Event Populer,
+         dan 5 Kartu Kota dengan foto landmark.
+       - Rotasi animasi teks pencarian berjalan dengan warna Navy.
+
+[✓] 2. Kategori Event (http://localhost:8000/kategori)
+       - Tampil 8 kategori dengan ikon dan jumlah event aktif.
+       - Klik kategori membuka /events?category=X dengan filter aktif.
+
+[✓] 3. Jelajahi Kotamu (http://localhost:8000/kota)
+       - Tampil 5 kota tujuan utama.
+       - Klik "Bandung" membuka /kota/bandung dengan landmark Gedung Sate
+         dan event Nadin Amizah.
+       - Klik "Denpasar" membuka /kota/denpasar dengan event Bali (Festival Balon Udara).
+
+[✓] 4. Jelajahi Event (http://localhost:8000/events)
+       - Filter kata kunci, kategori, kota, dan rentang harga berfungsi.
+       - Paginasi berfungsi dengan baik.
+
+[✓] 5. Detail Event (http://localhost:8000/events/show/2)
+       - Menampilkan detail Tulus Live in Concert, harga Rp450.000,
+         kuota tiket, dan event terkait.
+
+[✓] 6. Halaman Error 404 (http://localhost:8000/halaman-ngawur)
+       - Tampil halaman error 404 berlayout lengkap (navbar + footer navy),
+         bukan halaman putih PHP mentah.
+       - Menguji /events/show/999 dan /kota/kota-tidak-ada juga menampilkan 404.
+
+[✓] 7. Otentikasi & Guard (http://localhost:8000/dashboard)
+       - Mengakses /dashboard tanpa login otomatis dialihkan ke /login.
+       - Login dengan demo@novalive.id / nova1234 berhasil masuk ke Dashboard.
+       - Dashboard menampilkan 4 KPI, daftar pesanan terbaru, dan peringatan tiket menipis.
+
+[✓] 8. Manajemen Event (Dashboard -> Event Saya)
+       - Tampil daftar event dengan tombol Ubah dan Hapus.
+       - Ubah harga tiket -> simpan -> harga terbaru langsung tampil.
+       - Hapus event -> berpindah ke Sampah (Soft Delete).
+       - Masuk ke Sampah (/events/trash) -> klik Pulihkan -> event aktif kembali.
+
+[✓] 9. Uji Otomatis
+       - Jalankan terminal: php tests/run.php
+       - Hasil: Lulus: 27 | Gagal: 0.
+======================================================================
