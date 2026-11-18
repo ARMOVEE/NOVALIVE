@@ -310,7 +310,7 @@ section[id]{scroll-margin-top:96px}
 }
 
 /* PITA LEGAL: di bawah footer, paling bawah halaman */
-.legal-band{background:var(--navy2);color:#D7DEE8;padding:44px 0 34px;overflow:hidden}
+.legal-band{background:var(--navy2);color:#D7DEE8;padding:44px 0 34px;overflow:hidden;position:relative;z-index:30}
 .legal-wrap{max-width:1280px;margin:0 auto;padding:0 20px}
 .legal-wordmark{font-family:var(--font-display);font-weight:800;line-height:.92;letter-spacing:-.03em;text-align:center;white-space:nowrap;font-size:clamp(3.2rem,13.2vw,11.5rem);color:var(--sky);margin:0 0 28px;user-select:none}
 .legal-wordmark span{color:var(--gold)}
@@ -491,42 +491,42 @@ section[id]{scroll-margin-top:96px}
   <!-- MEGA MENU KATEGORI: grid 4 kolom kategori NOVA + bagian Jelajahi Event -->
   <div class="mega-menu" id="navCatMenu" role="menu" aria-label="Kategori event">
     <div class="mega-grid">
-      <a class="mega-item" href="explore.html?cat=Musik" role="menuitem">
+      <a class="mega-item" href="NOVA LIVE — Jelajahi Event.html?cat=Musik" role="menuitem">
         <span class="mega-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/><path d="M9 18V5l12-2v13"/></svg></span>
         <span>Musik</span>
       </a>
-      <a class="mega-item" href="explore.html?cat=Pameran" role="menuitem">
+      <a class="mega-item" href="NOVA LIVE — Jelajahi Event.html?cat=Pameran" role="menuitem">
         <span class="mega-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg></span>
         <span>Pameran</span>
       </a>
-      <a class="mega-item" href="explore.html?cat=Teater" role="menuitem">
+      <a class="mega-item" href="NOVA LIVE — Jelajahi Event.html?cat=Teater" role="menuitem">
         <span class="mega-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c4.97 0 8 2.6 8 6.2 0 5.6-3.4 11.8-8 11.8S4 14.8 4 9.2C4 5.6 7.03 3 12 3z"/><circle cx="9" cy="9.5" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="9.5" r="1" fill="currentColor" stroke="none"/><path d="M9 14.5c.9 1.1 1.9 1.6 3 1.6s2.1-.5 3-1.6"/></svg></span>
         <span>Teater</span>
       </a>
-      <a class="mega-item" href="explore.html?cat=Olahraga" role="menuitem">
+      <a class="mega-item" href="NOVA LIVE — Jelajahi Event.html?cat=Olahraga" role="menuitem">
         <span class="mega-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5l2.9 2.1-1.1 3.4h-3.6l-1.1-3.4z"/><path d="M12 3v4.5M20.6 9.3l-3.2 1.1M17.8 19.5l-2.9-2.1M6.2 19.5l2.9-2.1M3.4 9.3l3.2 1.1"/></svg></span>
         <span>Olahraga</span>
       </a>
-      <a class="mega-item" href="explore.html?cat=Wisata" role="menuitem">
+      <a class="mega-item" href="NOVA LIVE — Jelajahi Event.html?cat=Wisata" role="menuitem">
         <span class="mega-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10.5c0 5.2-8 11.5-8 11.5S4 15.7 4 10.5a8 8 0 0 1 16 0z"/><circle cx="12" cy="10.5" r="3"/></svg></span>
         <span>Wisata</span>
       </a>
-      <a class="mega-item" href="explore.html?cat=Talkshow" role="menuitem">
+      <a class="mega-item" href="NOVA LIVE — Jelajahi Event.html?cat=Talkshow" role="menuitem">
         <span class="mega-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M9 21h6"/></svg></span>
         <span>Talkshow</span>
       </a>
-      <a class="mega-item" href="explore.html?cat=Workshop" role="menuitem">
+      <a class="mega-item" href="NOVA LIVE — Jelajahi Event.html?cat=Workshop" role="menuitem">
         <span class="mega-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3.5" width="18" height="12" rx="2"/><circle cx="12" cy="8" r="1.7"/><path d="M8.3 13.2c.6-2 2-3 3.7-3s3.1 1 3.7 3M12 15.5V19M8.5 21l3.5-2 3.5 2"/></svg></span>
         <span>Workshop</span>
       </a>
-      <a class="mega-item" href="explore.html?cat=Kompetisi" role="menuitem">
+      <a class="mega-item" href="NOVA LIVE — Jelajahi Event.html?cat=Kompetisi" role="menuitem">
         <span class="mega-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 5H4.5a2.5 2.5 0 0 0 2.6 4M17 5h2.5a2.5 2.5 0 0 1-2.6 4M12 14v3M8.5 20.5h7M10 17h4l.6 3.5H9.4z"/></svg></span>
         <span>Kompetisi</span>
       </a>
     </div>
     <div class="mega-explore">
       <h3>Jelajahi Event</h3>
-      <a class="mega-explore-card" href="explore.html">
+      <a class="mega-explore-card" href="NOVA LIVE — Jelajahi Event.html">
         <span class="mega-explore-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg></span>
         <span class="mega-explore-txt"><strong>Lihat Semua Event</strong><small>Telusuri semua event yang tersedia di NOVA LIVE dan temukan yang cocok untukmu.</small></span>
         <span class="mega-arrow" aria-hidden="true">›</span>
@@ -593,35 +593,35 @@ section[id]{scroll-margin-top:96px}
     <div class="wrap">
       <h2 class="kategori-title" id="katTitle">Kategori Event</h2>
       <div class="kategori-row">
-        <a class="kategori-item" href="explore.html?kategori=musik" data-explore="Musik">
+        <a class="kategori-item" href="NOVA LIVE — Jelajahi Event.html?cat=Musik" data-explore="Musik">
           <span class="kategori-circle"><svg width="46" height="46" viewBox="0 0 48 48" fill="none" aria-hidden="true"><g fill="currentColor"><rect x="29.5" y="2.5" width="5.5" height="19" rx="2" transform="rotate(38 32 12)"/><circle cx="16.5" cy="33.5" r="10.5"/><circle cx="23.5" cy="24.5" r="7.5"/></g><circle cx="18.5" cy="31.5" r="3.2" fill="var(--katbg)"/></svg></span>
           <span class="kategori-pill">Musik</span>
         </a>
-        <a class="kategori-item" href="explore.html?kategori=pameran" data-explore="Pameran">
+        <a class="kategori-item" href="NOVA LIVE — Jelajahi Event.html?cat=Pameran" data-explore="Pameran">
           <span class="kategori-circle"><svg width="46" height="46" viewBox="0 0 48 48" fill="none" aria-hidden="true"><rect x="7" y="6" width="34" height="19" rx="2.5" fill="currentColor"/><path d="M14 20.5l5-6.5 3.5 4 3-3.2 4.5 5.7z" fill="var(--katbg)"/><circle cx="31.5" cy="12" r="2" fill="var(--katbg)"/><g fill="currentColor"><circle cx="13" cy="31" r="2.7"/><circle cx="24" cy="31" r="2.7"/><circle cx="35" cy="31" r="2.7"/><path d="M7.5 41c.6-3.4 2.7-5 5.5-5s4.9 1.6 5.5 5zM18.5 41c.6-3.4 2.7-5 5.5-5s4.9 1.6 5.5 5zM29.5 41c.6-3.4 2.7-5 5.5-5s4.9 1.6 5.5 5z"/></g></svg></span>
           <span class="kategori-pill">Pameran</span>
         </a>
-        <a class="kategori-item" href="explore.html?kategori=teater" data-explore="Teater">
+        <a class="kategori-item" href="NOVA LIVE — Jelajahi Event.html?cat=Teater" data-explore="Teater">
           <span class="kategori-circle"><svg width="46" height="46" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 4c8.5 0 15 5.4 15 13.2C39 27 32.8 40 24 40S9 27 9 17.2C9 9.4 15.5 4 24 4z" fill="currentColor"/><circle cx="17.5" cy="17" r="2.6" fill="var(--katbg)"/><circle cx="30.5" cy="17" r="2.6" fill="var(--katbg)"/><path d="M16 25c2.4 3.4 5.2 5 8 5s5.6-1.6 8-5" stroke="var(--katbg)" stroke-width="3" stroke-linecap="round"/></svg></span>
           <span class="kategori-pill">Teater</span>
         </a>
-        <a class="kategori-item" href="explore.html?kategori=olahraga" data-explore="Olahraga">
+        <a class="kategori-item" href="NOVA LIVE — Jelajahi Event.html?cat=Olahraga" data-explore="Olahraga">
           <span class="kategori-circle"><svg width="46" height="46" viewBox="0 0 48 48" fill="none" aria-hidden="true"><rect x="5" y="11" width="38" height="26" rx="3" fill="currentColor"/><path d="M24 11v26M5 18.5h6v11H5M43 18.5h-6v11h6" stroke="var(--katbg)" stroke-width="2.5" fill="none"/><circle cx="24" cy="24" r="5" fill="none" stroke="var(--katbg)" stroke-width="2.5"/></svg></span>
           <span class="kategori-pill">Olahraga</span>
         </a>
-        <a class="kategori-item" href="explore.html?kategori=wisata" data-explore="Wisata">
+        <a class="kategori-item" href="NOVA LIVE — Jelajahi Event.html?cat=Wisata" data-explore="Wisata">
           <span class="kategori-circle"><svg width="46" height="46" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 3.5c-6.3 0-10.8 4.4-10.8 10.2C13.2 21.5 24 33 24 33s10.8-11.5 10.8-19.3C34.8 7.9 30.3 3.5 24 3.5z" fill="currentColor"/><circle cx="24" cy="13.8" r="4.2" fill="var(--katbg)"/><path d="M8 38.5l10.5-3 11 3L40 35.5v6.5l-10.5 3-11-3L8 45z" fill="currentColor" opacity=".5"/></svg></span>
           <span class="kategori-pill">Wisata</span>
         </a>
-        <a class="kategori-item" href="explore.html?kategori=talkshow" data-explore="Talkshow">
+        <a class="kategori-item" href="NOVA LIVE — Jelajahi Event.html?cat=Talkshow" data-explore="Talkshow">
           <span class="kategori-circle"><svg width="46" height="46" viewBox="0 0 48 48" fill="none" aria-hidden="true"><rect x="19" y="5" width="10" height="20" rx="5" fill="currentColor"/><path d="M13.5 19a10.5 10.5 0 0021 0" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/><path d="M24 29.5V38M16.5 43h15" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg></span>
           <span class="kategori-pill">Talkshow</span>
         </a>
-        <a class="kategori-item" href="explore.html?kategori=workshop" data-explore="Workshop">
+        <a class="kategori-item" href="NOVA LIVE — Jelajahi Event.html?cat=Workshop" data-explore="Workshop">
           <span class="kategori-circle"><svg width="46" height="46" viewBox="0 0 48 48" fill="none" aria-hidden="true"><rect x="6" y="6" width="36" height="23" rx="2.5" fill="currentColor"/><circle cx="24" cy="14.5" r="3" fill="var(--katbg)"/><path d="M16.5 25c.8-3.6 3.6-5.4 7.5-5.4s6.7 1.8 7.5 5.4z" fill="var(--katbg)"/><path d="M24 29v5M14 42l6.5-8M34 42l-6.5-8" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/></svg></span>
           <span class="kategori-pill">Workshop</span>
         </a>
-        <a class="kategori-item" href="explore.html?kategori=kompetisi" data-explore="Kompetisi">
+        <a class="kategori-item" href="NOVA LIVE — Jelajahi Event.html?cat=Kompetisi" data-explore="Kompetisi">
           <span class="kategori-circle"><svg width="46" height="46" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M15 5h18v7.5c0 5-4 9-9 9s-9-4-9-9z" fill="currentColor"/><path d="M15 9H10a5.5 5.5 0 005 6.5M33 9h5a5.5 5.5 0 01-5 6.5" fill="none" stroke="currentColor" stroke-width="3"/><path d="M24 9.6l1.2 2.5 2.7.4-2 1.9.5 2.7-2.4-1.3-2.4 1.3.5-2.7-2-1.9 2.7-.4z" fill="var(--katbg)"/><path d="M24 21.5V27" stroke="currentColor" stroke-width="4"/><rect x="20" y="27" width="8" height="4.5" fill="currentColor"/><rect x="14.5" y="34" width="19" height="4.5" rx="2" fill="currentColor"/></svg></span>
           <span class="kategori-pill">Kompetisi</span>
         </a>
@@ -680,7 +680,7 @@ section[id]{scroll-margin-top:96px}
     <div class="wrap">
       <div class="section-head">
         <h2 id="kotaTitle"><svg class="seru-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s-7-5.6-7-11a7 7 0 1114 0c0 5.4-7 11-7 11z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="10" r="2.6" fill="currentColor"/></svg>Jelajahi Event di Kotamu</h2>
-        <a class="kota-more" href="#populer">Lihat Semua ›</a>
+        <a class="kota-more" href="NOVA LIVE — Jelajahi Event.html">Lihat Semua ›</a>
       </div>
       <div class="kota-row">
         <button type="button" class="kota-card" data-kota="jakarta" aria-expanded="false" aria-controls="kotaPanel" style="--kota-accent:#F97316">
@@ -732,7 +732,7 @@ section[id]{scroll-margin-top:96px}
       </div>
       <nav aria-label="Tentang Kami"><h3>Tentang Kami</h3><a href="#atas">Tentang Kami</a><a href="#atas">Our Journey</a><a href="#faq">Hubungi Kami</a><a href="#faq">Biaya</a></nav>
       <nav aria-label="Informasi"><h3>Informasi</h3><a href="#faq">Syarat &amp; Ketentuan</a><a href="#faq">Kebijakan Privasi</a><a href="#faq">FAQ</a><a href="#faq">Tiket Gelang</a><a href="#faq">Validasi Tiket</a></nav>
-      <nav aria-label="Kategori Event"><h3>Kategori Event</h3><a href="#populer" data-cat-link="Musik">Musik</a><a href="#populer" data-cat-link="Pameran">Pameran</a><a href="#populer" data-cat-link="Wahana">Wahana</a><a href="#populer" data-cat-link="Olahraga">Olahraga</a><a href="#populer" data-cat-link="Semua">Semua Kategori</a></nav>
+      <nav aria-label="Kategori Event"><h3>Kategori Event</h3><a href="NOVA LIVE — Jelajahi Event.html?cat=Musik">Musik</a><a href="NOVA LIVE — Jelajahi Event.html?cat=Pameran">Pameran</a><a href="NOVA LIVE — Jelajahi Event.html?cat=Wisata">Wahana</a><a href="NOVA LIVE — Jelajahi Event.html?cat=Olahraga">Olahraga</a><a href="NOVA LIVE — Jelajahi Event.html">Semua Kategori</a></nav>
     </div>
   </div>
 </footer>
@@ -806,13 +806,8 @@ document.addEventListener("keydown",function(e){if(e.key==="Escape"){closeDrawer
 
 var reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-/* Kategori Event: tiap kategori membuka halaman explore dengan filter kategori itu (mockup) */
-document.querySelectorAll("[data-explore]").forEach(function(a){
-  a.addEventListener("click",function(e){e.preventDefault();showToast("Mockup: membuka Jelajahi Event dengan filter kategori "+a.getAttribute("data-explore")+", halaman explore belum dibuat di versi tampilan ini.");});
-});
-
-/* Pencarian navbar (mockup) */
-document.getElementById("navSearch").addEventListener("submit",function(e){e.preventDefault();var q=document.getElementById("navQ").value.trim();document.getElementById("populer").scrollIntoView({behavior:reduced?"auto":"smooth"});showToast(q?("Mockup: hasil pencarian \u201C"+q+"\u201D akan tampil di halaman Jelajahi Event."):"Ketik kata kunci dulu untuk mencari event.");});
+/* Pencarian navbar: membuka halaman Jelajahi Event dengan parameter pencarian */
+document.getElementById("navSearch").addEventListener("submit",function(e){e.preventDefault();var q=document.getElementById("navQ").value.trim();window.location.href="NOVA LIVE — Jelajahi Event.html"+(q?("?q="+encodeURIComponent(q)):"");});
 
 /* Animasi 3D berputar (flip rotateX) pada saran search navbar: overlay di atas input */
 (function initSearchFlipHint() {

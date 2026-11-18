@@ -331,7 +331,7 @@
     <!-- ================= NAVBAR ================= -->
     <header class="navbar">
       <div class="wrap nav-in">
-        <a class="brand" href="#" id="brandLogo" aria-label="NOVA LIVE — Jelajahi Event">
+        <a class="brand" href="index.html" id="brandLogo" aria-label="NOVA LIVE — Beranda">
           <svg id="ticket" viewBox="0 30 1300 540" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Logo tiket NOVALIVE">
             <defs>
               <linearGradient id="nv-dark" x1="60" y1="70" x2="780" y2="540" gradientUnits="userSpaceOnUse">
@@ -391,7 +391,7 @@
           <input id="searchInput" type="search" placeholder="Cari event, artis, atau kota…" aria-label="Cari event" />
           <span class="nav-search-hint" id="navSearchHint" aria-hidden="true"><span class="hint-prefix">Cari event </span><span class="hint-word" id="navHintWord"></span></span>
         </form>
-        <a class="nav-partner" href="#">
+        <a class="nav-partner" href="index.html#bikin">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z" fill="currentColor"/></svg><span>Bikin Eventmu</span>
         </a>
         <button class="btn-masuk" type="button">
@@ -476,8 +476,6 @@
           raf = requestAnimationFrame(tick);
         }
 
-        const brand = document.getElementById('brandLogo');
-        if (brand) brand.addEventListener('click', e => { e.preventDefault(); play(); });
         window.novaliveTicket = { apply, play, DURATION };
         play();
       })();
@@ -485,42 +483,42 @@
       <!-- MEGA MENU KATEGORI: grid 4 kolom kategori NOVA + bagian Jelajahi Event -->
       <div class="mega-menu" id="navCatMenu" role="menu" aria-label="Kategori event">
         <div class="mega-grid">
-          <a class="mega-item" href="explore.html?cat=Musik" role="menuitem">
+          <a class="mega-item" href="NOVA LIVE — Jelajahi Event.html?cat=Musik" role="menuitem">
             <span class="mega-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/><path d="M9 18V5l12-2v13"/></svg></span>
             <span>Musik</span>
           </a>
-          <a class="mega-item" href="explore.html?cat=Pameran" role="menuitem">
+          <a class="mega-item" href="NOVA LIVE — Jelajahi Event.html?cat=Pameran" role="menuitem">
             <span class="mega-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg></span>
             <span>Pameran</span>
           </a>
-          <a class="mega-item" href="explore.html?cat=Teater" role="menuitem">
+          <a class="mega-item" href="NOVA LIVE — Jelajahi Event.html?cat=Teater" role="menuitem">
             <span class="mega-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c4.97 0 8 2.6 8 6.2 0 5.6-3.4 11.8-8 11.8S4 14.8 4 9.2C4 5.6 7.03 3 12 3z"/><circle cx="9" cy="9.5" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="9.5" r="1" fill="currentColor" stroke="none"/><path d="M9 14.5c.9 1.1 1.9 1.6 3 1.6s2.1-.5 3-1.6"/></svg></span>
             <span>Teater</span>
           </a>
-          <a class="mega-item" href="explore.html?cat=Olahraga" role="menuitem">
+          <a class="mega-item" href="NOVA LIVE — Jelajahi Event.html?cat=Olahraga" role="menuitem">
             <span class="mega-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5l2.9 2.1-1.1 3.4h-3.6l-1.1-3.4z"/><path d="M12 3v4.5M20.6 9.3l-3.2 1.1M17.8 19.5l-2.9-2.1M6.2 19.5l2.9-2.1M3.4 9.3l3.2 1.1"/></svg></span>
             <span>Olahraga</span>
           </a>
-          <a class="mega-item" href="explore.html?cat=Wisata" role="menuitem">
+          <a class="mega-item" href="NOVA LIVE — Jelajahi Event.html?cat=Wisata" role="menuitem">
             <span class="mega-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10.5c0 5.2-8 11.5-8 11.5S4 15.7 4 10.5a8 8 0 0 1 16 0z"/><circle cx="12" cy="10.5" r="3"/></svg></span>
             <span>Wisata</span>
           </a>
-          <a class="mega-item" href="explore.html?cat=Talkshow" role="menuitem">
+          <a class="mega-item" href="NOVA LIVE — Jelajahi Event.html?cat=Talkshow" role="menuitem">
             <span class="mega-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M9 21h6"/></svg></span>
             <span>Talkshow</span>
           </a>
-          <a class="mega-item" href="explore.html?cat=Workshop" role="menuitem">
+          <a class="mega-item" href="NOVA LIVE — Jelajahi Event.html?cat=Workshop" role="menuitem">
             <span class="mega-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3.5" width="18" height="12" rx="2"/><circle cx="12" cy="8" r="1.7"/><path d="M8.3 13.2c.6-2 2-3 3.7-3s3.1 1 3.7 3M12 15.5V19M8.5 21l3.5-2 3.5 2"/></svg></span>
             <span>Workshop</span>
           </a>
-          <a class="mega-item" href="explore.html?cat=Kompetisi" role="menuitem">
+          <a class="mega-item" href="NOVA LIVE — Jelajahi Event.html?cat=Kompetisi" role="menuitem">
             <span class="mega-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 5H4.5a2.5 2.5 0 0 0 2.6 4M17 5h2.5a2.5 2.5 0 0 1-2.6 4M12 14v3M8.5 20.5h7M10 17h4l.6 3.5H9.4z"/></svg></span>
             <span>Kompetisi</span>
           </a>
         </div>
         <div class="mega-explore">
           <h3>Jelajahi Event</h3>
-          <a class="mega-explore-card" href="explore.html">
+          <a class="mega-explore-card" href="NOVA LIVE — Jelajahi Event.html">
             <span class="mega-explore-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg></span>
             <span class="mega-explore-txt"><strong>Lihat Semua Event</strong><small>Telusuri semua event yang tersedia di NOVA LIVE dan temukan yang cocok untukmu.</small></span>
             <span class="mega-arrow" aria-hidden="true">›</span>
@@ -530,10 +528,10 @@
     </header>
     <div class="drawer-backdrop" id="drawerBackdrop"></div>
     <nav class="drawer" id="drawer" aria-label="Menu">
-      <a href="#">Beranda</a>
-      <a href="#" aria-current="page">Jelajahi Event</a>
-      <a href="#">Bikin Eventmu</a>
-      <a href="#">Masuk</a>
+      <a href="index.html">Beranda</a>
+      <a href="NOVA LIVE — Jelajahi Event.html" aria-current="page">Jelajahi Event</a>
+      <a href="index.html#bikin">Bikin Eventmu</a>
+      <a href="index.html" data-open-login>Masuk</a>
     </nav>
     <script>
       (function () {
