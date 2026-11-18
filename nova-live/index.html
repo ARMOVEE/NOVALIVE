@@ -92,10 +92,10 @@ section[id]{scroll-margin-top:96px}
 .nav-search{flex:1;display:flex;align-items:center;background:#fff;border:1px solid var(--line);border-radius:999px;padding:0 6px 0 20px;height:48px;min-width:0;position:relative}
 .nav-search input{flex:1;border:0;background:transparent;outline:none;font:400 .95rem var(--font-body);min-width:0;color:var(--navy)}
 .nav-search input::placeholder{color:var(--muted)}
-.nav-search-hint{position:absolute;left:20px;right:52px;top:50%;transform:translateY(-50%);font:400 .95rem var(--font-body);color:var(--muted);pointer-events:none;white-space:nowrap;overflow:hidden}
+.nav-search-hint{position:absolute;left:20px;right:52px;top:50%;transform:translateY(-50%);font:500 .95rem var(--font-body);color:var(--navy);pointer-events:none;white-space:nowrap;overflow:hidden}
 .nav-search-hint.hidden{display:none}
-.nav-search-hint .hint-prefix{white-space:pre}
-.nav-search-hint .hint-word{display:inline-block;transform-origin:50% 50%}
+.nav-search-hint .hint-prefix{white-space:pre;color:var(--navy);font-weight:500}
+.nav-search-hint .hint-word{display:inline-block;transform-origin:50% 50%;color:var(--navy);font-weight:700}
 .nav-search-hint .hint-word.flip-out{animation:hint-flip-out .5s ease-in forwards}
 .nav-search-hint .hint-word.flip-in{animation:hint-flip-in .5s ease-out forwards}
 @keyframes hint-flip-out{from{transform:perspective(400px) rotateX(0deg);opacity:1}to{transform:perspective(400px) rotateX(90deg);opacity:0}}
@@ -483,9 +483,9 @@ section[id]{scroll-margin-top:96px}
     <a class="nav-partner" href="#bikin">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z" fill="currentColor"/></svg><span>Bikin Eventmu</span>
     </a>
-    <button class="nav-account" type="button" data-open-login>
+    <a class="nav-account" href="NOVA LIVE — Form Login.html">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Masuk</span>
-    </button>
+    </a>
     <button class="burger" id="burgerBtn" aria-label="Buka menu" aria-expanded="false" aria-controls="drawer">☰</button>
   </div>
   <!-- MEGA MENU KATEGORI: grid 4 kolom kategori NOVA + bagian Jelajahi Event -->
@@ -541,7 +541,7 @@ section[id]{scroll-margin-top:96px}
   <a href="#minggu">Event Populer</a>
   <a href="#bikin">Bikin Eventmu</a>
   <a href="#faq">FAQ</a>
-  <a href="#" data-open-login>Masuk / Akun</a>
+  <a href="NOVA LIVE — Form Login.html">Masuk / Akun</a>
 </nav>
 
 <main id="atas">
@@ -794,15 +794,8 @@ syncDrawerLinks();
 backdrop.addEventListener("click",closeDrawer);
 drawer.querySelectorAll("a").forEach(function(a){a.addEventListener("click",closeDrawer);});
 
-/* Login modal */
-var loginBackdrop=document.getElementById("loginBackdrop");
-function openLogin(){loginBackdrop.classList.add("open");}
-function closeLogin(){loginBackdrop.classList.remove("open");}
-document.querySelectorAll("[data-open-login]").forEach(function(b){b.addEventListener("click",function(e){e.preventDefault();closeDrawer();openLogin();});});
-loginBackdrop.addEventListener("click",function(e){if(e.target===loginBackdrop)closeLogin();});
-loginBackdrop.querySelector(".close").addEventListener("click",closeLogin);
-document.getElementById("loginForm").addEventListener("submit",function(e){e.preventDefault();document.getElementById("loginNote").textContent="Ini mockup tampilan: tombol Masuk belum terhubung ke akun beneran.";});
-document.addEventListener("keydown",function(e){if(e.key==="Escape"){closeDrawer();closeLogin();}});
+/* Navigasi Login */
+document.querySelectorAll("[data-open-login]").forEach(function(b){b.addEventListener("click",function(e){e.preventDefault();window.location.href="NOVA LIVE — Form Login.html";});});
 
 var reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -818,11 +811,13 @@ document.getElementById("navSearch").addEventListener("submit",function(e){e.pre
 
   var STATIC_PLACEHOLDER = "Cari event, artis, atau kota\u2026";
   var SUGGESTIONS = [
-    "ENHYPEN WORLD TOUR 'BLOOD SAGA' IN JAKARTA",
-    "di Malaysia",
-    "konser musik",
-    "LaLaLa Festival Jakarta 2027",
-    "BIGBANG JAKARTA 2027"
+    "Seru Untukmu",
+    "Musik",
+    "Populer",
+    "di Kotamu",
+    "Wisata",
+    "Olahraga",
+    "Favorit Kamu"
   ];
 
   var SHOW_TIME = 2000;
