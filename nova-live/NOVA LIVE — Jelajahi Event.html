@@ -300,18 +300,18 @@
       @media (max-width:560px){ .footer-grid{grid-template-columns:1fr} }
 
       /* ---------- Pita legal (sama seperti homepage mockup ZIP) ---------- */
-      .legal-band{background:#0A1F33;color:#D7DEE8;padding:44px 0 34px;overflow:hidden}
+      .legal-band{background:var(--navy-deep);color:#D7DEE8;padding:44px 0 34px;overflow:hidden}
       .legal-wrap{max-width:1280px;margin:0 auto;padding:0 20px}
       .legal-wordmark{font-family:"Plus Jakarta Sans","Inter",system-ui,sans-serif;font-weight:800;
         line-height:.92;letter-spacing:-.03em;text-align:center;white-space:nowrap;
-        font-size:clamp(3.2rem,13.2vw,11.5rem);color:#fff;margin:0 0 28px;user-select:none}
+        font-size:clamp(3.2rem,13.2vw,11.5rem);color:var(--sky);margin:0 0 28px;user-select:none}
       .legal-wordmark span{color:var(--gold)}
       .legal-row{display:flex;align-items:center;justify-content:space-between;gap:16px 28px;flex-wrap:wrap}
       .legal-links{display:flex;gap:8px 28px;flex-wrap:wrap}
       .legal-links a{color:#E6EDF5;text-decoration:none;font-weight:600;font-size:.95rem;padding:6px 0}
       .legal-links a:hover{color:#fff;text-decoration:underline;text-underline-offset:4px}
       .legal-divider{border:0;border-top:1px solid rgba(255,255,255,.18);margin:22px 0 18px}
-      .legal-rights{color:#E6EDF5;font-weight:600;font-size:.95rem;text-align:center;margin:16px auto 0}
+      .legal-rights,.legal-note{color:#9FB3C8;font-size:.88rem;line-height:1.75;margin:0 auto;max-width:1020px;text-align:center}
       @media (max-width:760px){
         .legal-band{padding:32px 0 28px}
         .legal-wordmark{font-size:clamp(2.6rem,13.5vw,4.5rem);margin-bottom:22px}
@@ -733,32 +733,32 @@
       <div class="wrap">
         <div class="footer-grid">
           <div>
-            <a class="logo" href="#" aria-label="NOVA LIVE"><span class="logo-nova">NOVA</span> <span class="logo-live">LIVE</span></a>
+            <a class="logo" href="index.html" aria-label="NOVA LIVE"><span class="logo-nova">NOVA</span> <span class="logo-live">LIVE</span></a>
             <p style="color:rgba(220,232,242,.88)">Platform tiket event Indonesia: konser, pameran, wahana, dan olahraga, jelas, aman, dan bisa dipercaya.</p>
             <div class="social" aria-label="Media sosial">
-              <a href="#" aria-label="WhatsApp">WA</a><a href="#" aria-label="Instagram">IG</a><a href="#" aria-label="TikTok">TT</a><a href="#" aria-label="X">X</a><a href="#" aria-label="LinkedIn">in</a><a href="#" aria-label="YouTube">▶</a>
+              <a href="index.html#atas" aria-label="WhatsApp">WA</a><a href="index.html#atas" aria-label="Instagram">IG</a><a href="index.html#atas" aria-label="TikTok">TT</a><a href="index.html#atas" aria-label="X">X</a><a href="index.html#atas" aria-label="LinkedIn">in</a><a href="index.html#atas" aria-label="YouTube">▶</a>
             </div>
           </div>
-          <nav aria-label="Tentang Kami"><h3>Tentang Kami</h3><a href="#">Tentang Kami</a><a href="#">Our Journey</a><a href="#">Hubungi Kami</a><a href="#">Biaya</a></nav>
-          <nav aria-label="Informasi"><h3>Informasi</h3><a href="#">Syarat &amp; Ketentuan</a><a href="#">Kebijakan Privasi</a><a href="#">FAQ</a><a href="#">Tiket Gelang</a><a href="#">Validasi Tiket</a></nav>
-          <nav aria-label="Kategori Event"><h3>Kategori Event</h3><a href="#" data-foot-cat="Musik">Musik</a><a href="#" data-foot-cat="Pameran">Pameran</a><a href="#" data-foot-cat="Wisata">Wahana</a><a href="#" data-foot-cat="Olahraga">Olahraga</a><a href="#" data-foot-cat="Semua">Semua Kategori</a></nav>
+          <nav aria-label="Tentang Kami"><h3>Tentang Kami</h3><a href="index.html#atas">Tentang Kami</a><a href="index.html#atas">Our Journey</a><a href="index.html#faq">Hubungi Kami</a><a href="index.html#faq">Biaya</a></nav>
+          <nav aria-label="Informasi"><h3>Informasi</h3><a href="index.html#faq">Syarat &amp; Ketentuan</a><a href="index.html#faq">Kebijakan Privasi</a><a href="index.html#faq">FAQ</a><a href="index.html#faq">Tiket Gelang</a><a href="index.html#faq">Validasi Tiket</a></nav>
+          <nav aria-label="Kategori Event"><h3>Kategori Event</h3><a href="NOVA LIVE — Jelajahi Event.html?cat=Musik" data-foot-cat="Musik">Musik</a><a href="NOVA LIVE — Jelajahi Event.html?cat=Pameran" data-foot-cat="Pameran">Pameran</a><a href="NOVA LIVE — Jelajahi Event.html?cat=Wisata" data-foot-cat="Wisata">Wahana</a><a href="NOVA LIVE — Jelajahi Event.html?cat=Olahraga" data-foot-cat="Olahraga">Olahraga</a><a href="NOVA LIVE — Jelajahi Event.html" data-foot-cat="Semua">Semua Kategori</a></nav>
         </div>
       </div>
     </footer>
 
     <!-- ================= PITA LEGAL (sama seperti homepage mockup ZIP) ================= -->
-    <section class="legal-band" aria-label="Informasi legal NOVA LIVE">
+    <section class="legal-band" id="faq" aria-label="Informasi legal NOVA LIVE">
       <div class="legal-wrap">
         <p class="legal-wordmark" aria-hidden="true">NOVA <span>LIVE</span></p>
         <div class="legal-row">
           <nav class="legal-links" aria-label="Tautan legal">
-            <a href="#">Kebijakan Privasi</a>
-            <a href="#">Syarat &amp; Ketentuan</a>
-            <a href="#">Prosedur Pengaduan</a>
+            <a href="index.html#faq">Kebijakan Privasi</a>
+            <a href="index.html#faq">Syarat &amp; Ketentuan</a>
+            <a href="index.html#faq">Prosedur Pengaduan</a>
           </nav>
         </div>
         <hr class="legal-divider">
-        <p class="legal-rights">© 2026 NOVA LIVE. Hak Cipta Dilindungi.</p>
+        <p class="legal-note">© 2026 NOVA LIVE. Hak Cipta Dilindungi.</p>
       </div>
     </section>
 
