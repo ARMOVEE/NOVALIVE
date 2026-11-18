@@ -66,7 +66,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 28px 16px 36px;
+        padding: 20px 14px 28px;
         background:
           radial-gradient(560px 380px at 12% 8%, rgba(212, 180, 117, 0.35), transparent 65%),
           radial-gradient(640px 460px at 88% 92%, rgba(80, 159, 200, 0.28), transparent 65%),
@@ -80,9 +80,9 @@
       /* ---------- Phone card ---------- */
       .phone {
         width: 100%;
-        max-width: 400px;
+        max-width: 360px;
         background: var(--navy-deep);
-        border-radius: 38px;
+        border-radius: 32px;
         box-shadow: var(--shadow-card);
         overflow: hidden;
       }
@@ -90,7 +90,7 @@
       /* ---------- Hero ---------- */
       .hero {
         position: relative;
-        height: 252px;
+        height: 195px;
         background: linear-gradient(180deg, #15497a 0%, #0e3254 78%);
         overflow: hidden;
         display: flex;
@@ -109,8 +109,8 @@
       .hero-ticket {
         position: relative;
         z-index: 1;
-        width: 88%;
-        max-width: 352px;
+        width: 86%;
+        max-width: 300px;
         height: auto;
         overflow: visible;
         display: block;
@@ -122,34 +122,34 @@
         position: relative;
         z-index: 3;
         background: var(--sheet-bg);
-        border-radius: 30px 30px 0 0;
-        margin-top: -26px;
-        padding: 26px 28px 30px;
+        border-radius: 26px 26px 0 0;
+        margin-top: -22px;
+        padding: 20px 24px 24px;
       }
       .sheet h1 {
         font-family: var(--font-display);
         font-weight: 800;
-        font-size: 31px;
+        font-size: 25px;
         letter-spacing: -0.01em;
         text-align: center;
-        margin: 2px 0 6px;
+        margin: 0 0 6px;
         color: var(--ink);
       }
       .sheet .sub {
         text-align: center;
         color: var(--muted);
-        font-size: 13.5px;
-        line-height: 1.5;
-        margin: 0 0 22px;
+        font-size: 13px;
+        line-height: 1.45;
+        margin: 0 0 18px;
       }
 
       /* ---------- Pembatas lekuk ke atas di tepi atas kartu form ---------- */
       .sheet-wave {
         position: absolute;
         left: 0;
-        top: -35px;
+        top: -30px;
         width: 100%;
-        height: 52px;
+        height: 44px;
         display: block;
         color: var(--sheet-bg);
         pointer-events: none;
@@ -190,25 +190,25 @@
       .field-group {
         background: var(--field-bg);
         border: 1px solid var(--field-line);
-        border-radius: 20px;
-        padding: 4px 16px;
+        border-radius: 18px;
+        padding: 2px 14px;
         margin-bottom: 6px;
       }
       .field-row {
         display: flex;
         align-items: center;
-        gap: 12px;
-        min-height: 58px;
+        gap: 10px;
+        min-height: 50px;
       }
       .field-row + .field-row { border-top: 1px solid var(--field-line); }
       .field-ico {
         flex: 0 0 auto;
-        width: 36px; height: 36px;
+        width: 32px; height: 32px;
         border-radius: 50%;
         display: grid;
         place-items: center;
       }
-      .field-ico svg { width: 18px; height: 18px; }
+      .field-ico svg { width: 16px; height: 16px; }
       .ico-mail { background: #f6e7c3; color: #9a741f; }
       .ico-lock { background: #dcecf5; color: var(--brand); }
       .ico-name { background: #dcecf5; color: var(--brand); }
@@ -221,18 +221,18 @@
         min-width: 0;
         border: 0;
         background: transparent;
-        font-size: 15px;
+        font-size: 14px;
         font-weight: 500;
         color: var(--ink);
-        padding: 10px 0;
-        min-height: 44px;
+        padding: 8px 0;
+        min-height: 40px;
       }
       .field-row input::placeholder { color: var(--muted); opacity: 0.75; font-weight: 400; }
       .field-row input:focus { outline: none; }
       .field-row:focus-within .field-ico { box-shadow: 0 0 0 3px rgba(80, 159, 200, 0.35); }
       .eye-btn {
         flex: 0 0 auto;
-        width: 40px; height: 40px;
+        width: 36px; height: 36px;
         border: 0;
         background: transparent;
         border-radius: 50%;
@@ -241,7 +241,7 @@
         color: var(--muted);
         padding: 0;
       }
-      .eye-btn svg { width: 20px; height: 20px; }
+      .eye-btn svg { width: 18px; height: 18px; }
       .eye-btn:hover { color: var(--brand); background: rgba(80, 159, 200, 0.12); }
 
       .field-err {
@@ -259,18 +259,18 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 14px;
-        margin-top: 20px;
+        gap: 12px;
+        margin-top: 16px;
       }
       .link {
         color: var(--brand);
-        font-size: 13.5px;
+        font-size: 13px;
         font-weight: 600;
         text-decoration: none;
         background: none;
         border: 0;
-        padding: 10px 4px;
-        min-height: 40px;
+        padding: 8px 2px;
+        min-height: 36px;
         display: inline-flex;
         align-items: center;
       }
@@ -281,11 +281,11 @@
         color: #fff;
         font-family: var(--font-display);
         font-weight: 700;
-        font-size: 15px;
-        padding: 0 38px;
-        min-height: 50px;
+        font-size: 14px;
+        padding: 0 32px;
+        min-height: 44px;
         border-radius: 999px;
-        box-shadow: 0 12px 22px -10px rgba(14, 42, 71, 0.55);
+        box-shadow: 0 10px 20px -8px rgba(14, 42, 71, 0.5);
         transition: transform 0.15s ease, background 0.15s ease;
       }
       @media (prefers-color-scheme: dark) { .btn-login { background: var(--gold-deep); color: #23190a; } }
@@ -301,11 +301,11 @@
         color: #fff;
         font-family: var(--font-display);
         font-weight: 700;
-        font-size: 15px;
-        min-height: 52px;
+        font-size: 14px;
+        min-height: 46px;
         border-radius: 999px;
-        margin-top: 20px;
-        box-shadow: 0 12px 22px -10px rgba(14, 42, 71, 0.55);
+        margin-top: 16px;
+        box-shadow: 0 10px 20px -8px rgba(14, 42, 71, 0.5);
       }
       @media (prefers-color-scheme: dark) { .btn-full { background: var(--gold-deep); color: #23190a; } }
       .btn-full:hover { background: var(--navy); }
@@ -325,20 +325,20 @@
 
       .switch-line {
         text-align: center;
-        margin: 24px 0 0;
-        font-size: 13.5px;
+        margin: 18px 0 0;
+        font-size: 13px;
         color: var(--muted);
       }
-      .switch-line .link { font-size: 13.5px; padding: 10px 2px; }
+      .switch-line .link { font-size: 13px; padding: 6px 2px; }
 
       /* ---------- Panel sukses / info ---------- */
       .notice {
         display: none;
-        border-radius: 16px;
-        padding: 14px 16px;
-        font-size: 13.5px;
-        line-height: 1.55;
-        margin-bottom: 18px;
+        border-radius: 14px;
+        padding: 12px 14px;
+        font-size: 13px;
+        line-height: 1.5;
+        margin-bottom: 14px;
       }
       .notice.show { display: block; }
       .notice.ok { background: #e8f5ec; color: #14532d; border: 1px solid #bbe7c6; }
@@ -356,22 +356,22 @@
         background: none;
         color: var(--brand);
         font-weight: 600;
-        font-size: 13.5px;
-        padding: 10px 4px;
-        min-height: 40px;
+        font-size: 12.5px;
+        padding: 6px 2px;
+        min-height: 34px;
         text-decoration: none;
       }
       .back-btn:hover { text-decoration: underline; }
-      .back-btn svg { width: 16px; height: 16px; }
+      .back-btn svg { width: 15px; height: 15px; }
 
       .view[hidden] { display: none; }
 
       .demo-chip {
-        margin-top: 22px;
+        margin-top: 16px;
         text-align: center;
-        font-size: 12px;
+        font-size: 11.5px;
         color: var(--muted);
-        line-height: 1.6;
+        line-height: 1.55;
       }
       .demo-chip code {
         background: var(--field-bg);
@@ -506,7 +506,7 @@
               <button type="button" class="link" id="gotoRegister">Daftar</button>
             </p>
 
-            <p class="demo-chip">Akun demo buat nyoba: <code>demo@novalive.id</code> · sandi <code>nova1234</code></p>
+            <p class="demo-chip">Akun demo: <code>demo@novalive.id</code> · sandi <code>nova1234</code><br>Akun Admin: <code>novaLive.Admin@gmail.id</code> · sandi <code>NovaLive.Admin</code></p>
           </div>
 
           <!-- ===== VIEW: LUPA KATA SANDI ===== -->
@@ -593,6 +593,8 @@
 
         var DEMO_EMAIL = "demo@novalive.id";
         var DEMO_PASS = "nova1234";
+        var ADMIN_EMAIL = "novalive.admin@gmail.id";
+        var ADMIN_PASS = "NovaLive.Admin";
 
         var views = {
           login: document.getElementById("view-login"),
@@ -635,6 +637,8 @@
           });
         }
         function validEmail(v) {
+          var clean = String(v).trim().toLowerCase();
+          if (clean === ADMIN_EMAIL || clean === "novalive.admin") return true;
           return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
         }
         function setLoading(btn, loading, label) {
@@ -679,6 +683,19 @@
         var loginNotice = document.getElementById("loginNotice");
         var loginBtn = document.getElementById("loginBtn");
 
+        Array.prototype.forEach.call(document.querySelectorAll(".demo-chip code"), function (c) {
+          c.style.cursor = "pointer";
+          c.title = "Klik untuk isi otomatis";
+          c.addEventListener("click", function () {
+            var txt = c.textContent.trim();
+            if (txt.indexOf("@") !== -1 || txt.toLowerCase() === "novalive.admin") {
+              document.getElementById("loginEmail").value = txt;
+            } else {
+              document.getElementById("loginPass").value = txt;
+            }
+          });
+        });
+
         loginForm.addEventListener("submit", function (ev) {
           ev.preventDefault();
           clearNotice(loginNotice);
@@ -698,13 +715,21 @@
 
           setTimeout(function () {
             setLoading(loginBtn, false, "Login");
-            if (email.toLowerCase() === DEMO_EMAIL && pass === DEMO_PASS) {
+            var cleanEmail = email.toLowerCase();
+            if ((cleanEmail === ADMIN_EMAIL || cleanEmail === "novalive.admin") && pass === ADMIN_PASS) {
+              loginForm.reset();
+              setNotice(loginNotice, "ok",
+                "<strong>Login Admin berhasil!</strong> Selamat datang Admin NOVA LIVE — mengalihkan ke Dashboard Admin…");
+              setTimeout(function () {
+                window.location.href = "NOVA%20LIVE%20%E2%80%94%20Dashboard%20Admin.html";
+              }, 800);
+            } else if (cleanEmail === DEMO_EMAIL && pass === DEMO_PASS) {
               loginForm.reset();
               setNotice(loginNotice, "ok",
                 "<strong>Login berhasil!</strong> Selamat datang kembali di NOVA LIVE — mengalihkan ke Beranda…");
               setTimeout(function () {
                 window.location.href = "index.html";
-              }, 1200);
+              }, 800);
             } else {
               setNotice(loginNotice, "err",
                 "Email atau kata sandi salah. Coba lagi, atau pakai akun demo di bawah form.");
