@@ -63,7 +63,7 @@ $flashSuccess = $flash['success'] ?? null;
         }
         /* Latar halaman tetap cream di mode gelap, jadi teks kaki halaman
            di luar kartu pakai warna mode terang biar tetap terbaca. */
-        .page-foot { color: #4a607a; }
+        .page-foot { color: #4a607a !important; }
       }
 
       * { box-sizing: border-box; }
@@ -75,7 +75,7 @@ $flashSuccess = $flash['success'] ?? null;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 20px 14px 28px;
+        padding: clamp(24px, 6vh, 56px) 14px;
         background:
           radial-gradient(560px 380px at 12% 8%, rgba(212, 180, 117, 0.35), transparent 65%),
           radial-gradient(640px 460px at 88% 92%, rgba(80, 159, 200, 0.28), transparent 65%),
@@ -89,7 +89,7 @@ $flashSuccess = $flash['success'] ?? null;
       /* ---------- Phone card ---------- */
       .phone {
         width: 100%;
-        max-width: 360px;
+        max-width: 440px;
         background: var(--navy-deep);
         border-radius: 32px;
         box-shadow: var(--shadow-card);
@@ -99,12 +99,13 @@ $flashSuccess = $flash['success'] ?? null;
       /* ---------- Hero ---------- */
       .hero {
         position: relative;
-        height: 195px;
+        height: 190px;
         background: linear-gradient(180deg, #15497a 0%, #0e3254 78%);
         overflow: hidden;
         display: flex;
         align-items: center;
         justify-content: center;
+        padding-bottom: 22px;
       }
       .hero::after {
         content: "";
@@ -118,8 +119,8 @@ $flashSuccess = $flash['success'] ?? null;
       .hero-ticket {
         position: relative;
         z-index: 1;
-        width: 86%;
-        max-width: 300px;
+        width: 88%;
+        max-width: 330px;
         height: auto;
         overflow: visible;
         display: block;
@@ -133,23 +134,23 @@ $flashSuccess = $flash['success'] ?? null;
         background: var(--sheet-bg);
         border-radius: 26px 26px 0 0;
         margin-top: -22px;
-        padding: 20px 24px 24px;
+        padding: 28px 32px 32px;
       }
       .sheet h1 {
         font-family: var(--font-display);
         font-weight: 800;
-        font-size: 25px;
+        font-size: 34px;
         letter-spacing: -0.01em;
         text-align: center;
-        margin: 0 0 6px;
+        margin: 0 0 8px;
         color: var(--ink);
       }
       .sheet .sub {
         text-align: center;
         color: var(--muted);
-        font-size: 13px;
-        line-height: 1.45;
-        margin: 0 0 18px;
+        font-size: 15px;
+        line-height: 1.5;
+        margin: 0 0 22px;
       }
 
       /* ---------- Pembatas lekuk ke atas di tepi atas kartu form ---------- */
@@ -199,25 +200,25 @@ $flashSuccess = $flash['success'] ?? null;
       .field-group {
         background: var(--field-bg);
         border: 1px solid var(--field-line);
-        border-radius: 18px;
-        padding: 2px 14px;
-        margin-bottom: 6px;
+        border-radius: 20px;
+        padding: 2px 16px;
+        margin-bottom: 8px;
       }
       .field-row {
         display: flex;
         align-items: center;
-        gap: 10px;
-        min-height: 50px;
+        gap: 12px;
+        min-height: 54px;
       }
       .field-row + .field-row { border-top: 1px solid var(--field-line); }
       .field-ico {
         flex: 0 0 auto;
-        width: 32px; height: 32px;
+        width: 36px; height: 36px;
         border-radius: 50%;
         display: grid;
         place-items: center;
       }
-      .field-ico svg { width: 16px; height: 16px; }
+      .field-ico svg { width: 18px; height: 18px; }
       .ico-mail { background: #f6e7c3; color: #9a741f; }
       .ico-lock { background: #dcecf5; color: var(--brand); }
       .ico-name { background: #dcecf5; color: var(--brand); }
@@ -230,18 +231,18 @@ $flashSuccess = $flash['success'] ?? null;
         min-width: 0;
         border: 0;
         background: transparent;
-        font-size: 14px;
+        font-size: 15px;
         font-weight: 500;
         color: var(--ink);
-        padding: 8px 0;
-        min-height: 40px;
+        padding: 10px 0;
+        min-height: 44px;
       }
       .field-row input::placeholder { color: var(--muted); opacity: 0.75; font-weight: 400; }
       .field-row input:focus { outline: none; }
       .field-row:focus-within .field-ico { box-shadow: 0 0 0 3px rgba(80, 159, 200, 0.35); }
       .eye-btn {
         flex: 0 0 auto;
-        width: 36px; height: 36px;
+        width: 38px; height: 38px;
         border: 0;
         background: transparent;
         border-radius: 50%;
@@ -256,7 +257,7 @@ $flashSuccess = $flash['success'] ?? null;
       .field-err {
         display: none;
         color: var(--danger);
-        font-size: 12.5px;
+        font-size: 13px;
         font-weight: 600;
         margin: 6px 4px 0;
       }
@@ -268,18 +269,18 @@ $flashSuccess = $flash['success'] ?? null;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 12px;
-        margin-top: 16px;
+        gap: 14px;
+        margin-top: 22px;
       }
       .link {
         color: var(--brand);
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 600;
         text-decoration: none;
         background: none;
         border: 0;
-        padding: 8px 2px;
-        min-height: 36px;
+        padding: 8px 4px;
+        min-height: 40px;
         display: inline-flex;
         align-items: center;
       }
@@ -290,9 +291,9 @@ $flashSuccess = $flash['success'] ?? null;
         color: #fff;
         font-family: var(--font-display);
         font-weight: 700;
-        font-size: 14px;
-        padding: 0 32px;
-        min-height: 44px;
+        font-size: 16px;
+        padding: 0 40px;
+        min-height: 50px;
         border-radius: 999px;
         box-shadow: 0 10px 20px -8px rgba(14, 42, 71, 0.5);
         transition: transform 0.15s ease, background 0.15s ease;
@@ -310,10 +311,10 @@ $flashSuccess = $flash['success'] ?? null;
         color: #fff;
         font-family: var(--font-display);
         font-weight: 700;
-        font-size: 14px;
-        min-height: 46px;
+        font-size: 16px;
+        min-height: 50px;
         border-radius: 999px;
-        margin-top: 16px;
+        margin-top: 22px;
         box-shadow: 0 10px 20px -8px rgba(14, 42, 71, 0.5);
       }
       @media (prefers-color-scheme: dark) { .btn-full { background: var(--gold-deep); color: #23190a; } }
@@ -334,11 +335,11 @@ $flashSuccess = $flash['success'] ?? null;
 
       .switch-line {
         text-align: center;
-        margin: 18px 0 0;
-        font-size: 13px;
+        margin: 22px 0 0;
+        font-size: 14px;
         color: var(--muted);
       }
-      .switch-line .link { font-size: 13px; padding: 6px 2px; }
+      .switch-line .link { font-size: 14px; padding: 6px 4px; }
 
       /* ---------- Panel sukses / info ---------- */
       .notice {
@@ -356,7 +357,7 @@ $flashSuccess = $flash['success'] ?? null;
         .notice.ok { background: #123324; color: #a7e8bd; border-color: #1f5136; }
       }
 
-      .back-row { margin-bottom: 4px; }
+      .back-row { margin-bottom: 6px; }
       .back-btn {
         display: inline-flex;
         align-items: center;
@@ -365,7 +366,7 @@ $flashSuccess = $flash['success'] ?? null;
         background: none;
         color: var(--brand);
         font-weight: 600;
-        font-size: 12.5px;
+        font-size: 13px;
         padding: 6px 2px;
         min-height: 34px;
         text-decoration: none;
@@ -376,32 +377,74 @@ $flashSuccess = $flash['success'] ?? null;
       .view[hidden] { display: none; }
 
       .demo-chip {
-        margin-top: 16px;
+        margin-top: 22px;
         text-align: center;
-        font-size: 11.5px;
+        font-size: 12.5px;
         color: var(--muted);
-        line-height: 1.55;
+        line-height: 1.6;
       }
       .demo-chip code {
         background: var(--field-bg);
         border: 1px solid var(--field-line);
         border-radius: 6px;
-        padding: 1px 6px;
-        font-size: 11.5px;
+        padding: 2px 7px;
+        font-size: 12px;
         color: var(--ink);
       }
 
       .page-foot {
         margin-top: 20px;
         text-align: center;
-        font-size: 12px;
-        color: var(--muted);
+        font-size: 12.5px;
+        font-weight: 500;
+        color: #4a607a;
       }
 
-      @media (max-width: 380px) {
-        .sheet { padding: 22px 20px 26px; }
-        .hero { height: 218px; }
-        .btn-login { padding: 0 28px; }
+      /* Desktop (>= 1024px): kartu lebar 440px, tinggi mengisi ~80-85% layar */
+      @media (min-width: 1024px) {
+        body { padding: clamp(32px, 7vh, 72px) 20px; }
+        .phone { width: 100%; max-width: 440px; }
+      }
+
+      /* Laptop / Desktop dengan tinggi layar terbatas (mis. 1366x768):
+         ketinggian kartu disesuaikan agar pas di viewport tanpa scroll vertikal */
+      @media (max-height: 820px) and (min-width: 768px) {
+        body { padding: 12px 14px 16px; }
+        .phone { max-width: 420px; }
+        .hero { height: 165px; padding-bottom: 18px; }
+        .hero-ticket { max-width: 290px; }
+        .sheet { padding: 20px 28px 24px; margin-top: -20px; }
+        .sheet h1 { font-size: 28px; margin-bottom: 4px; }
+        .sheet .sub { font-size: 13.5px; margin-bottom: 14px; line-height: 1.4; }
+        .field-row { min-height: 48px; }
+        .field-row input { font-size: 14px; min-height: 38px; }
+        .action-row { margin-top: 14px; }
+        .btn-login { min-height: 46px; font-size: 15px; padding: 0 34px; }
+        .btn-full { min-height: 46px; margin-top: 14px; }
+        .switch-line { margin-top: 14px; font-size: 13px; }
+        .demo-chip { margin-top: 14px; font-size: 11.5px; line-height: 1.5; }
+        .page-foot { margin-top: 12px; font-size: 11.5px; }
+      }
+
+      /* Layar HP (<= 480px): kartu selebar layar dengan margin 16px */
+      @media (max-width: 480px) {
+        body { padding: 16px 16px 24px; }
+        .phone { max-width: 100%; border-radius: 24px; }
+        .hero { height: 175px; padding-bottom: 20px; }
+        .hero-ticket { max-width: 270px; width: 82%; }
+        .sheet { padding: 20px 20px 24px; border-radius: 22px 22px 0 0; }
+        .sheet h1 { font-size: 26px; }
+        .sheet .sub { font-size: 13px; margin-bottom: 16px; }
+        .field-row { min-height: 50px; }
+        .field-row input { font-size: 14px; }
+        .field-ico { width: 32px; height: 32px; }
+        .field-ico svg { width: 16px; height: 16px; }
+        .action-row { margin-top: 16px; }
+        .btn-login { min-height: 46px; font-size: 14.5px; padding: 0 30px; }
+        .btn-full { min-height: 46px; margin-top: 16px; }
+        .switch-line { margin-top: 16px; font-size: 13px; }
+        .demo-chip { margin-top: 16px; font-size: 11.5px; }
+        .page-foot { margin-top: 16px; font-size: 12px; }
       }
       @media (prefers-reduced-motion: reduce) {
         * { transition: none !important; animation: none !important; }
@@ -440,9 +483,9 @@ $flashSuccess = $flash['success'] ?? null;
 
             <g data-part="root">
               <path data-part="ribbon" d="M 385 68 L 665 382 C 735 466 803 514 897 512 C 1022 510 1120 384 1230 258"
-                    fill="none" stroke="#E8D5A1" stroke-width="44" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/>
+                    fill="none" stroke="#E8D5A1" stroke-width="44" pathLength="1" stroke-dasharray="1" stroke-dashoffset="0"/>
 
-              <g data-part="dark" opacity="0">
+              <g data-part="dark" opacity="1">
                 <use href="#nvlogin-dark-shape" fill="url(#nvlogin-dark)" stroke="url(#nvlogin-dark)" stroke-width="5" stroke-linejoin="round"/>
                 <g fill="#FAFAFC">
                   <g data-part="dot" data-cx="395" data-cy="255"><circle r="28"/></g>
@@ -451,7 +494,7 @@ $flashSuccess = $flash['success'] ?? null;
                 </g>
               </g>
 
-              <g data-part="light" opacity="0">
+              <g data-part="light" opacity="1">
                 <use href="#nvlogin-light-shape" fill="url(#nvlogin-light)" stroke="url(#nvlogin-light)" stroke-width="4" stroke-linejoin="round"/>
                 <g fill="#FAFAFC">
                   <g data-part="oval" data-cx="773" data-cy="355"><ellipse rx="27" ry="16" transform="rotate(-8)"/></g>
@@ -868,12 +911,12 @@ $flashSuccess = $flash['success'] ?? null;
         var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         var raf = 0, timer = 0;
 
-        function play() {
+        function play(fromStart) {
           cancelAnimationFrame(raf);
           clearTimeout(timer);
           if (reduceMotion) { apply(DURATION); return; }
           var start = 0;
-          apply(0);
+          if (fromStart) apply(0);
           function tick(now) {
             if (!start) start = now;
             var t = (now - start) / 1000;
@@ -881,15 +924,21 @@ $flashSuccess = $flash['success'] ?? null;
             if (t < DURATION) {
               raf = requestAnimationFrame(tick);
             } else {
-              timer = setTimeout(play, PAUSE_MS); // jeda, lalu putar lagi
+              apply(DURATION);
+              timer = setTimeout(function () { play(true); }, PAUSE_MS); // jeda, lalu putar lagi
             }
           }
           raf = requestAnimationFrame(tick);
         }
 
-        svg.addEventListener("click", play);
+        svg.addEventListener("click", function () { play(true); });
         window.novaliveTicketLogin = { apply: apply, play: play, DURATION: DURATION };
-        play();
+
+        // Tampilkan bentuk utuh sejak frame awal, lalu mulai loop animasi setelah jeda
+        apply(DURATION);
+        if (!reduceMotion) {
+          timer = setTimeout(function () { play(true); }, PAUSE_MS);
+        }
       })();
     </script>
   </body>
