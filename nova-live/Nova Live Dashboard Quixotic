@@ -168,8 +168,29 @@
         display:grid;place-items:center;padding:0 4px;border:2px solid #fff;font-family:'Plus Jakarta Sans',sans-serif;
       }
       .rail button.active .rail-badge{border-color:var(--navy)}
-      .rail-sep{width:26px;height:1px;background:var(--line);margin:5px 0;flex:none}
       .rail .spacer{flex:1;min-height:14px}
+
+      /* ---------- Tab bar menu gabungan ---------- */
+      .tabs{
+        display:flex;gap:2px;background:#F1F3F4;border-radius:999px;padding:4px;
+        width:fit-content;max-width:100%;overflow-x:auto;scrollbar-width:none;
+        margin:2px 2px 18px;box-shadow:inset 0 0 0 1px var(--line);
+      }
+      .tabs[hidden]{display:none}
+      .tabs::-webkit-scrollbar{display:none}
+      .tabs button{
+        display:inline-flex;align-items:center;gap:7px;flex:none;white-space:nowrap;
+        padding:8px 18px;border-radius:999px;font-size:13.5px;font-weight:600;color:#5B6B78;min-height:38px;
+        transition:background .15s,color .15s;
+      }
+      .tabs button:hover{color:var(--navy)}
+      .tabs button.active{background:var(--navy);color:#fff;box-shadow:0 4px 12px rgba(14,50,84,.25)}
+      .tab-badge{
+        min-width:18px;height:18px;border-radius:99px;background:var(--gold-deep);color:#fff;
+        font-size:10.5px;font-weight:800;line-height:1;display:grid;place-items:center;padding:0 5px;
+        font-family:'Plus Jakarta Sans',sans-serif;
+      }
+      .tabs button.active .tab-badge{background:var(--gold);color:var(--navy)}
       .views{flex:1;min-width:0}
       .view{display:none}
       .view.active{display:block;animation:viewIn .25s ease}
@@ -610,7 +631,6 @@
           position:static;max-height:none;overflow:visible;justify-content:flex-start;gap:6px;
         }
         .rail .spacer{display:none}
-        .rail-sep{display:none}
         .rail button{width:42px;height:42px}
         #railTip{display:none}
         .fin-grid{grid-template-columns:1fr}
@@ -784,64 +804,32 @@
       </div>
 
       <div class="layout">
-        <!-- ======= ICON RAIL: 17 menu dashboard ======= -->
+        <!-- ======= ICON RAIL: 8 menu dashboard ======= -->
         <nav class="rail" id="rail" aria-label="Menu dashboard">
-          <button class="active" type="button" data-view="ringkasan" data-tip="Ringkasan" aria-label="Ringkasan" title="Ringkasan">
+          <button class="active" type="button" data-menu="ringkasan" data-tip="Ringkasan" aria-label="Ringkasan" title="Ringkasan">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><rect x="3" y="3" width="7.5" height="7.5" rx="1.8"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.8"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.8"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.8"/></svg>
           </button>
-          <button type="button" data-view="event" data-tip="Event Saya" aria-label="Event Saya" title="Event Saya">
+          <button type="button" data-menu="event" data-tip="Event" aria-label="Event" title="Event">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
             <span class="rail-badge" id="navEventCount">10</span>
           </button>
-          <button type="button" data-view="pesanan" data-tip="Pesanan" aria-label="Pesanan" title="Pesanan">
+          <button type="button" data-menu="pesanan" data-tip="Pesanan" aria-label="Pesanan" title="Pesanan">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h2l2.4 11.2a1.5 1.5 0 0 0 1.5 1.2h7.9a1.5 1.5 0 0 0 1.5-1.2L20.5 8H7"/><circle cx="10" cy="21" r="1"/><circle cx="18" cy="21" r="1"/></svg>
             <span class="rail-badge" id="navOrderCount">8</span>
           </button>
-          <button type="button" data-view="keuangan" data-tip="Keuangan" aria-label="Keuangan" title="Keuangan">
+          <button type="button" data-menu="keuangan" data-tip="Keuangan" aria-label="Keuangan" title="Keuangan">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10.5h18M7 15h4"/></svg>
           </button>
-          <span class="rail-sep" aria-hidden="true"></span>
-          <button type="button" data-view="checkin" data-tip="Check-in" aria-label="Check-in" title="Check-in">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3h-3zM21 14v.01M14 21h.01M18.5 18.5H21V21h-2.5z"/></svg>
-          </button>
-          <button type="button" data-view="refund" data-tip="Refund" aria-label="Refund" title="Refund">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>
-            <span class="rail-badge" id="navRefundCount">2</span>
-          </button>
-          <button type="button" data-view="stok" data-tip="Stok Tiket" aria-label="Stok Tiket" title="Stok Tiket">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M4 8l8-4 8 4v8l-8 4-8-4z"/><path d="M4 8l8 4 8-4M12 12v8"/></svg>
-          </button>
-          <span class="rail-sep" aria-hidden="true"></span>
-          <button type="button" data-view="banner" data-tip="Banner" aria-label="Banner" title="Banner">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="9" cy="10" r="1.6"/><path d="M3 17l5-4 4 3 4-4 5 5"/></svg>
-          </button>
-          <button type="button" data-view="tampilan" data-tip="Tampilan Homepage" aria-label="Tampilan Homepage" title="Tampilan Homepage">
+          <button type="button" data-menu="homepage" data-tip="Homepage" aria-label="Homepage" title="Homepage">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 4v5.5"/></svg>
           </button>
-          <button type="button" data-view="kategori" data-tip="Kategori" aria-label="Kategori" title="Kategori">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-          </button>
-          <button type="button" data-view="kota" data-tip="Kota" aria-label="Kota" title="Kota">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 21s-7-5.6-7-11a7 7 0 0 1 14 0c0 5.4-7 11-7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>
-          </button>
-          <button type="button" data-view="etiket" data-tip="E-Tiket" aria-label="E-Tiket" title="E-Tiket">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v1.5a3 3 0 0 0 0 5V16a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1.5a3 3 0 0 0 0-5z"/><path d="M14 7v2M14 11v2M14 15v2" stroke-linecap="round"/></svg>
-          </button>
-          <span class="rail-sep" aria-hidden="true"></span>
-          <button type="button" data-view="notifikasi" data-tip="Notifikasi" aria-label="Notifikasi" title="Notifikasi">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>
-          </button>
-          <button type="button" data-view="analitik" data-tip="Analitik" aria-label="Analitik" title="Analitik">
+          <button type="button" data-menu="laporan" data-tip="Laporan" aria-label="Laporan" title="Laporan">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M5 20v-6M11 20V6M17 20v-9"/><path d="M3 20h18"/></svg>
           </button>
-          <button type="button" data-view="log" data-tip="Log Aktivitas" aria-label="Log Aktivitas" title="Log Aktivitas">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M8.5 6H21M8.5 12H21M8.5 18H21"/><circle cx="4" cy="6" r="1.1" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.1" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.1" fill="currentColor" stroke="none"/></svg>
-          </button>
-          <span class="rail-sep" aria-hidden="true"></span>
-          <button type="button" data-view="promosi" data-tip="Promosi" aria-label="Promosi" title="Promosi">
+          <button type="button" data-menu="promosi" data-tip="Promosi" aria-label="Promosi" title="Promosi">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M3 11V7a2 2 0 0 1 2-2h4l9 9-4 4-9-9z"/><circle cx="8" cy="9" r="1.4"/></svg>
           </button>
-          <button type="button" data-view="pengaturan" data-tip="Pengaturan" aria-label="Pengaturan" title="Pengaturan">
+          <button type="button" data-menu="pengaturan" data-tip="Pengaturan" aria-label="Pengaturan" title="Pengaturan">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19 12a7 7 0 0 0-.14-1.4l2-1.55-2-3.46-2.36.95a7 7 0 0 0-2.42-1.4L13.7 2.6h-3.4l-.38 2.54a7 7 0 0 0-2.42 1.4l-2.36-.95-2 3.46 2 1.55a7 7 0 0 0 0 2.8l-2 1.55 2 3.46 2.36-.95a7 7 0 0 0 2.42 1.4l.38 2.54h3.4l.38-2.54a7 7 0 0 0 2.42-1.4l2.36.95 2-3.46-2-1.55c.1-.45.14-.92.14-1.4z"/></svg>
           </button>
           <span class="spacer"></span>
@@ -855,6 +843,7 @@
 
         <!-- ======= VIEWS ======= -->
         <main class="views">
+          <div class="tabs" id="menuTabs" role="tablist" aria-label="Tab menu" hidden></div>
 
           <!-- ========== VIEW: RINGKASAN ========== -->
           <section class="view active" id="view-ringkasan" aria-label="Ringkasan">
@@ -1028,7 +1017,7 @@
                     <tr>
                       <td class="ev-cell">
                         <span class="ev-ava" style="background:#D4B475;color:#0E3254">N</span>
-                        <span><span class="ev-name">Nadin Amizah — Konser Rumpang</span><span class="ev-sub" style="display:block;color:var(--gold-deep);font-weight:600">+9,34%</span></span>
+                        <span><span class="ev-name">Nadin Amizah — Live in Bandung</span><span class="ev-sub" style="display:block;color:var(--gold-deep);font-weight:600">+9,34%</span></span>
                       </td>
                       <td data-label="Tanggal">15 Juni 2025</td>
                       <td data-label="Waktu">23.45 WIB</td>
@@ -1838,18 +1827,78 @@
         }).join("");
       }
 
-      /* ==================== NAVIGASI VIEW ==================== */
+      /* ==================== NAVIGASI: 8 MENU + TAB ==================== */
+      var MENUS = {
+        ringkasan: null,
+        event: ["event", "stok", "kategori", "kota"],
+        pesanan: ["pesanan", "checkin", "refund", "etiket"],
+        keuangan: null,
+        homepage: ["banner", "tampilan"],
+        laporan: ["analitik", "log", "notifikasi"],
+        promosi: null,
+        pengaturan: null
+      };
+      var TAB_LABELS = {
+        event: "Event Saya", stok: "Stok Tiket", kategori: "Kategori", kota: "Kota",
+        pesanan: "Pesanan", checkin: "Check-in", refund: "Refund", etiket: "E-Tiket",
+        banner: "Banner", tampilan: "Tampilan Homepage",
+        analitik: "Analitik", log: "Log Aktivitas", notifikasi: "Notifikasi"
+      };
+      var TAB_MENU = {};
+      Object.keys(MENUS).forEach(function(m){
+        (MENUS[m] || []).forEach(function(t){ TAB_MENU[t] = m; });
+      });
+      var lastTab = {};
       var currentView = "ringkasan";
-      function goView(name){
-        currentView = name;
-        $$(".rail [data-view]").forEach(function(b){ b.classList.toggle("active", b.getAttribute("data-view") === name); });
-        $$(".topnav [data-view]").forEach(function(b){ b.classList.toggle("active", b.getAttribute("data-view") === name); });
-        $$(".view").forEach(function(v){ v.classList.toggle("active", v.id === "view-" + name); });
+      var currentMenu = "ringkasan";
+      function renderMenuTabs(menu, activeTab){
+        var bar = $("#menuTabs");
+        var tabs = MENUS[menu];
+        if(!tabs){ bar.hidden = true; bar.innerHTML = ""; return; }
+        bar.hidden = false;
+        bar.innerHTML = tabs.map(function(t){
+          var badge = t === "refund" ? '<span class="tab-badge" id="navRefundCount">2</span>' : "";
+          return '<button type="button" role="tab" data-tab="' + t + '"' + (t === activeTab ? ' class="active" aria-selected="true"' : ' aria-selected="false"') + ">" + TAB_LABELS[t] + badge + "</button>";
+        }).join("");
+        renderRefunds();
+      }
+      function activateMenu(menu, tab){
+        var tabs = MENUS[menu];
+        if(tabs){
+          if(!tab || tabs.indexOf(tab) < 0) tab = lastTab[menu] || tabs[0];
+          lastTab[menu] = tab;
+        } else {
+          tab = null;
+        }
+        currentMenu = menu;
+        currentView = tab || menu;
+        $$(".rail [data-menu]").forEach(function(b){ b.classList.toggle("active", b.getAttribute("data-menu") === menu); });
+        $$(".topnav [data-view]").forEach(function(b){
+          var dv = b.getAttribute("data-view");
+          var dm = TAB_MENU[dv] || dv;
+          var dt = TAB_MENU[dv] ? dv : null;
+          b.classList.toggle("active", dm === menu && dt === tab);
+        });
+        $$(".view").forEach(function(v){ v.classList.toggle("active", v.id === "view-" + currentView); });
+        renderMenuTabs(menu, tab);
         window.scrollTo({top:0, behavior:"smooth"});
       }
+      function goView(name){
+        var menu = TAB_MENU[name] || (MENUS.hasOwnProperty(name) ? name : null);
+        if(!menu) return;
+        activateMenu(menu, TAB_MENU[name] ? name : null);
+      }
+      function goMenu(menu){
+        if(!MENUS.hasOwnProperty(menu)) return;
+        activateMenu(menu, null);
+      }
       $("#rail").addEventListener("click", function(e){
-        var b = e.target.closest("[data-view]"); if(!b) return;
-        goView(b.getAttribute("data-view"));
+        var b = e.target.closest("[data-menu]"); if(!b) return;
+        goMenu(b.getAttribute("data-menu"));
+      });
+      $("#menuTabs").addEventListener("click", function(e){
+        var b = e.target.closest("[data-tab]"); if(!b) return;
+        goView(b.getAttribute("data-tab"));
       });
       $$(".topnav [data-view]").forEach(function(b){
         b.addEventListener("click", function(){ goView(b.getAttribute("data-view")); });
@@ -2278,8 +2327,7 @@
       function renderRefunds(){
         var pend = REFUNDS.filter(function(r){ return r.status === "menunggu"; });
         var badge = $("#navRefundCount");
-        badge.textContent = pend.length;
-        badge.style.display = pend.length ? "" : "none";
+        if(badge){ badge.textContent = pend.length; badge.style.display = pend.length ? "" : "none"; }
         var ph = $("#refundPending");
         if(pend.length){
           ph.innerHTML = '<div class="card" style="margin-bottom:18px"><div class="card-head"><div><h2>Menunggu Persetujuan (' + pend.length + ')</h2><p>Pengajuan terbaru yang belum diputuskan</p></div></div>' +

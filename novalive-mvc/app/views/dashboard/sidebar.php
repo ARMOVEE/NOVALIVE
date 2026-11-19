@@ -133,77 +133,70 @@ if (empty($shellFooter)):
         </div>
       </div>
 
+      <!-- Shared Tabs Styling -->
+      <style>
+        .tabs{
+          display:flex;gap:2px;background:#F1F3F4;border-radius:999px;padding:4px;
+          width:fit-content;max-width:100%;overflow-x:auto;scrollbar-width:none;
+          margin:2px 2px 18px;box-shadow:inset 0 0 0 1px var(--line);
+        }
+        .tabs::-webkit-scrollbar{display:none}
+        .tabs a, .tabs button{
+          display:inline-flex;align-items:center;gap:7px;flex:none;white-space:nowrap;
+          padding:8px 18px;border-radius:999px;font-size:13.5px;font-weight:600;color:#5B6B78;min-height:38px;
+          transition:background .15s,color .15s;text-decoration:none;border:none;background:transparent;cursor:pointer;
+        }
+        .tabs a:hover, .tabs button:hover{color:var(--navy)}
+        .tabs a.active, .tabs button.active{background:var(--navy);color:#fff;box-shadow:0 4px 12px rgba(14,50,84,.25)}
+        .tab-badge{
+          min-width:18px;height:18px;border-radius:99px;background:var(--gold-deep);color:#fff;
+          font-size:10.5px;font-weight:800;line-height:1;display:grid;place-items:center;padding:0 5px;
+          font-family:'Plus Jakarta Sans',sans-serif;
+        }
+        .tabs a.active .tab-badge, .tabs button.active .tab-badge{background:var(--gold);color:var(--navy)}
+      </style>
+
       <div class="layout">
-        <!-- ======= ICON RAIL: 17 menu dashboard ======= -->
+        <!-- ======= ICON RAIL: 8 menu dashboard ======= -->
         <nav class="rail" id="rail" aria-label="Menu dashboard">
-          <!-- 1. Menu Utama -->
-          <a href="<?= base_url('dashboard') ?>" class="<?= ($activeNav ?? '') === 'ringkasan' ? 'active' : '' ?>" data-tip="Ringkasan" aria-label="Ringkasan" title="Ringkasan">
+          <!-- 1. Ringkasan -->
+          <a href="<?= base_url('dashboard') ?>" class="<?= (($activeNav ?? '') === 'ringkasan' || ($activeMenu ?? '') === 'ringkasan') ? 'active' : '' ?>" data-tip="Ringkasan" aria-label="Ringkasan" title="Ringkasan">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><rect x="3" y="3" width="7.5" height="7.5" rx="1.8"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.8"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.8"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.8"/></svg>
           </a>
-          <a href="<?= base_url('dashboard/events') ?>" class="<?= ($activeNav ?? '') === 'events' ? 'active' : '' ?>" data-tip="Event Saya" aria-label="Event Saya" title="Event Saya">
+
+          <!-- 2. Event -->
+          <a href="<?= base_url('dashboard/events') ?>" class="<?= (in_array($activeNav ?? '', ['events', 'stock', 'categories', 'cities']) || ($activeMenu ?? '') === 'event') ? 'active' : '' ?>" data-tip="Event" aria-label="Event" title="Event">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
             <span class="rail-badge" id="navEventCount"><?= (int)($sidebarCounts['events'] ?? 10) ?></span>
           </a>
-          <a href="<?= base_url('dashboard/orders') ?>" class="<?= ($activeNav ?? '') === 'orders' ? 'active' : '' ?>" data-tip="Pesanan" aria-label="Pesanan" title="Pesanan">
+
+          <!-- 3. Pesanan -->
+          <a href="<?= base_url('dashboard/orders') ?>" class="<?= (($activeNav ?? '') === 'orders' || ($activeMenu ?? '') === 'pesanan') ? 'active' : '' ?>" data-tip="Pesanan" aria-label="Pesanan" title="Pesanan">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h2l2.4 11.2a1.5 1.5 0 0 0 1.5 1.2h7.9a1.5 1.5 0 0 0 1.5-1.2L20.5 8H7"/><circle cx="10" cy="21" r="1"/><circle cx="18" cy="21" r="1"/></svg>
             <span class="rail-badge" id="navOrderCount"><?= (int)($sidebarCounts['orders'] ?? 8) ?></span>
           </a>
+
+          <!-- 4. Keuangan -->
           <button type="button" class="js-soon" data-feature="Keuangan" data-tip="Keuangan" aria-label="Keuangan" title="Keuangan">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10.5h18M7 15h4"/></svg>
           </button>
 
-          <span class="rail-sep" aria-hidden="true"></span>
-
-          <!-- 2. Operasional -->
-          <button type="button" class="js-soon" data-feature="Check-in" data-tip="Check-in" aria-label="Check-in" title="Check-in">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3h-3zM21 14v.01M14 21h.01M18.5 18.5H21V21h-2.5z"/></svg>
-          </button>
-          <button type="button" class="js-soon" data-feature="Refund" data-tip="Refund" aria-label="Refund" title="Refund">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>
-            <span class="rail-badge" id="navRefundCount"><?= (int)($sidebarCounts['refund'] ?? 2) ?></span>
-          </button>
-          <button type="button" class="js-soon" data-feature="Stok Tiket" data-tip="Stok Tiket" aria-label="Stok Tiket" title="Stok Tiket">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M4 8l8-4 8 4v8l-8 4-8-4z"/><path d="M4 8l8 4 8-4M12 12v8"/></svg>
-          </button>
-
-          <span class="rail-sep" aria-hidden="true"></span>
-
-          <!-- 3. Homepage -->
-          <button type="button" class="js-soon" data-feature="Banner" data-tip="Banner" aria-label="Banner" title="Banner">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="9" cy="10" r="1.6"/><path d="M3 17l5-4 4 3 4-4 5 5"/></svg>
-          </button>
-          <button type="button" class="js-soon" data-feature="Tampilan Homepage" data-tip="Tampilan Homepage" aria-label="Tampilan Homepage" title="Tampilan Homepage">
+          <!-- 5. Homepage -->
+          <button type="button" class="js-soon" data-feature="Homepage" data-tip="Homepage" aria-label="Homepage" title="Homepage">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 4v5.5"/></svg>
           </button>
-          <button type="button" class="js-soon" data-feature="Kategori" data-tip="Kategori" aria-label="Kategori" title="Kategori">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-          </button>
-          <button type="button" class="js-soon" data-feature="Kota" data-tip="Kota" aria-label="Kota" title="Kota">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 21s-7-5.6-7-11a7 7 0 0 1 14 0c0 5.4-7 11-7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>
-          </button>
-          <button type="button" class="js-soon" data-feature="E-Tiket" data-tip="E-Tiket" aria-label="E-Tiket" title="E-Tiket">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v1.5a3 3 0 0 0 0 5V16a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1.5a3 3 0 0 0 0-5z"/><path d="M14 7v2M14 11v2M14 15v2" stroke-linecap="round"/></svg>
-          </button>
 
-          <span class="rail-sep" aria-hidden="true"></span>
-
-          <!-- 4. Komunikasi & Laporan -->
-          <button type="button" class="js-soon" data-feature="Notifikasi" data-tip="Notifikasi" aria-label="Notifikasi" title="Notifikasi">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>
-          </button>
-          <button type="button" class="js-soon" data-feature="Analitik" data-tip="Analitik" aria-label="Analitik" title="Analitik">
+          <!-- 6. Laporan -->
+          <button type="button" class="js-soon" data-feature="Laporan" data-tip="Laporan" aria-label="Laporan" title="Laporan">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M5 20v-6M11 20V6M17 20v-9"/><path d="M3 20h18"/></svg>
           </button>
-          <button type="button" class="js-soon" data-feature="Log Aktivitas" data-tip="Log Aktivitas" aria-label="Log Aktivitas" title="Log Aktivitas">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M8.5 6H21M8.5 12H21M8.5 18H21"/><circle cx="4" cy="6" r="1.1" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.1" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.1" fill="currentColor" stroke="none"/></svg>
-          </button>
 
-          <span class="rail-sep" aria-hidden="true"></span>
-
-          <!-- 5. Lainnya -->
+          <!-- 7. Promosi -->
           <button type="button" class="js-soon" data-feature="Promosi" data-tip="Promosi" aria-label="Promosi" title="Promosi">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M3 11V7a2 2 0 0 1 2-2h4l9 9-4 4-9-9z"/><circle cx="8" cy="9" r="1.4"/></svg>
           </button>
+
+          <!-- 8. Pengaturan -->
           <button type="button" class="js-soon" data-feature="Pengaturan" data-tip="Pengaturan" aria-label="Pengaturan" title="Pengaturan">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19 12a7 7 0 0 0-.14-1.4l2-1.55-2-3.46-2.36.95a7 7 0 0 0-2.42-1.4L13.7 2.6h-3.4l-.38 2.54a7 7 0 0 0-2.42 1.4l-2.36-.95-2 3.46 2 1.55a7 7 0 0 0 0 2.8l-2 1.55 2 3.46 2.36-.95a7 7 0 0 0 2.42 1.4l.38 2.54h3.4l.38-2.54a7 7 0 0 0 2.42-1.4l2.36.95 2-3.46-2-1.55c.1-.45.14-.92.14-1.4z"/></svg>
           </button>
@@ -221,6 +214,21 @@ if (empty($shellFooter)):
 
         <!-- ======= VIEWS ======= -->
         <main class="views">
+          <?php if (($activeMenu ?? '') === 'event'): ?>
+            <div class="tabs" role="tablist" aria-label="Tab menu">
+              <a href="<?= base_url('dashboard/events') ?>" class="<?= ($activeTab ?? 'events') === 'events' ? 'active' : '' ?>" role="tab">Event Saya</a>
+              <a href="<?= base_url('dashboard/events/stock') ?>" class="<?= ($activeTab ?? '') === 'stock' ? 'active' : '' ?>" role="tab">Stok Tiket</a>
+              <a href="<?= base_url('dashboard/categories') ?>" class="<?= ($activeTab ?? '') === 'categories' ? 'active' : '' ?>" role="tab">Kategori</a>
+              <a href="<?= base_url('dashboard/cities') ?>" class="<?= ($activeTab ?? '') === 'cities' ? 'active' : '' ?>" role="tab">Kota</a>
+            </div>
+          <?php elseif (($activeMenu ?? '') === 'pesanan'): ?>
+            <div class="tabs" role="tablist" aria-label="Tab menu">
+              <a href="<?= base_url('dashboard/orders') ?>" class="<?= ($activeTab ?? 'pesanan') === 'pesanan' ? 'active' : '' ?>" role="tab">Pesanan</a>
+              <button type="button" class="js-soon" data-feature="Check-in" role="tab">Check-in</button>
+              <button type="button" class="js-soon" data-feature="Refund" role="tab">Refund <span class="tab-badge" id="navRefundCount"><?= (int)($sidebarCounts['refund'] ?? 2) ?></span></button>
+              <button type="button" class="js-soon" data-feature="E-Tiket" role="tab">E-Tiket</button>
+            </div>
+          <?php endif; ?>
 <?php else: ?>
         </main>
       </div><!-- /.layout -->
@@ -454,4 +462,22 @@ if (empty($shellFooter)):
         }
       })();
     </script>
+
+    <?php 
+      $flash = $flash ?? ($_SESSION['flash'] ?? []);
+      unset($_SESSION['flash']);
+      $flashMsg = $flash['message'] ?? $flash['success'] ?? $flash['error'] ?? '';
+      if (!empty($flashMsg)):
+    ?>
+    <script>
+      (function(){
+        var msg = <?= json_encode((string)$flashMsg) ?>;
+        if(window.addEventListener){
+          window.addEventListener('load', function(){
+            if(typeof showToast === 'function') showToast(msg);
+          });
+        }
+      })();
+    </script>
+    <?php endif; ?>
 <?php endif; ?>

@@ -71,6 +71,6 @@ abstract class Model {
      * Memeriksa apakah tabel memiliki kolom deleted_at
      */
     protected function hasDeletedAt(): bool {
-        return in_array($this->table, ['events', 'categories']);
+        return in_array($this->table, ['events', 'categories', 'cities']);
     }
 }

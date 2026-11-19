@@ -15,6 +15,8 @@ require_once __DIR__ . '/../app/core/Security.php';
 require_once __DIR__ . '/../app/core/Middleware.php';
 require_once __DIR__ . '/../app/core/Upload.php';
 require_once __DIR__ . '/../app/core/Logger.php';
+require_once __DIR__ . '/../app/models/Category.php';
+require_once __DIR__ . '/../app/models/City.php';
 
 // Pastikan sesi aktif untuk pengujian keamanan
 Security::startSession();
@@ -84,18 +86,28 @@ it("RBAC: Manager DITOLAK memulihkan event (hanya Admin yang boleh restore)", Mi
 it("RBAC: Staff memiliki izin melihat dashboard ('dashboard.view')", Middleware::check('dashboard.view', $staffUser) === true);
 it("RBAC: Staff memiliki izin melihat event ('events.view')", Middleware::check('events.view', $staffUser) === true);
 it("RBAC: Staff DITOLAK membuat event ('events.create')", Middleware::check('events.create', $staffUser) === false);
+it("RBAC: Staff memiliki izin melihat kategori ('categories.view')", Middleware::check('categories.view', $staffUser) === true);
+it("RBAC: Staff memiliki izin melihat kota ('cities.view')", Middleware::check('cities.view', $staffUser) === true);
+it("RBAC: Staff DITOLAK mengelola kategori ('categories.manage')", Middleware::check('categories.manage', $staffUser) === false);
+it("RBAC: Staff DITOLAK mengelola kota ('cities.manage')", Middleware::check('cities.manage', $staffUser) === false);
+it("RBAC: Admin memiliki izin mengelola kategori ('categories.manage')", Middleware::check('categories.manage', $adminUser) === true);
+it("RBAC: Admin memiliki izin mengelola kota ('cities.manage')", Middleware::check('cities.manage', $adminUser) === true);
 it("RBAC: Default Deny berlaku bagi peran yang tidak terdaftar", Middleware::check('dashboard.view', $guestUser) === false);
 
-// --- KELOMPOK 6: MODEL SOFT DELETES (1 Pengujian) ---
+// --- KELOMPOK 6: MODEL SOFT DELETES (2 Pengujian) ---
 $traits = class_uses('Model');
 it("Soft Delete: Kelas dasar Model menyertakan trait SoftDeletes", in_array('SoftDeletes', $traits, true));
+$cityModel = new City();
+$hasDelRef = new ReflectionMethod($cityModel, 'hasDeletedAt');
+$hasDelRef->setAccessible(true);
+it("Soft Delete: Tabel cities terdaftar memiliki kolom deleted_at", $hasDelRef->invoke($cityModel) === true);
 
 echo "=======================================================\n";
 echo sprintf("HASIL PENGUJIAN: Lulus: %d | Gagal: %d\n", $passed, $failed);
 echo "=======================================================\n";
 
-if ($passed === 27 && $failed === 0) {
-    echo "SELURUH 27 PENGUJIAN DINYATAKAN LULUS SEMPURNA!\n";
+if ($failed === 0) {
+    echo sprintf("SELURUH %d PENGUJIAN DINYATAKAN LULUS SEMPURNA!\n", $passed);
     exit(0);
 } else {
     echo "TERDAPAT PENGUJIAN YANG GAGAL!\n";

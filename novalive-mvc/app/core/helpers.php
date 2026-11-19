@@ -35,6 +35,23 @@ function csrf_field(): string {
 }
 
 /**
+ * Mengembalikan nilai raw token CSRF sesi saat ini
+ */
+function csrf_token(): string {
+    return Security::csrfToken();
+}
+
+/**
+ * Memvalidasi token CSRF dari request POST (atau token yang diberikan)
+ */
+function validate_csrf(?string $token = null): bool {
+    if ($token === null) {
+        $token = (string)post_input('csrf_token', '');
+    }
+    return Security::validateCsrf($token);
+}
+
+/**
  * Menghasilkan URL aset statis
  */
 function asset(string $path): string {

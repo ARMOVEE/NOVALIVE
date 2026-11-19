@@ -19,6 +19,8 @@ class Middleware {
             'events.upload',
             'categories.view',
             'categories.manage',
+            'cities.view',
+            'cities.manage',
             'orders.view',
             'orders.manage',
             'reports.view',
@@ -28,6 +30,7 @@ class Middleware {
             'dashboard.view',
             'events.view',
             'categories.view',
+            'cities.view',
             'orders.view',
             'reports.view'
         ]

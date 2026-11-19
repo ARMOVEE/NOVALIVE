@@ -37,12 +37,57 @@ class App {
             }
         } elseif ($url[0] === 'dashboard') {
             $this->controller = 'DashboardController';
-            if (isset($url[1]) && in_array($url[1], ['orders', 'events'], true)) {
-                $this->method = $url[1];
+            $seg1 = $url[1] ?? '';
+            $seg2 = $url[2] ?? '';
+            $seg3 = $url[3] ?? '';
+
+            if ($seg1 === 'events') {
+                if ($seg2 === 'stock') {
+                    if ($_SERVER['REQUEST_METHOD'] === 'POST' && $seg3 !== '') {
+                        $this->method = 'updateStock';
+                        $this->params = [$seg3];
+                    } else {
+                        $this->method = 'stock';
+                        $this->params = array_slice($url, 3);
+                    }
+                } else {
+                    $this->method = 'events';
+                    $this->params = array_slice($url, 2);
+                }
+            } elseif ($seg1 === 'categories') {
+                if ($seg2 === 'store') {
+                    $this->method = 'storeCategory';
+                    $this->params = [];
+                } elseif ($seg2 === 'update' && $seg3 !== '') {
+                    $this->method = 'updateCategory';
+                    $this->params = [$seg3];
+                } elseif ($seg2 === 'delete' && $seg3 !== '') {
+                    $this->method = 'deleteCategory';
+                    $this->params = [$seg3];
+                } else {
+                    $this->method = 'categories';
+                    $this->params = array_slice($url, 2);
+                }
+            } elseif ($seg1 === 'cities') {
+                if ($seg2 === 'store') {
+                    $this->method = 'storeCity';
+                    $this->params = [];
+                } elseif ($seg2 === 'update' && $seg3 !== '') {
+                    $this->method = 'updateCity';
+                    $this->params = [$seg3];
+                } elseif ($seg2 === 'delete' && $seg3 !== '') {
+                    $this->method = 'deleteCity';
+                    $this->params = [$seg3];
+                } else {
+                    $this->method = 'cities';
+                    $this->params = array_slice($url, 2);
+                }
+            } elseif ($seg1 === 'orders') {
+                $this->method = 'orders';
                 $this->params = array_slice($url, 2);
             } else {
-                $this->method = 'index';
-                $this->params = array_slice($url, 1);
+                $this->method = ($seg1 !== '' && method_exists('DashboardController', $seg1)) ? $seg1 : 'index';
+                $this->params = array_slice($url, 2);
             }
         } elseif ($url[0] === 'events') {
             $this->controller = 'EventsController';

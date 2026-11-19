@@ -422,4 +422,34 @@ class Event extends Model {
     public function totalTicketsSold(): int {
         return (int)$this->db->query("SELECT COALESCE(SUM(sold), 0) FROM events WHERE deleted_at IS NULL")->fetchColumn();
     }
+
+    /**
+     * Mengambil daftar event aktif untuk manajemen stok tiket
+     */
+    public function allStock(): array {
+        $sql = "
+            SELECT e.*, c.name AS category_name, ci.name AS city_name
+            FROM events e
+            LEFT JOIN categories c ON e.category_id = c.id
+            LEFT JOIN cities ci ON e.city_id = ci.id
+            WHERE e.deleted_at IS NULL
+            ORDER BY e.event_date ASC, e.id ASC
+        ";
+        return $this->db->query($sql)->fetchAll();
+    }
+
+    /**
+     * Memperbarui kuota tiket suatu event
+     */
+    public function updateQuota(int $id, int $quota): bool {
+        $stmt = $this->db->prepare("
+            UPDATE events
+            SET quota = :quota
+            WHERE id = :id AND deleted_at IS NULL
+        ");
+        return $stmt->execute([
+            ':id'    => $id,
+            ':quota' => $quota
+        ]);
+    }
 }
