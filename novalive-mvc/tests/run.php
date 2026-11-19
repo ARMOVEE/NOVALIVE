@@ -28,6 +28,17 @@ require_once __DIR__ . '/../app/models/HomepageSection.php';
 require_once __DIR__ . '/../app/models/Promo.php';
 require_once __DIR__ . '/../app/models/Setting.php';
 require_once __DIR__ . '/../app/models/User.php';
+require_once __DIR__ . '/../app/models/Event.php';
+require_once __DIR__ . '/../app/models/Order.php';
+require_once __DIR__ . '/../app/models/Refund.php';
+require_once __DIR__ . '/../app/models/Withdrawal.php';
+require_once __DIR__ . '/../app/models/Notification.php';
+require_once __DIR__ . '/../app/models/ActivityLog.php';
+require_once __DIR__ . '/../app/models/Banner.php';
+require_once __DIR__ . '/../app/models/HomepageSection.php';
+require_once __DIR__ . '/../app/models/Promo.php';
+require_once __DIR__ . '/../app/models/Setting.php';
+require_once __DIR__ . '/../app/models/User.php';
 
 // Pastikan sesi aktif untuk pengujian keamanan
 Security::startSession();

@@ -9,6 +9,9 @@ if (empty($shellFooter)):
   $userInitials = strtoupper(substr(preg_replace('/[^a-zA-Z]/', '', $currentUser['full_name'] ?? 'AD'), 0, 2));
   if (strlen($userInitials) < 2) $userInitials = 'AD';
 ?>
+      <!-- Unified Dashboard Quixotic Stylesheet -->
+      <link rel="stylesheet" href="<?= base_url('css/dashboard.css') ?>" />
+
       <!-- ======= TOP BAR ======= -->
       <header class="topbar">
         <a class="logo" href="<?= base_url('dashboard') ?>" aria-label="NOVA LIVE — Beranda" id="logoHome">
@@ -103,7 +106,7 @@ if (empty($shellFooter)):
           </a>
         </div>
 
-        <div class="pop" id="bellPop" role="dialog" aria-label="Notifikasi">
+        <div class="pop" id="bellPop" role="dialog" aria-label="Notifikasi" style="display:none">
           <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px 8px;border-bottom:1px solid var(--line)">
             <h3 style="margin:0;font-size:14px;font-weight:700">Notifikasi (<?= $unreadNotifCount ?>)</h3>
             <a href="<?= base_url('dashboard/reports/notifications') ?>" style="font-size:12px;color:var(--blue);font-weight:600;text-decoration:none">Lihat Semua</a>
@@ -133,6 +136,14 @@ if (empty($shellFooter)):
         </div>
       </header>
 
+      <?php
+        $todayDate = date('Y-m-d');
+        $currentYear = date('Y');
+        $range7Days = tanggal(date('Y-m-d', strtotime('-6 days'))) . ' – ' . tanggal($todayDate);
+        $range30Days = tanggal(date('Y-m-d', strtotime('-29 days'))) . ' – ' . tanggal($todayDate);
+        $rangeMonth = tanggal(date('Y-m-01')) . ' – ' . tanggal(date('Y-m-t'));
+        $rangeYear = '1 Jan ' . $currentYear . ' – 31 Des ' . $currentYear;
+      ?>
       <!-- ======= GREETING ======= -->
       <div class="greet">
         <h1>Selamat Datang Kembali, <strong><?= e($currentUser['full_name'] ?? 'Admin') ?></strong></h1>
@@ -140,14 +151,14 @@ if (empty($shellFooter)):
           <div class="range-wrap">
             <button class="range-btn" id="rangeBtn" type="button" aria-haspopup="true" aria-expanded="false">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
-              <span id="rangeLabel">29 Juni 2025 – 29 Agustus 2025</span>
+              <span id="rangeLabel"><?= e($range30Days) ?></span>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
             </button>
-            <div class="range-menu" id="rangeMenu" role="menu">
-              <button type="button" data-range="29 Juni 2025 – 29 Agustus 2025" class="sel">29 Juni 2025 – 29 Agustus 2025</button>
-              <button type="button" data-range="1 – 30 Juni 2025">1 – 30 Juni 2025</button>
-              <button type="button" data-range="1 Jan – 30 Juni 2025">1 Jan – 30 Juni 2025</button>
-              <button type="button" data-range="1 Jan – 31 Des 2025">1 Jan – 31 Des 2025</button>
+            <div class="range-menu" id="rangeMenu" role="menu" style="display:none">
+              <button type="button" data-range="<?= e($range30Days) ?>" class="sel">30 Hari Terakhir (<?= e($range30Days) ?>)</button>
+              <button type="button" data-range="<?= e($range7Days) ?>">7 Hari Terakhir (<?= e($range7Days) ?>)</button>
+              <button type="button" data-range="<?= e($rangeMonth) ?>">Bulan Ini (<?= e($rangeMonth) ?>)</button>
+              <button type="button" data-range="<?= e($rangeYear) ?>">Tahun <?= $currentYear ?> (<?= e($rangeYear) ?>)</button>
             </div>
           </div>
           <a href="<?= base_url('events/create') ?>" class="btn-primary" id="buatEventBtn">
@@ -457,21 +468,26 @@ if (empty($shellFooter)):
         btn.addEventListener('click', function(e){
           e.stopPropagation();
           var open = menu.classList.toggle('open');
+          menu.style.display = open ? 'block' : 'none';
           btn.setAttribute('aria-expanded', open ? 'true' : 'false');
         });
         menu.querySelectorAll('button').forEach(function(b){
-          b.addEventListener('click', function(){
+          b.addEventListener('click', function(e){
+            e.stopPropagation();
             menu.querySelectorAll('button').forEach(function(x){ x.classList.remove('sel'); });
             b.classList.add('sel');
-            if(lbl) lbl.textContent = b.getAttribute('data-range') || b.textContent;
+            var val = b.getAttribute('data-range') || b.textContent;
+            if(lbl) lbl.textContent = val;
             menu.classList.remove('open');
+            menu.style.display = 'none';
             btn.setAttribute('aria-expanded', 'false');
-            showToast('Rentang tanggal diubah: <em>' + (b.getAttribute('data-range') || b.textContent) + '</em>');
+            showToast('Rentang tanggal diubah: <em>' + val + '</em>');
           });
         });
         document.addEventListener('click', function(e){
           if(!menu.contains(e.target) && !btn.contains(e.target)){
             menu.classList.remove('open');
+            menu.style.display = 'none';
             btn.setAttribute('aria-expanded', 'false');
           }
         });
@@ -485,15 +501,37 @@ if (empty($shellFooter)):
         btn.addEventListener('click', function(e){
           e.stopPropagation();
           var open = pop.classList.toggle('open');
+          pop.style.display = open ? 'block' : 'none';
           btn.setAttribute('aria-expanded', open ? 'true' : 'false');
         });
         document.addEventListener('click', function(e){
           if(!pop.contains(e.target) && !btn.contains(e.target)){
             pop.classList.remove('open');
+            pop.style.display = 'none';
             btn.setAttribute('aria-expanded', 'false');
           }
         });
       })();
+
+      /* Close dropdowns with Esc key */
+      document.addEventListener('keydown', function(e){
+        if(e.key === 'Escape' || e.key === 'Esc'){
+          var pop = document.getElementById('bellPop');
+          var bellBtn = document.getElementById('bellBtn');
+          if(pop && (pop.classList.contains('open') || pop.style.display === 'block')){
+            pop.classList.remove('open');
+            pop.style.display = 'none';
+            if(bellBtn) bellBtn.setAttribute('aria-expanded', 'false');
+          }
+          var menu = document.getElementById('rangeMenu');
+          var rangeBtn = document.getElementById('rangeBtn');
+          if(menu && (menu.classList.contains('open') || menu.style.display === 'block')){
+            menu.classList.remove('open');
+            menu.style.display = 'none';
+            if(rangeBtn) rangeBtn.setAttribute('aria-expanded', 'false');
+          }
+        }
+      });
 
       /* Top Search toggle & input handler */
       (function(){
