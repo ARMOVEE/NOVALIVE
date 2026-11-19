@@ -10,7 +10,7 @@ class DashboardController extends Controller {
     }
 
     /**
-     * Halaman Ringkasan Dashboard (4 KPI, Pesanan Terbaru, Tiket Menipis)
+     * Halaman Ringkasan Dashboard (4 KPI, Grafik Penjualan, Event Terlaris, Event Berikutnya, Transaksi Terbaru)
      */
     public function index(): void {
         $this->authorize('dashboard.view');
@@ -24,17 +24,27 @@ class DashboardController extends Controller {
         $totalOrders = $orderModel->count();
 
         $recentOrders = $orderModel->recent(5);
-        $lowTickets = $eventModel->lowTicketEvents(5);
+        $topSelling = $eventModel->popular(4);
+        $upcomingEvents = $eventModel->seru(4);
+
+        $sidebarCounts = [
+            'events' => $totalEvents,
+            'orders' => $totalOrders,
+            'refund' => 2
+        ];
 
         $this->view('dashboard/index', [
-            'pageTitle'    => 'Dashboard Ringkasan — NOVA LIVE',
-            'totalEvents'  => $totalEvents,
-            'totalSold'    => $totalSold,
-            'totalRevenue' => $totalRevenue,
-            'totalOrders'  => $totalOrders,
-            'recentOrders' => $recentOrders,
-            'lowTickets'   => $lowTickets
-        ]);
+            'pageTitle'      => 'NOVA LIVE — Dashboard Admin',
+            'activeNav'      => 'ringkasan',
+            'totalEvents'    => $totalEvents,
+            'totalSold'      => $totalSold,
+            'totalRevenue'   => $totalRevenue,
+            'totalOrders'    => $totalOrders,
+            'recentOrders'   => $recentOrders,
+            'topSelling'     => $topSelling,
+            'upcomingEvents' => $upcomingEvents,
+            'sidebarCounts'  => $sidebarCounts
+        ], false);
     }
 
     /**
@@ -50,14 +60,25 @@ class DashboardController extends Controller {
         ];
 
         $orderModel = $this->model('Order');
+        $eventModel = $this->model('Event');
         $statusCounts = $orderModel->countsByStatus();
-        $ordersData = $orderModel->paginate($filters, $page, 10);
+        $ordersData = $orderModel->paginate($filters, $page, 15);
+
+        $totalEvents = $eventModel->totalEvents();
+        $totalOrders = $orderModel->count();
+        $sidebarCounts = [
+            'events' => $totalEvents,
+            'orders' => $totalOrders,
+            'refund' => 2
+        ];
 
         $this->view('dashboard/orders', array_merge($ordersData, [
-            'pageTitle'    => 'Daftar Pesanan Tiket — NOVA LIVE',
-            'statusCounts' => $statusCounts,
-            'filters'      => $filters
-        ]));
+            'pageTitle'     => 'NOVA LIVE — Pesanan Tiket',
+            'activeNav'     => 'orders',
+            'statusCounts'  => $statusCounts,
+            'filters'       => $filters,
+            'sidebarCounts' => $sidebarCounts
+        ]), false);
     }
 
     /**
@@ -72,11 +93,23 @@ class DashboardController extends Controller {
         ];
 
         $eventModel = $this->model('Event');
-        $eventsData = $eventModel->paginate($filters, $page, 10);
+        $orderModel = $this->model('Order');
+        $eventsData = $eventModel->paginate($filters, $page, 15);
+
+        $totalEvents = $eventModel->totalEvents();
+        $totalOrders = $orderModel->count();
+        $sidebarCounts = [
+            'events' => $totalEvents,
+            'orders' => $totalOrders,
+            'refund' => 2
+        ];
 
         $this->view('dashboard/events', array_merge($eventsData, [
-            'pageTitle' => 'Kelola Event Saya — NOVA LIVE',
-            'filters'   => $filters
-        ]));
+            'pageTitle'     => 'NOVA LIVE — Kelola Event',
+            'activeNav'     => 'events',
+            'filters'       => $filters,
+            'sidebarCounts' => $sidebarCounts
+        ]), false);
     }
 }
+
