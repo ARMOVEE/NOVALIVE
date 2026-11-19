@@ -72,7 +72,7 @@ if (empty($shellFooter)):
           <a href="<?= base_url('dashboard/reports/analytics') ?>" class="<?= ($activeMenu ?? '') === 'laporan' ? 'active' : '' ?>">Laporan</a>
           <a href="<?= base_url('dashboard/orders/tickets') ?>" class="<?= ($activeNav ?? '') === 'tickets' ? 'active' : '' ?>">Dokumen</a>
           <a href="<?= base_url('dashboard/reports/logs') ?>" class="<?= ($activeNav ?? '') === 'logs' ? 'active' : '' ?>">Riwayat</a>
-          <button type="button" class="js-soon" data-feature="Kontak">Kontak</button>
+          <a href="<?= base_url('dashboard/settings') ?>" class="<?= (($activeNav ?? '') === 'settings' || ($activeMenu ?? '') === 'pengaturan') ? 'active' : '' ?>">Kontak</a>
         </nav>
 
         <div class="top-actions">
@@ -93,10 +93,14 @@ if (empty($shellFooter)):
               <span class="dot" aria-hidden="true"></span>
             <?php endif; ?>
           </button>
-          <button class="avatar-btn js-soon" type="button" id="avatarBtn" data-feature="Pengaturan Profil" aria-label="Profil penyelenggara — Pengaturan" title="Pengaturan — Profil Penyelenggara">
-            <span class="avatar" id="topAvatar" aria-hidden="true"><?= e($userInitials) ?></span>
+          <a href="<?= base_url('dashboard/settings/account') ?>" class="avatar-btn" id="avatarBtn" aria-label="Profil penyelenggara — Pengaturan" title="Pengaturan — Profil Penyelenggara">
+            <?php if (!empty($currentUser['avatar']) && file_exists(ROOT_PATH . '/public/' . ltrim($currentUser['avatar'], '/'))): ?>
+              <img src="<?= base_url(ltrim($currentUser['avatar'], '/')) ?>" alt="Avatar" style="width:34px;height:34px;border-radius:50%;object-fit:cover;">
+            <?php else: ?>
+              <span class="avatar" id="topAvatar" aria-hidden="true"><?= e($userInitials) ?></span>
+            <?php endif; ?>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5B6B78" stroke-width="2.4" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
-          </button>
+          </a>
         </div>
 
         <div class="pop" id="bellPop" role="dialog" aria-label="Notifikasi">
@@ -252,14 +256,14 @@ if (empty($shellFooter)):
           </a>
 
           <!-- 7. Promosi -->
-          <button type="button" class="js-soon" data-feature="Promosi" data-tip="Promosi" aria-label="Promosi" title="Promosi">
+          <a href="<?= base_url('dashboard/promotions') ?>" class="<?= (($activeNav ?? '') === 'promotions' || ($activeMenu ?? '') === 'promosi') ? 'active' : '' ?>" data-tip="Promosi" aria-label="Promosi" title="Promosi">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M3 11V7a2 2 0 0 1 2-2h4l9 9-4 4-9-9z"/><circle cx="8" cy="9" r="1.4"/></svg>
-          </button>
+          </a>
 
           <!-- 8. Pengaturan -->
-          <button type="button" class="js-soon" data-feature="Pengaturan" data-tip="Pengaturan" aria-label="Pengaturan" title="Pengaturan">
+          <a href="<?= base_url('dashboard/settings') ?>" class="<?= (in_array($activeNav ?? '', ['settings', 'account', 'users']) || ($activeMenu ?? '') === 'pengaturan') ? 'active' : '' ?>" data-tip="Pengaturan" aria-label="Pengaturan" title="Pengaturan">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19 12a7 7 0 0 0-.14-1.4l2-1.55-2-3.46-2.36.95a7 7 0 0 0-2.42-1.4L13.7 2.6h-3.4l-.38 2.54a7 7 0 0 0-2.42 1.4l-2.36-.95-2 3.46 2 1.55a7 7 0 0 0 0 2.8l-2 1.55 2 3.46 2.36-.95a7 7 0 0 0 2.42 1.4l.38 2.54h3.4l.38-2.54a7 7 0 0 0 2.42-1.4l2.36.95 2-3.46-2-1.55c.1-.45.14-.92.14-1.4z"/></svg>
-          </button>
+          </a>
 
           <span class="spacer"></span>
 
@@ -298,6 +302,18 @@ if (empty($shellFooter)):
               <a href="<?= base_url('dashboard/reports/analytics') ?>" class="<?= ($activeTab ?? 'analytics') === 'analytics' ? 'active' : '' ?>" role="tab">Analitik</a>
               <a href="<?= base_url('dashboard/reports/logs') ?>" class="<?= ($activeTab ?? '') === 'logs' ? 'active' : '' ?>" role="tab">Log Aktivitas</a>
               <a href="<?= base_url('dashboard/reports/notifications') ?>" class="<?= ($activeTab ?? '') === 'notifications' ? 'active' : '' ?>" role="tab">Notifikasi <?php if (!empty($sidebarCounts['notifications'])): ?><span class="tab-badge" id="tabNotifCount"><?= (int)$sidebarCounts['notifications'] ?></span><?php endif; ?></a>
+            </div>
+          <?php elseif (($activeMenu ?? '') === 'promosi'): ?>
+            <div class="tabs" role="tablist" aria-label="Tab menu">
+              <a href="<?= base_url('dashboard/promotions') ?>" class="<?= ($activeTab ?? 'promotions') === 'promotions' ? 'active' : '' ?>" role="tab">Daftar Kode Promo</a>
+            </div>
+          <?php elseif (($activeMenu ?? '') === 'pengaturan'): ?>
+            <div class="tabs" role="tablist" aria-label="Tab menu">
+              <a href="<?= base_url('dashboard/settings') ?>" class="<?= ($activeTab ?? 'org') === 'org' ? 'active' : '' ?>" role="tab">Profil Organisasi &amp; Kontak</a>
+              <a href="<?= base_url('dashboard/settings/account') ?>" class="<?= ($activeTab ?? '') === 'account' ? 'active' : '' ?>" role="tab">Akun Saya</a>
+              <?php if (($currentUser['role'] ?? '') === 'admin'): ?>
+                <a href="<?= base_url('dashboard/settings/users') ?>" class="<?= ($activeTab ?? '') === 'users' ? 'active' : '' ?>" role="tab">Kelola Pengguna</a>
+              <?php endif; ?>
             </div>
           <?php endif; ?>
 <?php else: ?>
@@ -419,7 +435,7 @@ if (empty($shellFooter)):
         play();
       })();
 
-      /* Toast Notification function & .js-soon handler */
+      /* Toast Notification function */
       function showToast(msg, duration){
         var t = document.getElementById('toast');
         if(!t) return;
@@ -430,13 +446,7 @@ if (empty($shellFooter)):
           t.classList.remove('show');
         }, duration || 2800);
       }
-      document.querySelectorAll('.js-soon').forEach(function(el){
-        el.addEventListener('click', function(e){
-          e.preventDefault();
-          var name = this.getAttribute('data-feature') || this.getAttribute('data-tip') || this.textContent.trim();
-          showToast('Fitur <em>' + name + '</em> segera hadir di NOVA LIVE.');
-        });
-      });
+
 
       /* Range Menu toggle */
       (function(){

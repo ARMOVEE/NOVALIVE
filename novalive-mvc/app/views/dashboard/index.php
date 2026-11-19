@@ -441,9 +441,9 @@ if (strlen($userInitials) < 2) $userInitials = 'AD';
               <h2 id="targetTitle">Target Penjualan</h2>
               <p>Total target penjualan tiket</p>
             </div>
-            <button class="expand-btn js-soon" type="button" data-feature="Keuangan" aria-label="Lihat detail keuangan">
+            <a href="<?= base_url('dashboard/finance') ?>" class="expand-btn" aria-label="Lihat detail keuangan" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
-            </button>
+            </a>
           </div>
 
           <div class="ticket">
@@ -486,9 +486,9 @@ if (strlen($userInitials) < 2) $userInitials = 'AD';
                 <button type="button" id="segBulanan" class="active">Bulanan</button>
                 <button type="button" id="segTahunan">Tahunan</button>
               </div>
-              <button class="expand-btn js-soon" type="button" data-feature="Analitik" aria-label="Lihat laporan analitik" style="margin-left:0">
+              <a href="<?= base_url('dashboard/reports/analytics') ?>" class="expand-btn" aria-label="Lihat laporan analitik" style="margin-left:0;display:inline-flex;align-items:center;justify-content:center;text-decoration:none">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
-              </button>
+              </a>
             </div>
           </div>
 
@@ -507,9 +507,9 @@ if (strlen($userInitials) < 2) $userInitials = 'AD';
               <h2 id="saldoTitle">Saldo Penyelenggara</h2>
               <p>Total saldo akun penjual</p>
             </div>
-            <button class="expand-btn js-soon" type="button" data-feature="Keuangan" aria-label="Lihat detail saldo">
+            <a href="<?= base_url('dashboard/finance') ?>" class="expand-btn" aria-label="Lihat detail saldo" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
-            </button>
+            </a>
           </div>
           <p class="saldo-label">Total Saldo</p>
           <p class="saldo-amount"><?= rupiah($totalRevenue) ?></p>
@@ -530,10 +530,10 @@ if (strlen($userInitials) < 2) $userInitials = 'AD';
               Tarik Dana
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
             </a>
-            <button class="btn-ghost js-soon" id="terimaBtn" data-feature="Terima Dana" type="button">
+            <a href="<?= base_url('dashboard/finance') ?>" class="btn-ghost" id="terimaBtn" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none">
               Terima
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
-            </button>
+            </a>
           </div>
         </section>
 

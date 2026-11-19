@@ -201,6 +201,57 @@ class App {
                         $this->params = array_slice($url, 2);
                     }
                 }
+            } elseif ($seg1 === 'promotions' || $seg1 === 'promosi') {
+                $seg4 = $url[4] ?? '';
+                if ($seg2 === 'store') {
+                    $this->method = 'storePromotion';
+                    $this->params = [];
+                } elseif ($seg2 === 'update' && $seg3 !== '') {
+                    $this->method = 'updatePromotion';
+                    $this->params = [$seg3];
+                } elseif ($seg2 === 'toggle' && $seg3 !== '') {
+                    $this->method = 'togglePromotion';
+                    $this->params = [$seg3];
+                } elseif ($seg2 === 'delete' && $seg3 !== '') {
+                    $this->method = 'deletePromotion';
+                    $this->params = [$seg3];
+                } else {
+                    $this->method = 'promotions';
+                    $this->params = array_slice($url, 2);
+                }
+            } elseif ($seg1 === 'settings' || $seg1 === 'pengaturan') {
+                $seg4 = $url[4] ?? '';
+                if ($seg2 === 'account') {
+                    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                        $this->method = 'updateAccount';
+                    } else {
+                        $this->method = 'accountSettings';
+                    }
+                    $this->params = array_slice($url, 3);
+                } elseif ($seg2 === 'password') {
+                    $this->method = 'updatePassword';
+                    $this->params = array_slice($url, 3);
+                } elseif ($seg2 === 'users') {
+                    if ($seg3 === 'store') {
+                        $this->method = 'storeUser';
+                        $this->params = [];
+                    } elseif ($seg3 === 'role' && $seg4 !== '') {
+                        $this->method = 'updateUserRole';
+                        $this->params = [$seg4];
+                    } elseif ($seg3 === 'toggle' && $seg4 !== '') {
+                        $this->method = 'toggleUserActive';
+                        $this->params = [$seg4];
+                    } else {
+                        $this->method = 'userSettings';
+                        $this->params = array_slice($url, 3);
+                    }
+                } elseif ($seg2 === 'profile' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+                    $this->method = 'updateOrgProfile';
+                    $this->params = [];
+                } else {
+                    $this->method = 'settings';
+                    $this->params = array_slice($url, 2);
+                }
             } else {
                 $this->method = ($seg1 !== '' && method_exists('DashboardController', $seg1)) ? $seg1 : 'index';
                 $this->params = array_slice($url, 2);

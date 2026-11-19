@@ -1485,4 +1485,529 @@ class DashboardController extends Controller {
         $this->flash('success', 'Kurasi daftar event homepage berhasil disimpan.');
         $this->redirect('dashboard/homepage/layout');
     }
+
+    /* ================================================================
+       BAGIAN A — PROMOSI (/dashboard/promotions)
+       ================================================================ */
+
+    /**
+     * Halaman Daftar Kode Promo Tiket
+     */
+    public function promotions(): void {
+        $this->authorize('dashboard.view');
+
+        $promoModel = $this->model('Promo');
+        $eventModel = $this->model('Event');
+
+        $promos = $promoModel->allPromos();
+        $events = $eventModel->all();
+        $sidebarCounts = $this->getSidebarCounts();
+
+        // Hitung status otomatis untuk setiap promo
+        foreach ($promos as &$p) {
+            $p['calculated_status'] = $promoModel->calculateStatus($p);
+        }
+        unset($p);
+
+        $this->view('dashboard/promotions', [
+            'pageTitle'     => 'NOVA LIVE — Kode Promo',
+            'activeNav'     => 'promotions',
+            'activeMenu'    => 'promosi',
+            'activeTab'     => 'promotions',
+            'promos'        => $promos,
+            'events'        => $events,
+            'sidebarCounts' => $sidebarCounts
+        ], false);
+    }
+
+    /**
+     * Tambah Kode Promo Baru (POST)
+     */
+    public function storePromotion(): void {
+        $this->authorize('dashboard.view');
+        $this->validateCsrf();
+
+        $code = strtoupper(preg_replace('/\s+/', '', trim($_POST['code'] ?? '')));
+        $type = in_array($_POST['type'] ?? '', ['persen', 'nominal'], true) ? $_POST['type'] : 'persen';
+        $value = (float)($_POST['value'] ?? 0);
+        $eventId = !empty($_POST['event_id']) ? (int)$_POST['event_id'] : null;
+        $quota = !empty($_POST['quota']) ? (int)$_POST['quota'] : null;
+        $startsAt = !empty($_POST['starts_at']) ? trim($_POST['starts_at']) : null;
+        $endsAt = !empty($_POST['ends_at']) ? trim($_POST['ends_at']) : null;
+
+        $promoModel = $this->model('Promo');
+
+        if ($code === '') {
+            $this->flash('error', 'Kode promo tidak boleh kosong.', 'error');
+            $this->redirect('dashboard/promotions');
+        }
+
+        if ($promoModel->codeExists($code)) {
+            $this->flash('error', "Kode promo '{$code}' sudah digunakan.", 'error');
+            $this->redirect('dashboard/promotions');
+        }
+
+        if ($type === 'persen' && ($value <= 0 || $value > 100)) {
+            $this->flash('error', 'Persentase diskon harus bernilai antara 1 sampai 100%.', 'error');
+            $this->redirect('dashboard/promotions');
+        }
+
+        if ($type === 'nominal' && $value <= 0) {
+            $this->flash('error', 'Nominal potongan diskon harus lebih besar dari Rp 0.', 'error');
+            $this->redirect('dashboard/promotions');
+        }
+
+        if ($startsAt && $endsAt && $endsAt < $startsAt) {
+            $this->flash('error', 'Tanggal berakhir tidak boleh lebih awal dari tanggal mulai.', 'error');
+            $this->redirect('dashboard/promotions');
+        }
+
+        $id = $promoModel->create([
+            'code'      => $code,
+            'type'      => $type,
+            'value'     => $value,
+            'event_id'  => $eventId,
+            'quota'     => $quota,
+            'used'      => 0,
+            'starts_at' => $startsAt,
+            'ends_at'   => $endsAt,
+            'is_active' => 1
+        ]);
+
+        $this->logActivity('promo.create', 'promo_codes', $id, "Menambahkan kode promo '{$code}' ({$type}: {$value})");
+
+        $this->flash('success', "Kode promo '{$code}' berhasil ditambahkan.");
+        $this->redirect('dashboard/promotions');
+    }
+
+    /**
+     * Perbarui Kode Promo (POST)
+     */
+    public function updatePromotion(int $id): void {
+        $this->authorize('dashboard.view');
+        $this->validateCsrf();
+
+        $promoModel = $this->model('Promo');
+        $promo = $promoModel->find($id);
+        if (!$promo) {
+            $this->flash('error', 'Kode promo tidak ditemukan.', 'error');
+            $this->redirect('dashboard/promotions');
+        }
+
+        $code = strtoupper(preg_replace('/\s+/', '', trim($_POST['code'] ?? '')));
+        $type = in_array($_POST['type'] ?? '', ['persen', 'nominal'], true) ? $_POST['type'] : 'persen';
+        $value = (float)($_POST['value'] ?? 0);
+        $eventId = !empty($_POST['event_id']) ? (int)$_POST['event_id'] : null;
+        $quota = !empty($_POST['quota']) ? (int)$_POST['quota'] : null;
+        $startsAt = !empty($_POST['starts_at']) ? trim($_POST['starts_at']) : null;
+        $endsAt = !empty($_POST['ends_at']) ? trim($_POST['ends_at']) : null;
+
+        if ($code === '') {
+            $this->flash('error', 'Kode promo tidak boleh kosong.', 'error');
+            $this->redirect('dashboard/promotions');
+        }
+
+        if ($promoModel->codeExists($code, $id)) {
+            $this->flash('error', "Kode promo '{$code}' sudah digunakan oleh promo lain.", 'error');
+            $this->redirect('dashboard/promotions');
+        }
+
+        if ($type === 'persen' && ($value <= 0 || $value > 100)) {
+            $this->flash('error', 'Persentase diskon harus bernilai antara 1 sampai 100%.', 'error');
+            $this->redirect('dashboard/promotions');
+        }
+
+        if ($type === 'nominal' && $value <= 0) {
+            $this->flash('error', 'Nominal potongan diskon harus lebih besar dari Rp 0.', 'error');
+            $this->redirect('dashboard/promotions');
+        }
+
+        if ($startsAt && $endsAt && $endsAt < $startsAt) {
+            $this->flash('error', 'Tanggal berakhir tidak boleh lebih awal dari tanggal mulai.', 'error');
+            $this->redirect('dashboard/promotions');
+        }
+
+        $promoModel->update($id, [
+            'code'      => $code,
+            'type'      => $type,
+            'value'     => $value,
+            'event_id'  => $eventId,
+            'quota'     => $quota,
+            'starts_at' => $startsAt,
+            'ends_at'   => $endsAt
+        ]);
+
+        $this->logActivity('promo.update', 'promo_codes', $id, "Memperbarui kode promo '{$code}'");
+
+        $this->flash('success', "Kode promo '{$code}' berhasil diperbarui.");
+        $this->redirect('dashboard/promotions');
+    }
+
+    /**
+     * Ubah Status Aktif / Nonaktif Kode Promo (POST)
+     */
+    public function togglePromotion(int $id): void {
+        $this->authorize('dashboard.view');
+        $this->validateCsrf();
+
+        $promoModel = $this->model('Promo');
+        $promo = $promoModel->find($id);
+        if (!$promo) {
+            $this->flash('error', 'Kode promo tidak ditemukan.', 'error');
+            $this->redirect('dashboard/promotions');
+        }
+
+        $promoModel->toggleActive($id);
+        $newStatus = empty($promo['is_active']) ? 'diaktifkan' : 'dinonaktifkan';
+
+        $this->logActivity('promo.toggle', 'promo_codes', $id, "Mengubah status kode promo '{$promo['code']}' menjadi {$newStatus}");
+
+        $this->flash('success', "Kode promo '{$promo['code']}' berhasil {$newStatus}.");
+        $this->redirect('dashboard/promotions');
+    }
+
+    /**
+     * Hapus Kode Promo (POST)
+     */
+    public function deletePromotion(int $id): void {
+        $this->authorize('dashboard.view');
+        $this->validateCsrf();
+
+        $promoModel = $this->model('Promo');
+        $promo = $promoModel->find($id);
+        if (!$promo) {
+            $this->flash('error', 'Kode promo tidak ditemukan.', 'error');
+            $this->redirect('dashboard/promotions');
+        }
+
+        $promoModel->delete($id);
+
+        $this->logActivity('promo.delete', 'promo_codes', $id, "Menghapus kode promo '{$promo['code']}'");
+
+        $this->flash('success', "Kode promo '{$promo['code']}' berhasil dihapus.");
+        $this->redirect('dashboard/promotions');
+    }
+
+    /* ================================================================
+       BAGIAN B — PENGATURAN (/dashboard/settings)
+       ================================================================ */
+
+    /**
+     * Halaman Pengaturan (Tab: Profil Organisasi, Akun Saya, Kelola Pengguna)
+     */
+    public function settings(?string $tab = 'org'): void {
+        $this->authorize('dashboard.view');
+
+        $tab = in_array($tab, ['org', 'account', 'users'], true) ? $tab : 'org';
+        $settingModel = $this->model('Setting');
+        $settings = $settingModel->allSettings();
+        $sidebarCounts = $this->getSidebarCounts();
+
+        $userModel = $this->model('User');
+        $users = [];
+        if ($tab === 'users') {
+            if (($_SESSION['user']['role'] ?? '') !== 'admin') {
+                Security::abort(403, 'Hanya Administrator yang memiliki akses ke manajemen pengguna.');
+            }
+            $users = $userModel->allUsers();
+        }
+
+        // Ambil data user login terbaru dari database
+        $currentUserId = (int)($_SESSION['user']['id'] ?? 1);
+        $currentUserData = $userModel->find($currentUserId);
+        if ($currentUserData) {
+            unset($currentUserData['password']);
+            $_SESSION['user'] = array_merge($_SESSION['user'] ?? [], $currentUserData);
+        }
+
+        $this->view('dashboard/settings', [
+            'pageTitle'     => 'NOVA LIVE — Pengaturan & Kontak',
+            'activeNav'     => 'settings',
+            'activeMenu'    => 'pengaturan',
+            'activeTab'     => $tab,
+            'settings'      => $settings,
+            'users'         => $users,
+            'currentUser'   => $_SESSION['user'] ?? [],
+            'sidebarCounts' => $sidebarCounts
+        ], false);
+    }
+
+    /**
+     * Simpan Perubahan Profil Organisasi & Kontak (POST)
+     */
+    public function updateOrgProfile(): void {
+        $this->authorize('dashboard.view');
+        $this->validateCsrf();
+
+        $settingModel = $this->model('Setting');
+
+        $keys = [
+            'org_name',
+            'contact_email',
+            'contact_phone',
+            'contact_city',
+            'contact_address',
+            'contact_instagram',
+            'org_description'
+        ];
+
+        $data = [];
+        foreach ($keys as $k) {
+            if (isset($_POST[$k])) {
+                $data[$k] = trim($_POST[$k]);
+            }
+        }
+
+        // Khusus checkbox preferensi notifikasi
+        foreach (['notif_new_order', 'notif_low_stock', 'notif_payout', 'notif_weekly_summary'] as $notifKey) {
+            $data[$notifKey] = isset($_POST[$notifKey]) ? '1' : '0';
+        }
+
+        $settingModel->updateMultiple($data);
+
+        $this->logActivity('settings.update', 'settings', null, 'Memperbarui profil organisasi dan kontak');
+
+        $this->flash('success', 'Profil organisasi dan kontak berhasil disimpan.');
+        $this->redirect('dashboard/settings');
+    }
+
+    /**
+     * Shortcut Halaman Akun Saya
+     */
+    public function accountSettings(): void {
+        $this->settings('account');
+    }
+
+    /**
+     * Simpan Pembaruan Profil Akun Sendiri (POST)
+     */
+    public function updateAccount(): void {
+        $this->authorize('dashboard.view');
+        $this->validateCsrf();
+
+        $userId = (int)($_SESSION['user']['id'] ?? 1);
+        $userModel = $this->model('User');
+
+        $fullName = trim($_POST['full_name'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $phone = trim($_POST['phone'] ?? '');
+
+        if ($fullName === '') {
+            $this->flash('error', 'Nama lengkap tidak boleh kosong.', 'error');
+            $this->redirect('dashboard/settings/account');
+        }
+
+        if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->flash('error', 'Alamat email tidak valid.', 'error');
+            $this->redirect('dashboard/settings/account');
+        }
+
+        if ($userModel->emailExists($email, $userId)) {
+            $this->flash('error', 'Alamat email sudah digunakan oleh akun lain.', 'error');
+            $this->redirect('dashboard/settings/account');
+        }
+
+        $updateData = [
+            'full_name' => $fullName,
+            'email'     => $email,
+            'phone'     => $phone
+        ];
+
+        // Proses unggah foto profil
+        if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] !== UPLOAD_ERR_NO_FILE) {
+            try {
+                $avatarPath = Upload::image('avatar', 'avatars');
+                if ($avatarPath) {
+                    $oldUser = $userModel->find($userId);
+                    if (!empty($oldUser['avatar'])) {
+                        Upload::delete($oldUser['avatar']);
+                    }
+                    $updateData['avatar'] = $avatarPath;
+                }
+            } catch (\Exception $e) {
+                $this->flash('error', 'Gagal mengunggah foto profil: ' . $e->getMessage(), 'error');
+                $this->redirect('dashboard/settings/account');
+            }
+        }
+
+        $userModel->updateProfile($userId, $updateData);
+
+        // Segarkan data sesi user
+        $freshUser = $userModel->find($userId);
+        unset($freshUser['password']);
+        $_SESSION['user'] = array_merge($_SESSION['user'] ?? [], $freshUser);
+
+        $this->logActivity('user.update_profile', 'users', $userId, "Memperbarui profil akun {$email}");
+
+        $this->flash('success', 'Profil akun Anda berhasil diperbarui.');
+        $this->redirect('dashboard/settings/account');
+    }
+
+    /**
+     * Ganti Kata Sandi Akun Sendiri (POST)
+     */
+    public function updatePassword(): void {
+        $this->authorize('dashboard.view');
+        $this->validateCsrf();
+
+        $userId = (int)($_SESSION['user']['id'] ?? 1);
+        $userModel = $this->model('User');
+        $user = $userModel->find($userId);
+
+        $currentPassword = (string)($_POST['current_password'] ?? '');
+        $newPassword = (string)($_POST['new_password'] ?? '');
+        $confirmPassword = (string)($_POST['confirm_password'] ?? '');
+
+        if (!password_verify($currentPassword, $user['password'])) {
+            $this->flash('error', 'Kata sandi saat ini yang Anda masukkan salah.', 'error');
+            $this->redirect('dashboard/settings/account');
+        }
+
+        if (strlen($newPassword) < 8) {
+            $this->flash('error', 'Kata sandi baru minimal harus 8 karakter.', 'error');
+            $this->redirect('dashboard/settings/account');
+        }
+
+        if ($newPassword !== $confirmPassword) {
+            $this->flash('error', 'Konfirmasi kata sandi baru tidak cocok.', 'error');
+            $this->redirect('dashboard/settings/account');
+        }
+
+        $userModel->updatePassword($userId, $newPassword);
+
+        $this->logActivity('user.change_password', 'users', $userId, 'Mengubah kata sandi akun');
+
+        $this->flash('success', 'Kata sandi berhasil diubah.');
+        $this->redirect('dashboard/settings/account');
+    }
+
+    /**
+     * Shortcut Halaman Kelola Pengguna
+     */
+    public function userSettings(): void {
+        $this->settings('users');
+    }
+
+    /**
+     * Tambah Pengguna Baru (POST — Khusus Admin)
+     */
+    public function storeUser(): void {
+        $this->authorize('dashboard.view');
+        if (($_SESSION['user']['role'] ?? '') !== 'admin') {
+            Security::abort(403, 'Hanya Administrator yang berhak menambah pengguna.');
+        }
+        $this->validateCsrf();
+
+        $fullName = trim($_POST['full_name'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $phone = trim($_POST['phone'] ?? '');
+        $role = in_array($_POST['role'] ?? '', ['admin', 'manager', 'staff'], true) ? $_POST['role'] : 'staff';
+        $password = (string)($_POST['password'] ?? '');
+
+        $userModel = $this->model('User');
+
+        if ($fullName === '' || $email === '') {
+            $this->flash('error', 'Nama lengkap dan email wajib diisi.', 'error');
+            $this->redirect('dashboard/settings/users');
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->flash('error', 'Format email tidak valid.', 'error');
+            $this->redirect('dashboard/settings/users');
+        }
+
+        if ($userModel->emailExists($email)) {
+            $this->flash('error', "Email '{$email}' sudah terdaftar pada sistem.", 'error');
+            $this->redirect('dashboard/settings/users');
+        }
+
+        if (strlen($password) < 8) {
+            $this->flash('error', 'Kata sandi pengguna minimal 8 karakter.', 'error');
+            $this->redirect('dashboard/settings/users');
+        }
+
+        $newId = $userModel->createUser([
+            'full_name' => $fullName,
+            'email'     => $email,
+            'phone'     => $phone,
+            'role'      => $role,
+            'password'  => $password,
+            'is_active' => 1
+        ]);
+
+        $this->logActivity('user.create', 'users', $newId, "Menambahkan pengguna baru {$fullName} ({$email}, peran: {$role})");
+
+        $this->flash('success', "Pengguna {$fullName} ({$role}) berhasil didaftarkan.");
+        $this->redirect('dashboard/settings/users');
+    }
+
+    /**
+     * Ubah Peran Pengguna (POST — Khusus Admin)
+     */
+    public function updateUserRole(int $id): void {
+        $this->authorize('dashboard.view');
+        if (($_SESSION['user']['role'] ?? '') !== 'admin') {
+            Security::abort(403, 'Hanya Administrator yang berhak mengubah peran pengguna.');
+        }
+        $this->validateCsrf();
+
+        $currentUserId = (int)($_SESSION['user']['id'] ?? 1);
+        if ($id === $currentUserId) {
+            $this->flash('error', 'Anda tidak dapat mengubah peran akun Anda sendiri.', 'error');
+            $this->redirect('dashboard/settings/users');
+        }
+
+        $role = in_array($_POST['role'] ?? '', ['admin', 'manager', 'staff'], true) ? $_POST['role'] : null;
+        if (!$role) {
+            $this->flash('error', 'Pilihan peran pengguna tidak valid.', 'error');
+            $this->redirect('dashboard/settings/users');
+        }
+
+        $userModel = $this->model('User');
+        $targetUser = $userModel->find($id);
+        if (!$targetUser) {
+            $this->flash('error', 'Pengguna tidak ditemukan.', 'error');
+            $this->redirect('dashboard/settings/users');
+        }
+
+        $userModel->updateRole($id, $role);
+
+        $this->logActivity('user.change_role', 'users', $id, "Mengubah peran pengguna {$targetUser['email']} menjadi {$role}");
+
+        $this->flash('success', "Peran pengguna {$targetUser['full_name']} berhasil diubah menjadi {$role}.");
+        $this->redirect('dashboard/settings/users');
+    }
+
+    /**
+     * Ubah Status Aktif / Nonaktif Pengguna (POST — Khusus Admin)
+     */
+    public function toggleUserActive(int $id): void {
+        $this->authorize('dashboard.view');
+        if (($_SESSION['user']['role'] ?? '') !== 'admin') {
+            Security::abort(403, 'Hanya Administrator yang berhak mengubah status akun pengguna.');
+        }
+        $this->validateCsrf();
+
+        $currentUserId = (int)($_SESSION['user']['id'] ?? 1);
+        if ($id === $currentUserId) {
+            $this->flash('error', 'Anda tidak dapat menonaktifkan akun Anda sendiri.', 'error');
+            $this->redirect('dashboard/settings/users');
+        }
+
+        $userModel = $this->model('User');
+        $targetUser = $userModel->find($id);
+        if (!$targetUser) {
+            $this->flash('error', 'Pengguna tidak ditemukan.', 'error');
+            $this->redirect('dashboard/settings/users');
+        }
+
+        $userModel->toggleActive($id);
+        $newStatus = empty($targetUser['is_active']) ? 'diaktifkan' : 'dinonaktifkan';
+
+        $this->logActivity('user.toggle_status', 'users', $id, "Mengubah status akun pengguna {$targetUser['email']} menjadi {$newStatus}");
+
+        $this->flash('success', "Akun pengguna {$targetUser['full_name']} berhasil {$newStatus}.");
+        $this->redirect('dashboard/settings/users');
+    }
 }
+

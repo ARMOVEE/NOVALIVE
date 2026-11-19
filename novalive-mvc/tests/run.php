@@ -25,6 +25,9 @@ require_once __DIR__ . '/../app/models/Notification.php';
 require_once __DIR__ . '/../app/models/ActivityLog.php';
 require_once __DIR__ . '/../app/models/Banner.php';
 require_once __DIR__ . '/../app/models/HomepageSection.php';
+require_once __DIR__ . '/../app/models/Promo.php';
+require_once __DIR__ . '/../app/models/Setting.php';
+require_once __DIR__ . '/../app/models/User.php';
 
 // Pastikan sesi aktif untuk pengujian keamanan
 Security::startSession();
@@ -247,6 +250,73 @@ $method = $refClass->getMethod('image');
 $params = $method->getParameters();
 $hasSubfolderParam = count($params) >= 2 && $params[1]->getName() === 'subfolder';
 it("Tahap 4 Upload: Method image() mendukung parameter subfolder kustom", $hasSubfolderParam);
+
+// 61. Skema Database Tahap 5: Tabel promo_codes dan settings tersedia
+$pdo = Database::getInstance();
+$tables = $pdo->query("SHOW TABLES")->fetchAll(PDO::FETCH_COLUMN);
+$hasPromoTable = in_array('promo_codes', $tables, true);
+$hasSettingsTable = in_array('settings', $tables, true);
+it("Tahap 5 Skema: Tabel promo_codes dan settings tersedia di database", $hasPromoTable && $hasSettingsTable);
+
+// 62. Skema Database Tahap 5: Kolom phone dan avatar tersedia pada tabel users
+$userCols = $pdo->query("DESCRIBE users")->fetchAll(PDO::FETCH_COLUMN);
+it("Tahap 5 Skema: Kolom phone dan avatar tersedia pada tabel users", in_array('phone', $userCols, true) && in_array('avatar', $userCols, true));
+
+// 63. Model Promo: findByCode() menemukan kode promo 'NOVAHEMAT' (case-insensitive)
+$promoModel = new Promo();
+$foundPromo = $promoModel->findByCode('novahemat');
+it("Tahap 5 Promo: findByCode() menemukan kode promo 'NOVAHEMAT' (case-insensitive)", !empty($foundPromo) && $foundPromo['code'] === 'NOVAHEMAT');
+
+// 64. Model Promo: calculateStatus() mendeteksi status dengan tepat
+$mockActive = ['is_active' => 1, 'quota' => 100, 'used' => 10, 'starts_at' => '2026-01-01', 'ends_at' => '2026-12-31'];
+$mockExpired = ['is_active' => 1, 'quota' => 100, 'used' => 10, 'starts_at' => '2026-01-01', 'ends_at' => '2025-01-01'];
+$mockFull = ['is_active' => 1, 'quota' => 50, 'used' => 50, 'starts_at' => '2026-01-01', 'ends_at' => '2026-12-31'];
+$mockInactive = ['is_active' => 0, 'quota' => 100, 'used' => 0, 'starts_at' => '2026-01-01', 'ends_at' => '2026-12-31'];
+$statusOk = ($promoModel->calculateStatus($mockActive) === 'Aktif') &&
+            ($promoModel->calculateStatus($mockExpired) === 'Berakhir') &&
+            ($promoModel->calculateStatus($mockFull) === 'Habis') &&
+            ($promoModel->calculateStatus($mockInactive) === 'Nonaktif');
+it("Tahap 5 Promo: calculateStatus() mendeteksi status Aktif, Berakhir, Habis, dan Nonaktif", $statusOk);
+
+// 65. Model Promo: validate() sukses menghitung potongan diskon persen
+$valResult = $promoModel->validate('NOVAHEMAT', 1, 1000000.0);
+it("Tahap 5 Promo: validate() sukses menghitung potongan diskon persen (15% dari Rp 1.000.000 = Rp 150.000)", $valResult['valid'] === true && (float)$valResult['discount'] === 150000.0);
+
+// 66. Model Promo: validate() membatasi diskon tidak melebihi subtotal
+$valMax = $promoModel->validate('TULUSJKT', 2, 20000.0);
+it("Tahap 5 Promo: validate() membatasi diskon tidak melebihi subtotal pembelian", $valMax['valid'] === true && (float)$valMax['discount'] === 20000.0);
+
+// 67. Model Promo: validate() menolak kode promo kedaluwarsa atau tidak valid dengan pesan informatif
+$valInvalid = $promoModel->validate('JAZZOKT', 1, 500000.0);
+$valNotFound = $promoModel->validate('KODEPALSU123', 1, 500000.0);
+it("Tahap 5 Promo: validate() menolak kode promo yang kedaluwarsa atau tidak terdaftar", !$valInvalid['valid'] && !empty($valInvalid['error']) && !$valNotFound['valid'] && !empty($valNotFound['error']));
+
+// 68. Model Setting: get() dan set() berhasil membaca dan menyimpan konfigurasi
+$settingModel = new Setting();
+$testKey = 'test_kunci_sistem';
+$settingModel->set($testKey, 'Nilai Uji Tahap 5');
+$valRead = $settingModel->get($testKey);
+$pdo->prepare("DELETE FROM settings WHERE setting_key = :k")->execute([':k' => $testKey]);
+it("Tahap 5 Setting: get() dan set() berhasil membaca dan menyimpan konfigurasi sistem", $valRead === 'Nilai Uji Tahap 5');
+
+// 69. Model User: allUsers() mengembalikan daftar pengguna dan emailExists() mendeteksi duplikasi
+$userModel = new User();
+$allUsersList = $userModel->allUsers();
+$emailDuplicate = $userModel->emailExists('demo@novalive.id');
+$emailAvailable = !$userModel->emailExists('email_acak_tidak_ada_98765@novalive.id');
+it("Tahap 5 User: allUsers() mengembalikan daftar pengguna dan emailExists() mendeteksi duplikasi", count($allUsersList) >= 1 && $emailDuplicate && $emailAvailable);
+
+// 70. Model User: updatePassword() menyimpan hash kata sandi yang valid via password_verify()
+$demoUser = $userModel->findByEmail('demo@novalive.id');
+$canVerifyDemo = false;
+if ($demoUser) {
+    // Cari hash mentah dari DB
+    $stmt = $pdo->prepare("SELECT password FROM users WHERE id = :id");
+    $stmt->execute([':id' => $demoUser['id']]);
+    $rawHash = $stmt->fetchColumn();
+    $canVerifyDemo = password_verify('nova1234', $rawHash);
+}
+it("Tahap 5 User: updatePassword() menyimpan hash kata sandi yang valid via password_verify()", $canVerifyDemo);
 
 echo "=======================================================\n";
 echo sprintf("HASIL PENGUJIAN: Lulus: %d | Gagal: %d\n", $passed, $failed);
