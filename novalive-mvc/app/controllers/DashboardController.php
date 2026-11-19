@@ -20,11 +20,13 @@ class DashboardController extends Controller {
         $eventModel = $this->model('Event');
         $orderModel = $this->model('Order');
         $refundModel = $this->model('Refund');
+        $notifModel = $this->model('Notification');
 
         return [
-            'events' => $eventModel->totalEvents(),
-            'orders' => $orderModel->count(),
-            'refund' => $refundModel->countPending()
+            'events'        => $eventModel->totalEvents(),
+            'orders'        => $orderModel->count(),
+            'refund'        => $refundModel->countPending(),
+            'notifications' => $notifModel->unreadCount()
         ];
     }
 
@@ -844,5 +846,354 @@ class DashboardController extends Controller {
 
         $this->flash('success', "E-tiket {$order['ticket_code']} untuk {$order['buyer_name']} berhasil dikirim ulang.");
         $this->redirect('dashboard/orders/tickets');
+    }
+
+    // =========================================================================
+    // TAHAP 3: KEUANGAN & LAPORAN
+    // =========================================================================
+
+    /**
+     * Halaman Keuangan (/dashboard/finance)
+     */
+    public function finance(): void {
+        $this->authorize('dashboard.view');
+
+        $withdrawalModel = $this->model('Withdrawal');
+        $orderModel = $this->model('Order');
+
+        $grossRevenue = $withdrawalModel->getGrossRevenue();
+        $approvedRefunds = $withdrawalModel->getApprovedRefunds();
+        $serviceFee = $withdrawalModel->getServiceFee();
+        $totalWithdrawn = $withdrawalModel->getTotalWithdrawn();
+        $totalSuccessful = $withdrawalModel->getTotalSuccessful();
+        $totalPending = $withdrawalModel->getTotalPending();
+        $availableBalance = $withdrawalModel->getAvailableBalance();
+
+        $monthlyRevenue = $orderModel->getMonthlyRevenue(6);
+        $revenuePerEvent = $orderModel->getRevenuePerEvent();
+        $withdrawals = $withdrawalModel->allWithUser();
+
+        // Export CSV jika diminta
+        if (isset($_GET['export']) && $_GET['export'] === 'csv') {
+            header('Content-Type: text/csv; charset=utf-8');
+            header('Content-Disposition: attachment; filename="laporan-pendapatan-event-' . date('Ymd-His') . '.csv"');
+            $out = fopen('php://output', 'w');
+            fputcsv($out, ['ID Event', 'Kode', 'Nama Event', 'Harga Tiket (Rp)', 'Kuota', 'Tiket Terjual', 'Pendapatan Kotor (Rp)', 'Refund (Rp)', 'Pendapatan Bersih (Rp)']);
+            foreach ($revenuePerEvent as $row) {
+                fputcsv($out, [
+                    $row['id'],
+                    $row['code'],
+                    $row['title'],
+                    $row['price'],
+                    $row['quota'],
+                    $row['sold'],
+                    $row['gross_revenue'],
+                    $row['refund_amount'],
+                    $row['net_revenue']
+                ]);
+            }
+            fclose($out);
+            exit;
+        }
+
+        $sidebarCounts = $this->getSidebarCounts();
+
+        $this->view('dashboard/finance', [
+            'pageTitle'        => 'NOVA LIVE — Keuangan',
+            'activeNav'        => 'finance',
+            'activeMenu'       => 'keuangan',
+            'activeTab'        => 'finance',
+            'grossRevenue'     => $grossRevenue,
+            'approvedRefunds'  => $approvedRefunds,
+            'serviceFee'       => $serviceFee,
+            'totalWithdrawn'   => $totalWithdrawn,
+            'totalSuccessful'  => $totalSuccessful,
+            'totalPending'     => $totalPending,
+            'availableBalance' => $availableBalance,
+            'monthlyRevenue'   => $monthlyRevenue,
+            'revenuePerEvent'  => $revenuePerEvent,
+            'withdrawals'      => $withdrawals,
+            'sidebarCounts'    => $sidebarCounts
+        ], false);
+    }
+
+    /**
+     * Memproses Pengajuan Penarikan Dana (POST)
+     */
+    public function withdraw(): void {
+        $this->authorize('dashboard.view');
+        $this->validateCsrf();
+
+        $withdrawalModel = $this->model('Withdrawal');
+        $availableBalance = $withdrawalModel->getAvailableBalance();
+
+        $rawAmount = post_data('amount', 0);
+        $amount = (float)str_replace(['Rp', '.', ' '], ['', '', ''], (string)$rawAmount);
+        $bankName = trim(post_data('bank_name', ''));
+        $accountNo = trim(post_data('account_no', ''));
+        $accountName = trim(post_data('account_name', ''));
+        $note = trim(post_data('note', ''));
+
+        if ($amount <= 0) {
+            $this->flash('error', 'Nominal penarikan harus lebih dari Rp 0.');
+            $this->redirect('dashboard/finance');
+        }
+
+        if ($amount > $availableBalance) {
+            $this->flash('error', 'Nominal penarikan (' . rupiah($amount) . ') melebihi saldo tersedia yang dapat ditarik (' . rupiah($availableBalance) . ').');
+            $this->redirect('dashboard/finance');
+        }
+
+        if (empty($bankName) || empty($accountNo) || empty($accountName)) {
+            $this->flash('error', 'Nama bank, nomor rekening, dan nama pemilik rekening wajib diisi lengkap.');
+            $this->redirect('dashboard/finance');
+        }
+
+        $userId = $_SESSION['user']['id'] ?? null;
+        $wId = $withdrawalModel->requestWithdraw($amount, $bankName, $accountNo, $accountName, $userId, $note);
+
+        // Catat jejak audit ke activity_logs
+        $this->logActivity('withdrawal.request', 'withdrawals', $wId, "Mengajukan penarikan dana sebesar " . rupiah($amount) . " ke rekening {$bankName} {$accountNo} a.n. {$accountName}");
+
+        // Buat notifikasi otomatis
+        $notifModel = $this->model('Notification');
+        $notifModel->createNotification(
+            'system',
+            'Pengajuan Penarikan Dana Baru',
+            "Pengajuan penarikan dana sebesar " . rupiah($amount) . " ke rekening {$bankName} ({$accountNo}) sedang diproses.",
+            '/dashboard/finance',
+            $userId
+        );
+
+        $this->flash('success', 'Pengajuan penarikan dana sebesar ' . rupiah($amount) . ' berhasil dikirim dan sedang diproses admin.');
+        $this->redirect('dashboard/finance');
+    }
+
+    /**
+     * Update Status Penarikan Dana (POST — Admin Only)
+     */
+    public function updateWithdrawalStatus(string $id): void {
+        $this->authorize('dashboard.view');
+        $this->validateCsrf();
+
+        // Verifikasi peran admin
+        if (($_SESSION['user']['role'] ?? '') !== 'admin') {
+            $this->flash('error', 'Hanya administrator yang memiliki wewenang mengubah status pencairan dana.');
+            $this->redirect('dashboard/finance');
+        }
+
+        $wId = (int)$id;
+        $status = trim(post_data('status', ''));
+        $note = trim(post_data('note', ''));
+
+        if (!in_array($status, ['Diproses', 'Berhasil', 'Ditolak'], true)) {
+            $this->flash('error', 'Status penarikan dana tidak valid.');
+            $this->redirect('dashboard/finance');
+        }
+
+        $withdrawalModel = $this->model('Withdrawal');
+        $withdrawal = $withdrawalModel->find($wId);
+
+        if (!$withdrawal) {
+            $this->flash('error', 'Data penarikan dana tidak ditemukan.');
+            $this->redirect('dashboard/finance');
+        }
+
+        $withdrawalModel->updateStatus($wId, $status, $note ?: null);
+
+        $this->logActivity('withdrawal.update_status', 'withdrawals', $wId, "Mengubah status penarikan dana #{$wId} menjadi {$status}");
+
+        $notifModel = $this->model('Notification');
+        $notifModel->createNotification(
+            'system',
+            'Status Penarikan Dana Diperbarui',
+            "Pencairan dana #{$wId} (" . rupiah($withdrawal['amount']) . ") status telah diubah menjadi: {$status}." . ($note ? " Catatan: {$note}" : ''),
+            '/dashboard/finance',
+            $withdrawal['created_by'] ?? null
+        );
+
+        $this->flash('success', "Status penarikan dana #{$wId} berhasil diubah menjadi {$status}.");
+        $this->redirect('dashboard/finance');
+    }
+
+    /**
+     * Halaman Analitik & Laporan (/dashboard/reports/analytics)
+     */
+    public function analytics(): void {
+        $this->authorize('dashboard.view');
+
+        $orderModel = $this->model('Order');
+
+        $startDate = trim($_GET['start_date'] ?? '');
+        $endDate = trim($_GET['end_date'] ?? '');
+
+        $categorySales = $orderModel->getSalesByCategory($startDate, $endDate);
+        $citySales = $orderModel->getSalesByCity($startDate, $endDate);
+        $occupancyRates = $orderModel->getEventOccupancyRates();
+        $statusBreakdown = $orderModel->getOrderStatusBreakdown($startDate, $endDate);
+        $monthlyRevenue = $orderModel->getMonthlyRevenue(6);
+
+        // Export CSV jika diminta
+        if (isset($_GET['export']) && $_GET['export'] === 'csv') {
+            header('Content-Type: text/csv; charset=utf-8');
+            header('Content-Disposition: attachment; filename="laporan-analitik-penjualan-' . date('Ymd-His') . '.csv"');
+            $out = fopen('php://output', 'w');
+            fputcsv($out, ['Tipe Laporan', 'Nama Entitas', 'Tiket Terjual', 'Total Pendapatan (Rp)']);
+            foreach ($categorySales as $c) {
+                fputcsv($out, ['Kategori', $c['name'], $c['tickets_sold'], $c['total_revenue']]);
+            }
+            foreach ($citySales as $ci) {
+                fputcsv($out, ['Kota', $ci['name'], $ci['tickets_sold'], $ci['total_revenue']]);
+            }
+            fclose($out);
+            exit;
+        }
+
+        $sidebarCounts = $this->getSidebarCounts();
+
+        $this->view('dashboard/analytics', [
+            'pageTitle'       => 'NOVA LIVE — Analitik & Laporan',
+            'activeNav'       => 'analytics',
+            'activeMenu'      => 'laporan',
+            'activeTab'       => 'analytics',
+            'categorySales'   => $categorySales,
+            'citySales'       => $citySales,
+            'occupancyRates'  => $occupancyRates,
+            'statusBreakdown' => $statusBreakdown,
+            'monthlyRevenue'  => $monthlyRevenue,
+            'startDate'       => $startDate,
+            'endDate'         => $endDate,
+            'sidebarCounts'   => $sidebarCounts
+        ], false);
+    }
+
+    /**
+     * Halaman Log Aktivitas (/dashboard/reports/logs)
+     */
+    public function activityLogs(): void {
+        $this->authorize('dashboard.view');
+
+        $page = max(1, (int)($_GET['page'] ?? 1));
+        $filters = [
+            'action'     => trim($_GET['action'] ?? ''),
+            'user_id'    => trim($_GET['user_id'] ?? ''),
+            'start_date' => trim($_GET['start_date'] ?? ''),
+            'end_date'   => trim($_GET['end_date'] ?? ''),
+            'search'     => trim($_GET['q'] ?? $_GET['search'] ?? '')
+        ];
+
+        $logModel = $this->model('ActivityLog');
+        $logsData = $logModel->paginate($page, 20, $filters);
+        $distinctActions = $logModel->getDistinctActions();
+
+        $userModel = $this->model('User');
+        $users = $userModel->all();
+
+        $sidebarCounts = $this->getSidebarCounts();
+
+        $this->view('dashboard/logs', [
+            'pageTitle'       => 'NOVA LIVE — Log Aktivitas Admin',
+            'activeNav'       => 'logs',
+            'activeMenu'      => 'laporan',
+            'activeTab'       => 'logs',
+            'logsData'        => $logsData,
+            'distinctActions' => $distinctActions,
+            'users'           => $users,
+            'filters'         => $filters,
+            'sidebarCounts'   => $sidebarCounts
+        ], false);
+    }
+
+    /**
+     * Halaman Notifikasi (/dashboard/reports/notifications)
+     */
+    public function notifications(): void {
+        $this->authorize('dashboard.view');
+
+        $notifModel = $this->model('Notification');
+        // Sinkronkan peringatan stok menipis otomatis (<= 20% kuota)
+        $notifModel->checkAndCreateStockAlerts();
+
+        $notifications = $notifModel->all();
+        $unreadCount = $notifModel->unreadCount();
+
+        $eventModel = $this->model('Event');
+        $events = $eventModel->all();
+
+        $sidebarCounts = $this->getSidebarCounts();
+
+        $this->view('dashboard/notifications', [
+            'pageTitle'     => 'NOVA LIVE — Notifikasi ke Pembeli & Sistem',
+            'activeNav'     => 'notifications',
+            'activeMenu'    => 'laporan',
+            'activeTab'     => 'notifications',
+            'notifications' => $notifications,
+            'unreadCount'   => $unreadCount,
+            'events'        => $events,
+            'sidebarCounts' => $sidebarCounts
+        ], false);
+    }
+
+    /**
+     * Tandai Satu Notifikasi Dibaca (POST)
+     */
+    public function markNotificationRead(string $id): void {
+        $this->authorize('dashboard.view');
+        $this->validateCsrf();
+
+        $notifId = (int)$id;
+        $notifModel = $this->model('Notification');
+        $notifModel->markAsRead($notifId);
+
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+            $this->json(['success' => true]);
+        }
+
+        $this->flash('success', 'Notifikasi berhasil ditandai sebagai dibaca.');
+        $this->redirect('dashboard/reports/notifications');
+    }
+
+    /**
+     * Tandai Semua Notifikasi Dibaca (POST)
+     */
+    public function markAllNotificationsRead(): void {
+        $this->authorize('dashboard.view');
+        $this->validateCsrf();
+
+        $notifModel = $this->model('Notification');
+        $notifModel->markAllAsRead();
+
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+            $this->json(['success' => true]);
+        }
+
+        $this->flash('success', 'Semua notifikasi berhasil ditandai sebagai dibaca.');
+        $this->redirect('dashboard/reports/notifications');
+    }
+
+    /**
+     * Kirim Pengumuman ke Pembeli (POST)
+     */
+    public function createNotification(): void {
+        $this->authorize('dashboard.view');
+        $this->validateCsrf();
+
+        $title = trim(post_data('title', ''));
+        $message = trim(post_data('message', ''));
+        $target = post_data('target', 'all');
+
+        if (empty($title) || empty($message)) {
+            $this->flash('error', 'Judul dan isi pesan pengumuman wajib diisi.');
+            $this->redirect('dashboard/reports/notifications');
+        }
+
+        $notifModel = $this->model('Notification');
+        $link = ($target !== 'all' && is_numeric($target)) ? "/dashboard/events" : '/dashboard/events';
+        $notifId = $notifModel->createNotification('broadcast', $title, $message, $link);
+
+        $this->logActivity('notification.broadcast', 'notifications', $notifId, "Menyiarkan pengumuman pembeli: {$title}");
+
+        $this->flash('success', "Pengumuman '{$title}' berhasil disiarkan.");
+        $this->redirect('dashboard/reports/notifications');
     }
 }

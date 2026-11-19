@@ -69,9 +69,9 @@ if (empty($shellFooter)):
 
         <nav class="topnav" aria-label="Navigasi utama">
           <a href="<?= base_url('dashboard') ?>" class="<?= ($activeNav ?? '') === 'ringkasan' ? 'active' : '' ?>">Dashboard</a>
-          <button type="button" class="js-soon" data-feature="Laporan">Laporan</button>
+          <a href="<?= base_url('dashboard/reports/analytics') ?>" class="<?= ($activeMenu ?? '') === 'laporan' ? 'active' : '' ?>">Laporan</a>
           <a href="<?= base_url('dashboard/orders/tickets') ?>" class="<?= ($activeNav ?? '') === 'tickets' ? 'active' : '' ?>">Dokumen</a>
-          <a href="<?= base_url('dashboard/orders') ?>" class="<?= ($activeNav ?? '') === 'orders' ? 'active' : '' ?>">Riwayat</a>
+          <a href="<?= base_url('dashboard/reports/logs') ?>" class="<?= ($activeNav ?? '') === 'logs' ? 'active' : '' ?>">Riwayat</a>
           <button type="button" class="js-soon" data-feature="Kontak">Kontak</button>
         </nav>
 
@@ -82,9 +82,16 @@ if (empty($shellFooter)):
               <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg>
             </button>
           </div>
-          <button class="icon-btn" id="bellBtn" type="button" aria-label="Notifikasi" aria-expanded="false">
+          <?php
+            $notifModelForSidebar = new Notification();
+            $latestNotifications = $latestNotifications ?? $notifModelForSidebar->latest(5);
+            $unreadNotifCount = (int)($sidebarCounts['notifications'] ?? $notifModelForSidebar->unreadCount());
+          ?>
+          <button class="icon-btn" id="bellBtn" type="button" aria-label="Notifikasi" aria-expanded="false" style="position:relative">
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9a6 6 0 1 0-12 0c0 6-2.5 7-2.5 7h17S18 15 18 9"/><path d="M10 20a2.2 2.2 0 0 0 4 0"/></svg>
-            <span class="dot" aria-hidden="true"></span>
+            <?php if ($unreadNotifCount > 0): ?>
+              <span class="dot" aria-hidden="true"></span>
+            <?php endif; ?>
           </button>
           <button class="avatar-btn js-soon" type="button" id="avatarBtn" data-feature="Pengaturan Profil" aria-label="Profil penyelenggara — Pengaturan" title="Pengaturan — Profil Penyelenggara">
             <span class="avatar" id="topAvatar" aria-hidden="true"><?= e($userInitials) ?></span>
@@ -93,18 +100,31 @@ if (empty($shellFooter)):
         </div>
 
         <div class="pop" id="bellPop" role="dialog" aria-label="Notifikasi">
-          <h3>Notifikasi</h3>
-          <div class="notif">
-            <span class="n-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></span>
-            <p>Pembayaran tiket <b>Tulus Live in Concert</b> berhasil diterima.<span>16 Juni 2025 · 22.30 WIB</span></p>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px 8px;border-bottom:1px solid var(--line)">
+            <h3 style="margin:0;font-size:14px;font-weight:700">Notifikasi (<?= $unreadNotifCount ?>)</h3>
+            <a href="<?= base_url('dashboard/reports/notifications') ?>" style="font-size:12px;color:var(--blue);font-weight:600;text-decoration:none">Lihat Semua</a>
           </div>
-          <div class="notif">
-            <span class="n-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V4s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg></span>
-            <p>Event <b>Midnight Jazz Session</b> menunggu persetujuan publikasi.<span>15 Juni 2025 · 09.12 WIB</span></p>
-          </div>
-          <div class="notif">
-            <span class="n-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M16 12.5h.01"/></svg></span>
-            <p>Penarikan dana <b>Rp5.000.000</b> sedang diproses ke rekening penyelenggara.<span>14 Juni 2025 · 15.40 WIB</span></p>
+          <div class="pop-list" style="max-height:300px;overflow-y:auto">
+            <?php if (empty($latestNotifications)): ?>
+              <div style="padding:16px;text-align:center;color:var(--muted);font-size:13px">Belum ada notifikasi.</div>
+            <?php else: ?>
+              <?php foreach ($latestNotifications as $nt): ?>
+                <a href="<?= base_url($nt['link'] ?? 'dashboard/reports/notifications') ?>" class="notif" style="display:flex;gap:10px;padding:10px 14px;text-decoration:none;color:inherit;border-bottom:1px solid #f1f3f4;<?= empty($nt['is_read']) ? 'background:rgba(234,212,162,0.12);' : '' ?>">
+                  <span class="n-ico" style="flex:none;width:28px;height:28px;border-radius:8px;background:var(--cream);color:var(--gold-deep);display:grid;place-items:center">
+                    <?php if (($nt['type'] ?? '') === 'refund'): ?>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10h10a5 5 0 0 1 5 5v2M3 10l6-6M3 10l6 6"/></svg>
+                    <?php elseif (($nt['type'] ?? '') === 'stock'): ?>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4M12 17h.01"/></svg>
+                    <?php else: ?>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+                    <?php endif; ?>
+                  </span>
+                  <div style="flex:1;min-width:0">
+                    <p style="margin:0;font-size:12.5px;line-height:1.4"><b><?= e($nt['title']) ?></b><br><?= e(mb_strimwidth($nt['message'], 0, 70, '…')) ?><span style="display:block;font-size:11px;color:var(--muted);margin-top:3px"><?= tanggal($nt['created_at'], 'd M Y · H:i') ?> WIB</span></p>
+                  </div>
+                </a>
+              <?php endforeach; ?>
+            <?php endif; ?>
           </div>
         </div>
       </header>
@@ -213,9 +233,10 @@ if (empty($shellFooter)):
           </a>
 
           <!-- 4. Keuangan -->
-          <button type="button" class="js-soon" data-feature="Keuangan" data-tip="Keuangan" aria-label="Keuangan" title="Keuangan">
+          <!-- 4. Keuangan -->
+          <a href="<?= base_url('dashboard/finance') ?>" class="<?= (($activeNav ?? '') === 'finance' || ($activeMenu ?? '') === 'keuangan') ? 'active' : '' ?>" data-tip="Keuangan" aria-label="Keuangan" title="Keuangan">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10.5h18M7 15h4"/></svg>
-          </button>
+          </a>
 
           <!-- 5. Homepage -->
           <button type="button" class="js-soon" data-feature="Homepage" data-tip="Homepage" aria-label="Homepage" title="Homepage">
@@ -223,9 +244,12 @@ if (empty($shellFooter)):
           </button>
 
           <!-- 6. Laporan -->
-          <button type="button" class="js-soon" data-feature="Laporan" data-tip="Laporan" aria-label="Laporan" title="Laporan">
+          <a href="<?= base_url('dashboard/reports/analytics') ?>" class="<?= (in_array($activeNav ?? '', ['analytics', 'logs', 'notifications']) || ($activeMenu ?? '') === 'laporan') ? 'active' : '' ?>" data-tip="Laporan" aria-label="Laporan" title="Laporan">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M5 20v-6M11 20V6M17 20v-9"/><path d="M3 20h18"/></svg>
-          </button>
+            <?php if (!empty($sidebarCounts['notifications'])): ?>
+              <span class="rail-badge" id="navNotifCount"><?= (int)$sidebarCounts['notifications'] ?></span>
+            <?php endif; ?>
+          </a>
 
           <!-- 7. Promosi -->
           <button type="button" class="js-soon" data-feature="Promosi" data-tip="Promosi" aria-label="Promosi" title="Promosi">
@@ -263,6 +287,12 @@ if (empty($shellFooter)):
               <a href="<?= base_url('dashboard/orders/checkin') ?>" class="<?= ($activeTab ?? '') === 'checkin' ? 'active' : '' ?>" role="tab">Check-in</a>
               <a href="<?= base_url('dashboard/orders/refunds') ?>" class="<?= ($activeTab ?? '') === 'refund' ? 'active' : '' ?>" role="tab">Refund <span class="tab-badge" id="navRefundCount"><?= (int)($sidebarCounts['refund'] ?? 2) ?></span></a>
               <a href="<?= base_url('dashboard/orders/tickets') ?>" class="<?= ($activeTab ?? '') === 'etiket' ? 'active' : '' ?>" role="tab">E-Tiket</a>
+            </div>
+          <?php elseif (($activeMenu ?? '') === 'laporan'): ?>
+            <div class="tabs" role="tablist" aria-label="Tab menu">
+              <a href="<?= base_url('dashboard/reports/analytics') ?>" class="<?= ($activeTab ?? 'analytics') === 'analytics' ? 'active' : '' ?>" role="tab">Analitik</a>
+              <a href="<?= base_url('dashboard/reports/logs') ?>" class="<?= ($activeTab ?? '') === 'logs' ? 'active' : '' ?>" role="tab">Log Aktivitas</a>
+              <a href="<?= base_url('dashboard/reports/notifications') ?>" class="<?= ($activeTab ?? '') === 'notifications' ? 'active' : '' ?>" role="tab">Notifikasi <?php if (!empty($sidebarCounts['notifications'])): ?><span class="tab-badge" id="tabNotifCount"><?= (int)$sidebarCounts['notifications'] ?></span><?php endif; ?></a>
             </div>
           <?php endif; ?>
 <?php else: ?>

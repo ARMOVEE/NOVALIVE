@@ -120,6 +120,48 @@ class App {
                     $this->method = 'orders';
                     $this->params = array_slice($url, 2);
                 }
+            } elseif ($seg1 === 'finance') {
+                if ($seg2 === 'withdraw') {
+                    if ($seg3 === 'status' && !empty($url[4])) {
+                        $this->method = 'updateWithdrawalStatus';
+                        $this->params = [$url[4]];
+                    } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                        $this->method = 'withdraw';
+                        $this->params = array_slice($url, 3);
+                    } else {
+                        $this->method = 'finance';
+                        $this->params = array_slice($url, 3);
+                    }
+                } else {
+                    $this->method = 'finance';
+                    $this->params = array_slice($url, 2);
+                }
+            } elseif ($seg1 === 'reports') {
+                $seg4 = $url[4] ?? '';
+                if ($seg2 === 'analytics' || $seg2 === '') {
+                    $this->method = 'analytics';
+                    $this->params = array_slice($url, 3);
+                } elseif ($seg2 === 'logs') {
+                    $this->method = 'activityLogs';
+                    $this->params = array_slice($url, 3);
+                } elseif ($seg2 === 'notifications') {
+                    if ($seg3 === 'read' && $seg4 !== '') {
+                        $this->method = 'markNotificationRead';
+                        $this->params = [$seg4];
+                    } elseif ($seg3 === 'read-all') {
+                        $this->method = 'markAllNotificationsRead';
+                        $this->params = array_slice($url, 4);
+                    } elseif ($seg3 === 'create') {
+                        $this->method = 'createNotification';
+                        $this->params = array_slice($url, 4);
+                    } else {
+                        $this->method = 'notifications';
+                        $this->params = array_slice($url, 3);
+                    }
+                } else {
+                    $this->method = 'analytics';
+                    $this->params = array_slice($url, 2);
+                }
             } else {
                 $this->method = ($seg1 !== '' && method_exists('DashboardController', $seg1)) ? $seg1 : 'index';
                 $this->params = array_slice($url, 2);

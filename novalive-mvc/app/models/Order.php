@@ -298,4 +298,211 @@ class Order extends Model {
             'totalPages'  => (int)ceil($total / $perPage)
         ];
     }
+
+    /**
+     * Pendapatan per bulan (N bulan terakhir) dari orders Terkirim/Selesai
+     */
+    public function getMonthlyRevenue(int $months = 6): array {
+        $result = [];
+        // Buat daftar N bulan terakhir (YYYY-MM)
+        for ($i = $months - 1; $i >= 0; $i--) {
+            $monthKey = date('Y-m', strtotime("-$i month"));
+            $monthLabel = date('M Y', strtotime("-$i month"));
+            $result[$monthKey] = [
+                'key' => $monthKey,
+                'label' => $monthLabel,
+                'total' => 0.0,
+                'orders_count' => 0,
+                'tickets_sold' => 0
+            ];
+        }
+
+        $sql = "
+            SELECT DATE_FORMAT(created_at, '%Y-%m') AS ym,
+                   SUM(total_price) AS total_revenue,
+                   COUNT(id) AS orders_count,
+                   SUM(qty) AS tickets_sold
+            FROM orders
+            WHERE status IN ('Terkirim', 'Selesai')
+              AND created_at >= DATE_SUB(DATE_FORMAT(NOW(), '%Y-%m-01'), INTERVAL :months MONTH)
+            GROUP BY DATE_FORMAT(created_at, '%Y-%m')
+            ORDER BY ym ASC
+        ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':months', $months - 1, PDO::PARAM_INT);
+        $stmt->execute();
+        $rows = $stmt->fetchAll();
+
+        foreach ($rows as $row) {
+            $k = $row['ym'];
+            if (isset($result[$k])) {
+                $result[$k]['total'] = (float)$row['total_revenue'];
+                $result[$k]['orders_count'] = (int)$row['orders_count'];
+                $result[$k]['tickets_sold'] = (int)$row['tickets_sold'];
+            }
+        }
+
+        return array_values($result);
+    }
+
+    /**
+     * Tabel Pendapatan per Event (tiket terjual, pendapatan kotor, refund, pendapatan bersih)
+     */
+    public function getRevenuePerEvent(): array {
+        $sql = "
+            SELECT e.id, e.title, e.code, e.price, e.quota, e.sold,
+                   COALESCE(SUM(CASE WHEN o.status IN ('Terkirim', 'Selesai') THEN o.total_price ELSE 0 END), 0) AS gross_revenue,
+                   COALESCE(SUM(CASE WHEN o.status IN ('Terkirim', 'Selesai') THEN o.qty ELSE 0 END), 0) AS actual_sold,
+                   COALESCE((
+                       SELECT SUM(r.amount) 
+                       FROM refunds r 
+                       JOIN orders o2 ON r.order_id = o2.id 
+                       WHERE o2.event_id = e.id AND r.status = 'Disetujui'
+                   ), 0) AS refund_amount
+            FROM events e
+            LEFT JOIN orders o ON e.id = o.event_id
+            WHERE e.deleted_at IS NULL
+            GROUP BY e.id
+            ORDER BY gross_revenue DESC, e.sold DESC
+        ";
+        $rows = $this->db->query($sql)->fetchAll();
+
+        foreach ($rows as &$r) {
+            $r['gross_revenue'] = (float)$r['gross_revenue'];
+            $r['refund_amount'] = (float)$r['refund_amount'];
+            $r['net_revenue'] = max(0.0, $r['gross_revenue'] - $r['refund_amount']);
+            $r['sold'] = max((int)$r['sold'], (int)$r['actual_sold']);
+        }
+        unset($r);
+
+        return $rows;
+    }
+
+    /**
+     * Analitik: Tiket terjual dan pendapatan per kategori
+     */
+    public function getSalesByCategory(string $startDate = '', string $endDate = ''): array {
+        $where = ["e.deleted_at IS NULL"];
+        $params = [];
+
+        if (!empty($startDate)) {
+            $where[] = "DATE(o.created_at) >= :sdate";
+            $params[':sdate'] = $startDate;
+        }
+        if (!empty($endDate)) {
+            $where[] = "DATE(o.created_at) <= :edate";
+            $params[':edate'] = $endDate;
+        }
+
+        $whereClause = implode(" AND ", $where);
+
+        $sql = "
+            SELECT c.id, c.name, c.color, c.icon,
+                   COALESCE(SUM(CASE WHEN o.status IN ('Terkirim', 'Selesai') THEN o.qty ELSE 0 END), 0) AS tickets_sold,
+                   COALESCE(SUM(CASE WHEN o.status IN ('Terkirim', 'Selesai') THEN o.total_price ELSE 0 END), 0) AS total_revenue
+            FROM categories c
+            LEFT JOIN events e ON c.id = e.category_id AND e.deleted_at IS NULL
+            LEFT JOIN orders o ON e.id = o.event_id AND {$whereClause}
+            WHERE c.deleted_at IS NULL
+            GROUP BY c.id
+            ORDER BY tickets_sold DESC, total_revenue DESC
+        ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Analitik: Tiket terjual dan pendapatan per kota
+     */
+    public function getSalesByCity(string $startDate = '', string $endDate = ''): array {
+        $where = ["e.deleted_at IS NULL"];
+        $params = [];
+
+        if (!empty($startDate)) {
+            $where[] = "DATE(o.created_at) >= :sdate";
+            $params[':sdate'] = $startDate;
+        }
+        if (!empty($endDate)) {
+            $where[] = "DATE(o.created_at) <= :edate";
+            $params[':edate'] = $endDate;
+        }
+
+        $whereClause = implode(" AND ", $where);
+
+        $sql = "
+            SELECT ci.id, ci.name, ci.accent,
+                   COALESCE(SUM(CASE WHEN o.status IN ('Terkirim', 'Selesai') THEN o.qty ELSE 0 END), 0) AS tickets_sold,
+                   COALESCE(SUM(CASE WHEN o.status IN ('Terkirim', 'Selesai') THEN o.total_price ELSE 0 END), 0) AS total_revenue
+            FROM cities ci
+            LEFT JOIN events e ON ci.id = e.city_id AND e.deleted_at IS NULL
+            LEFT JOIN orders o ON e.id = o.event_id AND {$whereClause}
+            WHERE ci.deleted_at IS NULL
+            GROUP BY ci.id
+            ORDER BY tickets_sold DESC, total_revenue DESC
+        ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Analitik: Distribusi status pesanan (Menunggu, Terkirim, Selesai, Dibatalkan)
+     */
+    public function getOrderStatusBreakdown(string $startDate = '', string $endDate = ''): array {
+        $where = ["1=1"];
+        $params = [];
+
+        if (!empty($startDate)) {
+            $where[] = "DATE(created_at) >= :sdate";
+            $params[':sdate'] = $startDate;
+        }
+        if (!empty($endDate)) {
+            $where[] = "DATE(created_at) <= :edate";
+            $params[':edate'] = $endDate;
+        }
+
+        $whereClause = implode(" AND ", $where);
+
+        $sql = "
+            SELECT status, COUNT(id) AS total_count, COALESCE(SUM(total_price), 0) AS total_amount
+            FROM orders
+            WHERE {$whereClause}
+            GROUP BY status
+        ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        $rows = $stmt->fetchAll();
+
+        $statuses = [
+            'Terkirim' => ['count' => 0, 'amount' => 0.0],
+            'Selesai' => ['count' => 0, 'amount' => 0.0],
+            'Menunggu' => ['count' => 0, 'amount' => 0.0],
+            'Dibatalkan' => ['count' => 0, 'amount' => 0.0]
+        ];
+
+        foreach ($rows as $r) {
+            $st = $r['status'];
+            if (isset($statuses[$st])) {
+                $statuses[$st]['count'] = (int)$r['total_count'];
+                $statuses[$st]['amount'] = (float)$r['total_amount'];
+            }
+        }
+
+        return $statuses;
+    }
+
+    /**
+     * Analitik: Tingkat keterisian tiket event (sold / quota)
+     */
+    public function getEventOccupancyRates(): array {
+        $sql = "
+            SELECT id, code, title, quota, sold, price,
+                   CASE WHEN quota > 0 THEN ROUND((sold / quota) * 100, 1) ELSE 0 END AS occupancy_pct
+            FROM events
+            WHERE deleted_at IS NULL
+            ORDER BY occupancy_pct DESC, sold DESC
+        ";
+        return $this->db->query($sql)->fetchAll();
+    }
 }

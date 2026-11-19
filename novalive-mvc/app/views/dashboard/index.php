@@ -526,10 +526,10 @@ if (strlen($userInitials) < 2) $userInitials = 'AD';
             <circle cx="228" cy="74" r="3.4" fill="#15497A" stroke="#fff" stroke-width="1.6"/>
           </svg>
           <div class="saldo-actions">
-            <button class="btn-navy js-soon" id="tarikBtn" data-feature="Tarik Dana" type="button">
+            <a href="<?= base_url('dashboard/finance#withdraw') ?>" class="btn-navy" id="tarikBtn">
               Tarik Dana
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-            </button>
+            </a>
             <button class="btn-ghost js-soon" id="terimaBtn" data-feature="Terima Dana" type="button">
               Terima
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>

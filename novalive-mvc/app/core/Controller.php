@@ -36,6 +36,13 @@ abstract class Controller {
     }
 
     /**
+     * Memvalidasi CSRF token pada controller
+     */
+    protected function validateCsrf(): void {
+        Security::requireCsrf();
+    }
+
+    /**
      * Memuat objek Model
      */
     public function model(string $model): Model {

@@ -17,6 +17,12 @@ require_once __DIR__ . '/../app/core/Upload.php';
 require_once __DIR__ . '/../app/core/Logger.php';
 require_once __DIR__ . '/../app/models/Category.php';
 require_once __DIR__ . '/../app/models/City.php';
+require_once __DIR__ . '/../app/models/Event.php';
+require_once __DIR__ . '/../app/models/Order.php';
+require_once __DIR__ . '/../app/models/Refund.php';
+require_once __DIR__ . '/../app/models/Withdrawal.php';
+require_once __DIR__ . '/../app/models/Notification.php';
+require_once __DIR__ . '/../app/models/ActivityLog.php';
 
 // Pastikan sesi aktif untuk pengujian keamanan
 Security::startSession();
@@ -135,6 +141,55 @@ it("Tahap 2 Refund: countPending() menghitung pengajuan refund berstatus 'Diajuk
 $eventModel = new Event();
 $upcoming = $eventModel->upcoming(5);
 it("Tahap 2 Event: upcoming() mengembalikan event mendatang terurut tanggal", is_array($upcoming) && count($upcoming) <= 5);
+
+// ==========================================
+// PENGUJIAN TAHAP 3: KEUANGAN & LAPORAN
+// ==========================================
+
+// 41. Skema Database: Tabel withdrawals
+$hasWithdrawalsTable = !empty($db->query("SHOW TABLES LIKE 'withdrawals'")->fetchAll());
+it("Tahap 3 Skema: Tabel withdrawals tersedia di database", $hasWithdrawalsTable);
+
+// 42. Skema Database: Tabel notifications
+$hasNotifTable = !empty($db->query("SHOW TABLES LIKE 'notifications'")->fetchAll());
+it("Tahap 3 Skema: Tabel notifications tersedia di database", $hasNotifTable);
+
+// 43. Model Withdrawal: getAvailableBalance & getGrossRevenue
+$wModel = new Withdrawal();
+$avail = $wModel->getAvailableBalance();
+$gross = $wModel->getGrossRevenue();
+it("Tahap 3 Keuangan: getAvailableBalance() mengembalikan nilai non-negatif float", is_float($avail) && $avail >= 0.0);
+
+// 44. Model Withdrawal: Biaya Layanan 5%
+$fee = $wModel->getServiceFee();
+$expectedFee = round($gross * 0.05, 2);
+it("Tahap 3 Keuangan: getServiceFee() menghitung tepat 5% dari pendapatan kotor", abs($fee - $expectedFee) < 0.01);
+
+// 45. Model Order: getMonthlyRevenue (6 bulan)
+$monthlyRev = $orderModel->getMonthlyRevenue(6);
+it("Tahap 3 Keuangan: getMonthlyRevenue() mengembalikan data 6 bulan terstruktur", count($monthlyRev) === 6 && isset($monthlyRev[0]['label']));
+
+// 46. Model Order: getRevenuePerEvent
+$revPerEvent = $orderModel->getRevenuePerEvent();
+it("Tahap 3 Keuangan: getRevenuePerEvent() memuat rincian kotor, refund, dan bersih", is_array($revPerEvent) && (!empty($revPerEvent) ? isset($revPerEvent[0]['net_revenue']) : true));
+
+// 47. Model Notification: latest (5 item)
+$notifModel = new Notification();
+$latestNotifs = $notifModel->latest(5);
+it("Tahap 3 Notifikasi: latest() mengembalikan daftar notifikasi terbaru", is_array($latestNotifs) && count($latestNotifs) <= 5);
+
+// 48. Model Notification: unreadCount
+$unreadCount = $notifModel->unreadCount();
+it("Tahap 3 Notifikasi: unreadCount() menghitung notifikasi belum dibaca", is_int($unreadCount) && $unreadCount >= 0);
+
+// 49. Model Notification: checkAndCreateStockAlerts
+$stockAlerts = $notifModel->checkAndCreateStockAlerts();
+it("Tahap 3 Notifikasi: checkAndCreateStockAlerts() berjalan tanpa error", is_int($stockAlerts) && $stockAlerts >= 0);
+
+// 50. Model ActivityLog: paginate dengan filter
+$logModel = new ActivityLog();
+$logs = $logModel->paginate(1, 20, ['search' => 'test']);
+it("Tahap 3 Log: paginate() mendukung filter kustom dan struktur paginasi 20 item", isset($logs['data']) && $logs['perPage'] === 20);
 
 echo "=======================================================\n";
 echo sprintf("HASIL PENGUJIAN: Lulus: %d | Gagal: %d\n", $passed, $failed);

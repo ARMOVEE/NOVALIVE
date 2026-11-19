@@ -45,6 +45,42 @@ abstract class Model {
     }
 
     /**
+     * Menyimpan record baru ke tabel
+     */
+    public function create(array $data): int {
+        $fields = array_keys($data);
+        $columns = implode(', ', $fields);
+        $placeholders = ':' . implode(', :', $fields);
+
+        $sql = "INSERT INTO {$this->table} ({$columns}) VALUES ({$placeholders})";
+        $stmt = $this->db->prepare($sql);
+
+        $params = [];
+        foreach ($data as $key => $val) {
+            $params[':' . $key] = $val;
+        }
+        $stmt->execute($params);
+        return (int)$this->db->lastInsertId();
+    }
+
+    /**
+     * Memperbarui record berdasarkan primary key
+     */
+    public function update($id, array $data): bool {
+        $setClauses = [];
+        $params = [':id' => $id];
+
+        foreach ($data as $key => $val) {
+            $setClauses[] = "{$key} = :{$key}";
+            $params[':' . $key] = $val;
+        }
+
+        $sql = "UPDATE {$this->table} SET " . implode(', ', $setClauses) . " WHERE {$this->primaryKey} = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute($params);
+    }
+
+    /**
      * Menghapus record secara soft delete
      */
     public function delete($id): bool {

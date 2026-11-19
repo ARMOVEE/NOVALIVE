@@ -120,6 +120,13 @@ function post_input(string $key, $default = null) {
 }
 
 /**
+ * Alias untuk post_input
+ */
+function post_data(string $key, $default = null) {
+    return post_input($key, $default);
+}
+
+/**
  * Mengambil data umum yang dibagi ke tampilan (pengguna login, flash message)
  */
 function view_shared_data(): array {
