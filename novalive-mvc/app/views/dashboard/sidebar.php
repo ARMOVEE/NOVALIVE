@@ -69,10 +69,10 @@ if (empty($shellFooter)):
 
         <nav class="topnav" aria-label="Navigasi utama">
           <a href="<?= base_url('dashboard') ?>" class="<?= ($activeNav ?? '') === 'ringkasan' ? 'active' : '' ?>">Dashboard</a>
-          <a href="<?= base_url('dashboard/reports') ?>" class="<?= ($activeNav ?? '') === 'reports' ? 'active' : '' ?>">Laporan</a>
+          <button type="button" class="js-soon" data-feature="Laporan">Laporan</button>
           <a href="<?= base_url('dashboard/orders/tickets') ?>" class="<?= ($activeNav ?? '') === 'tickets' ? 'active' : '' ?>">Dokumen</a>
-          <a href="<?= base_url('dashboard/reports/logs') ?>" class="<?= ($activeNav ?? '') === 'logs' ? 'active' : '' ?>">Riwayat</a>
-          <a href="<?= base_url('dashboard/settings') ?>" class="<?= ($activeNav ?? '') === 'settings' ? 'active' : '' ?>">Kontak</a>
+          <a href="<?= base_url('dashboard/orders') ?>" class="<?= ($activeNav ?? '') === 'orders' ? 'active' : '' ?>">Riwayat</a>
+          <button type="button" class="js-soon" data-feature="Kontak">Kontak</button>
         </nav>
 
         <div class="top-actions">
@@ -86,10 +86,10 @@ if (empty($shellFooter)):
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9a6 6 0 1 0-12 0c0 6-2.5 7-2.5 7h17S18 15 18 9"/><path d="M10 20a2.2 2.2 0 0 0 4 0"/></svg>
             <span class="dot" aria-hidden="true"></span>
           </button>
-          <a class="avatar-btn" href="<?= base_url('dashboard/settings') ?>" id="avatarBtn" aria-label="Profil penyelenggara — Pengaturan" title="Pengaturan — Profil Penyelenggara">
+          <button class="avatar-btn js-soon" type="button" id="avatarBtn" data-feature="Pengaturan Profil" aria-label="Profil penyelenggara — Pengaturan" title="Pengaturan — Profil Penyelenggara">
             <span class="avatar" id="topAvatar" aria-hidden="true"><?= e($userInitials) ?></span>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5B6B78" stroke-width="2.4" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
-          </a>
+          </button>
         </div>
 
         <div class="pop" id="bellPop" role="dialog" aria-label="Notifikasi">
@@ -133,41 +133,43 @@ if (empty($shellFooter)):
         </div>
       </div>
 
-      <!-- Link shared Dashboard Views CSS -->
-      <link rel="stylesheet" href="<?= base_url('assets/css/dashboard-views.css') ?>" />
-
-      <!-- Shared Tabs Styling, Centered Topbar, & Full-Width Frame Override -->
+      <!-- Shared Tabs Styling & Desktop 1680px Layout Override -->
       <style>
-        html,body{margin:0!important;padding:0!important;background:var(--panel)!important}
+        html,body{margin:0!important;padding:0!important}
+        body{background:var(--page)!important;padding:22px 18px 30px!important}
         .frame{
-          width:100%!important;max-width:none!important;margin:0!important;
-          border-radius:0!important;box-shadow:none!important;border:none!important;
-          padding:16px 20px 24px!important;box-sizing:border-box!important;
+          max-width:1680px!important;margin:0 auto!important;
+          background:var(--panel)!important;
+          border-radius:30px!important;
+          padding:20px 32px 26px!important;
+          box-shadow:0 24px 60px rgba(14,50,84,.10)!important;
+          box-sizing:border-box!important;
         }
-        @media (max-width:640px){
-          .frame{padding:10px 10px 16px!important}
-        }
-        /* True Center Topbar Navigation */
         .topbar{
-          position:relative!important;
-          display:flex!important;
-          align-items:center!important;
-          justify-content:space-between!important;
-        }
-        .topnav{
-          position:absolute!important;
-          left:50%!important;
-          transform:translateX(-50%)!important;
-          display:flex!important;
-          gap:4px!important;
-          background:#F1F3F4!important;
+          display:grid!important;grid-template-columns:1fr auto 1fr!important;align-items:center!important;gap:18px!important;
+          background:var(--card)!important;
           border-radius:999px!important;
-          padding:4px!important;
-          z-index:2!important;
-          margin:0!important;
+          padding:10px 12px 10px 20px!important;
+          box-shadow:var(--shadow)!important;
+          position:relative!important;z-index:30!important;
+        }
+        .logo{display:flex!important;align-items:center!important;gap:9px!important;text-decoration:none!important;color:var(--navy)!important;flex:none!important;justify-self:start!important}
+        .topnav{
+          display:flex!important;gap:4px!important;margin:0!important;justify-self:center!important;
+          background:#F1F3F4!important;border-radius:999px!important;padding:4px!important;
+        }
+        .top-actions{display:flex!important;align-items:center!important;gap:6px!important;flex:none!important;justify-self:end!important;margin-left:0!important}
+        @media (max-width:1120px){
+          .topbar{display:flex!important}
+          .topnav{margin:0 auto!important}
+          .top-actions{margin-left:auto!important}
         }
         @media (max-width:820px){
           .topnav{display:none!important}
+          .frame{padding:16px 18px 20px!important}
+        }
+        @media (max-width:640px){
+          .frame{padding:12px 12px 16px!important;border-radius:22px!important}
         }
         .tabs{
           display:flex;gap:2px;background:#F1F3F4;border-radius:999px;padding:4px;
@@ -211,29 +213,29 @@ if (empty($shellFooter)):
           </a>
 
           <!-- 4. Keuangan -->
-          <a href="<?= base_url('dashboard/finance') ?>" class="<?= (($activeNav ?? '') === 'finance' || ($activeMenu ?? '') === 'keuangan') ? 'active' : '' ?>" data-tip="Keuangan" aria-label="Keuangan" title="Keuangan">
+          <button type="button" class="js-soon" data-feature="Keuangan" data-tip="Keuangan" aria-label="Keuangan" title="Keuangan">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10.5h18M7 15h4"/></svg>
-          </a>
+          </button>
 
           <!-- 5. Homepage -->
-          <a href="<?= base_url('dashboard/homepage') ?>" class="<?= (in_array($activeNav ?? '', ['homepage', 'banner', 'tampilan']) || ($activeMenu ?? '') === 'homepage') ? 'active' : '' ?>" data-tip="Homepage" aria-label="Homepage" title="Homepage">
+          <button type="button" class="js-soon" data-feature="Homepage" data-tip="Homepage" aria-label="Homepage" title="Homepage">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 4v5.5"/></svg>
-          </a>
+          </button>
 
           <!-- 6. Laporan -->
-          <a href="<?= base_url('dashboard/reports') ?>" class="<?= (in_array($activeNav ?? '', ['reports', 'logs', 'notifications']) || ($activeMenu ?? '') === 'laporan') ? 'active' : '' ?>" data-tip="Laporan" aria-label="Laporan" title="Laporan">
+          <button type="button" class="js-soon" data-feature="Laporan" data-tip="Laporan" aria-label="Laporan" title="Laporan">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M5 20v-6M11 20V6M17 20v-9"/><path d="M3 20h18"/></svg>
-          </a>
+          </button>
 
           <!-- 7. Promosi -->
-          <a href="<?= base_url('dashboard/promotions') ?>" class="<?= (($activeNav ?? '') === 'promotions' || ($activeMenu ?? '') === 'promosi') ? 'active' : '' ?>" data-tip="Promosi" aria-label="Promosi" title="Promosi">
+          <button type="button" class="js-soon" data-feature="Promosi" data-tip="Promosi" aria-label="Promosi" title="Promosi">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M3 11V7a2 2 0 0 1 2-2h4l9 9-4 4-9-9z"/><circle cx="8" cy="9" r="1.4"/></svg>
-          </a>
+          </button>
 
           <!-- 8. Pengaturan -->
-          <a href="<?= base_url('dashboard/settings') ?>" class="<?= (($activeNav ?? '') === 'settings' || ($activeMenu ?? '') === 'pengaturan') ? 'active' : '' ?>" data-tip="Pengaturan" aria-label="Pengaturan" title="Pengaturan">
+          <button type="button" class="js-soon" data-feature="Pengaturan" data-tip="Pengaturan" aria-label="Pengaturan" title="Pengaturan">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19 12a7 7 0 0 0-.14-1.4l2-1.55-2-3.46-2.36.95a7 7 0 0 0-2.42-1.4L13.7 2.6h-3.4l-.38 2.54a7 7 0 0 0-2.42 1.4l-2.36-.95-2 3.46 2 1.55a7 7 0 0 0 0 2.8l-2 1.55 2 3.46 2.36-.95a7 7 0 0 0 2.42 1.4l.38 2.54h3.4l.38-2.54a7 7 0 0 0 2.42-1.4l2.36.95 2-3.46-2-1.55c.1-.45.14-.92.14-1.4z"/></svg>
-          </a>
+          </button>
 
           <span class="spacer"></span>
 
@@ -261,17 +263,6 @@ if (empty($shellFooter)):
               <a href="<?= base_url('dashboard/orders/checkin') ?>" class="<?= ($activeTab ?? '') === 'checkin' ? 'active' : '' ?>" role="tab">Check-in</a>
               <a href="<?= base_url('dashboard/orders/refunds') ?>" class="<?= ($activeTab ?? '') === 'refund' ? 'active' : '' ?>" role="tab">Refund <span class="tab-badge" id="navRefundCount"><?= (int)($sidebarCounts['refund'] ?? 2) ?></span></a>
               <a href="<?= base_url('dashboard/orders/tickets') ?>" class="<?= ($activeTab ?? '') === 'etiket' ? 'active' : '' ?>" role="tab">E-Tiket</a>
-            </div>
-          <?php elseif (($activeMenu ?? '') === 'homepage'): ?>
-            <div class="tabs" role="tablist" aria-label="Tab menu">
-              <a href="<?= base_url('dashboard/homepage') ?>" class="<?= ($activeTab ?? 'banner') === 'banner' ? 'active' : '' ?>" role="tab">Banner</a>
-              <a href="<?= base_url('dashboard/homepage/display') ?>" class="<?= ($activeTab ?? '') === 'tampilan' ? 'active' : '' ?>" role="tab">Tampilan Homepage</a>
-            </div>
-          <?php elseif (($activeMenu ?? '') === 'laporan'): ?>
-            <div class="tabs" role="tablist" aria-label="Tab menu">
-              <a href="<?= base_url('dashboard/reports') ?>" class="<?= ($activeTab ?? 'analitik') === 'analitik' ? 'active' : '' ?>" role="tab">Analitik</a>
-              <a href="<?= base_url('dashboard/reports/logs') ?>" class="<?= ($activeTab ?? '') === 'logs' ? 'active' : '' ?>" role="tab">Log Aktivitas</a>
-              <a href="<?= base_url('dashboard/reports/notifications') ?>" class="<?= ($activeTab ?? '') === 'notifikasi' ? 'active' : '' ?>" role="tab">Notifikasi</a>
             </div>
           <?php endif; ?>
 <?php else: ?>

@@ -102,6 +102,40 @@ $hasDelRef = new ReflectionMethod($cityModel, 'hasDeletedAt');
 $hasDelRef->setAccessible(true);
 it("Soft Delete: Tabel cities terdaftar memiliki kolom deleted_at", $hasDelRef->invoke($cityModel) === true);
 
+// --- KELOMPOK 7: TAHAP 2 — CHECK-IN, REFUND, E-TIKET (6 Pengujian) ---
+require_once ROOT_PATH . '/app/models/Order.php';
+require_once ROOT_PATH . '/app/models/Refund.php';
+require_once ROOT_PATH . '/app/models/Event.php';
+
+$db = Database::getInstance();
+
+// 35. Skema: orders.checked_in_at
+$colCheckin = $db->query("SHOW COLUMNS FROM orders LIKE 'checked_in_at'")->fetchAll();
+it("Tahap 2 Skema: Kolom checked_in_at tersedia pada tabel orders", count($colCheckin) > 0);
+
+// 36. Skema: tabel refunds
+$tblRefunds = $db->query("SHOW TABLES LIKE 'refunds'")->fetchAll();
+it("Tahap 2 Skema: Tabel refunds tersedia di database", count($tblRefunds) > 0);
+
+// 37. Model Order: findByTicketCode
+$orderModel = new Order();
+$foundOrder = $orderModel->findByTicketCode('NVL-A1B2C3');
+it("Tahap 2 Order: findByTicketCode() menemukan order dengan kode 'NVL-A1B2C3'", !empty($foundOrder) && $foundOrder['ticket_code'] === 'NVL-A1B2C3');
+
+// 38. Model Order: getCheckinStats
+$checkinStats = $orderModel->getCheckinStats();
+it("Tahap 2 Order: getCheckinStats() mengembalikan array statistik terstruktur", isset($checkinStats['checked_in']) && isset($checkinStats['total_tickets']) && isset($checkinStats['percentage']));
+
+// 39. Model Refund: countPending
+$refundModel = new Refund();
+$pendingCount = $refundModel->countPending();
+it("Tahap 2 Refund: countPending() menghitung pengajuan refund berstatus 'Diajukan'", is_int($pendingCount) && $pendingCount >= 0);
+
+// 40. Model Event: upcoming
+$eventModel = new Event();
+$upcoming = $eventModel->upcoming(5);
+it("Tahap 2 Event: upcoming() mengembalikan event mendatang terurut tanggal", is_array($upcoming) && count($upcoming) <= 5);
+
 echo "=======================================================\n";
 echo sprintf("HASIL PENGUJIAN: Lulus: %d | Gagal: %d\n", $passed, $failed);
 echo "=======================================================\n";

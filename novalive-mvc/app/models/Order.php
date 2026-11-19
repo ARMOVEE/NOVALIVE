@@ -160,4 +160,142 @@ class Order extends Model {
             ':status' => $status
         ]);
     }
+
+    /**
+     * Cari pesanan berdasarkan kode tiket (NVL-...)
+     */
+    public function findByTicketCode(string $code): ?array {
+        $sql = "
+            SELECT o.*, 
+                   e.id AS event_id, e.title AS event_title, e.code AS event_code, 
+                   e.event_date, e.venue, e.price AS unit_price
+            FROM orders o
+            JOIN events e ON o.event_id = e.id
+            WHERE o.ticket_code = :code
+            LIMIT 1
+        ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':code' => trim($code)]);
+        $res = $stmt->fetch();
+        return $res ?: null;
+    }
+
+    /**
+     * Tandai pesanan sudah check-in
+     */
+    public function markCheckedIn(int $id): bool {
+        $stmt = $this->db->prepare("UPDATE orders SET checked_in_at = NOW() WHERE id = :id");
+        return $stmt->execute([':id' => $id]);
+    }
+
+    /**
+     * Ambil riwayat check-in hari ini
+     */
+    public function getTodayCheckins(int $eventId = 0): array {
+        $sql = "
+            SELECT o.*, 
+                   e.title AS event_title, e.event_date, e.venue
+            FROM orders o
+            JOIN events e ON o.event_id = e.id
+            WHERE o.checked_in_at IS NOT NULL
+              AND DATE(o.checked_in_at) = CURDATE()
+        ";
+        $params = [];
+        if ($eventId > 0) {
+            $sql .= " AND o.event_id = :eventId";
+            $params[':eventId'] = $eventId;
+        }
+        $sql .= " ORDER BY o.checked_in_at DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Statistik check-in tiket per event atau keseluruhan
+     */
+    public function getCheckinStats(int $eventId = 0): array {
+        $sql = "
+            SELECT 
+                COALESCE(SUM(CASE WHEN checked_in_at IS NOT NULL THEN qty ELSE 0 END), 0) AS checked_in,
+                COALESCE(SUM(qty), 0) AS total_tickets
+            FROM orders
+            WHERE status IN ('Terkirim', 'Selesai')
+        ";
+        $params = [];
+        if ($eventId > 0) {
+            $sql .= " AND event_id = :eventId";
+            $params[':eventId'] = $eventId;
+        }
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        $row = $stmt->fetch() ?: ['checked_in' => 0, 'total_tickets' => 0];
+        $checkedIn = (int)$row['checked_in'];
+        $total = (int)$row['total_tickets'];
+        $percentage = $total > 0 ? round(($checkedIn / $total) * 100, 1) : 0;
+        return [
+            'checked_in'    => $checkedIn,
+            'total_tickets' => $total,
+            'percentage'    => $percentage
+        ];
+    }
+
+    /**
+     * Daftar pesanan yang memiliki e-tiket (status Terkirim / Selesai)
+     */
+    public function tickets(array $filters = [], int $page = 1, int $perPage = 15): array {
+        $page = max(1, $page);
+        $perPage = max(1, min(100, $perPage));
+        $offset = ($page - 1) * $perPage;
+
+        $conditions = [
+            "o.ticket_code IS NOT NULL",
+            "o.ticket_code != ''",
+            "o.status IN ('Terkirim', 'Selesai')"
+        ];
+        $params = [];
+
+        if (!empty($filters['search'])) {
+            $conditions[] = "(o.invoice LIKE :search OR o.buyer_name LIKE :search OR o.buyer_email LIKE :search OR o.ticket_code LIKE :search OR e.title LIKE :search)";
+            $params[':search'] = '%' . trim($filters['search']) . '%';
+        }
+
+        if (!empty($filters['event_id'])) {
+            $conditions[] = "o.event_id = :event_id";
+            $params[':event_id'] = (int)$filters['event_id'];
+        }
+
+        $whereClause = implode(" AND ", $conditions);
+
+        $countSql = "
+            SELECT COUNT(o.id)
+            FROM orders o
+            JOIN events e ON o.event_id = e.id
+            WHERE {$whereClause}
+        ";
+        $countStmt = $this->db->prepare($countSql);
+        $countStmt->execute($params);
+        $total = (int)$countStmt->fetchColumn();
+
+        $dataSql = "
+            SELECT o.*, 
+                   e.title AS event_title, e.code AS event_code, e.event_date, e.venue
+            FROM orders o
+            JOIN events e ON o.event_id = e.id
+            WHERE {$whereClause}
+            ORDER BY o.id DESC
+            LIMIT {$perPage} OFFSET {$offset}
+        ";
+        $dataStmt = $this->db->prepare($dataSql);
+        $dataStmt->execute($params);
+        $data = $dataStmt->fetchAll();
+
+        return [
+            'data'        => $data,
+            'total'       => $total,
+            'perPage'     => $perPage,
+            'currentPage' => $page,
+            'totalPages'  => (int)ceil($total / $perPage)
+        ];
+    }
 }

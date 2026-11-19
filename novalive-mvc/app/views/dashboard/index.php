@@ -49,53 +49,48 @@ if (strlen($userInitials) < 2) $userInitials = 'AD';
     html,body{margin:0;padding:0}
     body{
       font-family:'Inter',system-ui,sans-serif;
-      background:var(--panel);
+      background:var(--page);
       color:var(--ink);
       -webkit-font-smoothing:antialiased;
       min-height:100vh;
-      margin:0;
-      padding:0;
+      padding:22px 18px 30px;
+      box-sizing:border-box;
     }
     h1,h2,h3,.pj{font-family:'Plus Jakarta Sans','Inter',sans-serif}
     button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
     a{text-decoration:none;color:inherit}
     .frame{
-      width:100%;
-      max-width:none;
-      margin:0;
+      max-width:1680px;
+      margin:0 auto;
       background:var(--panel);
-      border-radius:0;
-      padding:16px 20px 24px;
-      box-shadow:none;
-      border:none;
+      border-radius:30px;
+      padding:20px 32px 26px;
+      box-shadow:0 24px 60px rgba(14,50,84,.10);
+      box-sizing:border-box;
     }
 
     /* ---------- Top bar ---------- */
     .topbar{
-      display:flex;align-items:center;justify-content:space-between;
+      display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:18px;
       background:var(--card);
       border-radius:999px;
       padding:10px 12px 10px 20px;
       box-shadow:var(--shadow);
       position:relative;z-index:30;
     }
-    .logo{display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--navy);flex:none}
+    .logo{display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--navy);flex:none;justify-self:start}
     .logo svg{display:block}
     .logo-ticket{height:40px;width:auto;overflow:visible;cursor:pointer;flex:none}
     .logo-word{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:19px;letter-spacing:.2px;color:var(--navy);white-space:nowrap}
     .logo-word em{font-style:normal;color:var(--gold-deep)}
-    .topnav{
-      position:absolute;left:50%;transform:translateX(-50%);
-      display:flex;gap:4px;margin:0;background:#F1F3F4;border-radius:999px;padding:4px;
-      z-index:2;
-    }
+    .topnav{display:flex;gap:4px;margin:0;justify-self:center;background:#F1F3F4;border-radius:999px;padding:4px}
     .topnav a, .topnav button{
       padding:8px 18px;border-radius:999px;font-size:13.5px;font-weight:600;color:#5B6B78;min-height:36px;
       transition:background .15s,color .15s;text-decoration:none;display:inline-flex;align-items:center;
     }
     .topnav a:hover, .topnav button:hover{color:var(--navy)}
     .topnav a.active, .topnav button.active{background:var(--card);color:var(--navy);box-shadow:0 2px 8px rgba(14,50,84,.10)}
-    .top-actions{display:flex;align-items:center;gap:6px;flex:none;margin-left:auto}
+    .top-actions{display:flex;align-items:center;gap:6px;flex:none;justify-self:end;margin-left:0}
     .icon-btn{
       width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--navy);
       position:relative;transition:background .15s;flex:none;
@@ -192,14 +187,34 @@ if (strlen($userInitials) < 2) $userInitials = 'AD';
     .view{display:block;animation:viewIn .25s ease}
     @keyframes viewIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
     .grid{
-      display:grid;gap:18px;
-      grid-template-columns:296px minmax(0,1fr) 296px;
-      grid-template-areas:"left chart right" "history history right";
+      display:grid;gap:18px;align-items:stretch;
+      grid-template-columns:340px minmax(0,1fr) 340px;
+      grid-template-areas:"ticket chart saldo" "kpi kpi kpi" "history history side";
     }
-    .col-left{grid-area:left;display:flex;flex-direction:column;gap:18px;min-width:0}
-    .col-right{grid-area:right;display:flex;flex-direction:column;gap:18px;min-width:0}
-    .chart-card{grid-area:chart}
+    .grid>.card{min-width:0;height:100%}
+    .ticket-card{grid-area:ticket;display:flex;flex-direction:column}
+    .ticket-card .ticket{margin-bottom:16px}
+    .ticket-card .weekly{margin-top:auto}
+    .chart-card{grid-area:chart;display:flex;flex-direction:column}
+    .chart-card .chart-area{flex:1;min-height:250px}
+    .chart-card .chart-foot{margin-top:auto;padding-top:14px}
+    .saldo-card{grid-area:saldo;display:flex;flex-direction:column}
+    .saldo-card .saldo-actions{margin-top:auto;padding-top:12px}
     .history-card{grid-area:history}
+    .side-card{grid-area:side;display:flex;flex-direction:column}
+    .side-card .sub-card{margin-top:auto}
+    .kpi-strip{grid-area:kpi;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;align-items:stretch}
+    .kpi-mini{
+      background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+      padding:16px 18px;display:flex;flex-direction:column;gap:12px;height:100%;min-width:0;
+    }
+    .kpi-mini-head{display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:600;color:var(--muted)}
+    .kpi-mini-row{display:flex;align-items:flex-end;gap:10px;margin-top:auto}
+    .kpi-mini-val{font-family:'Plus Jakarta Sans',sans-serif;font-size:24px;font-weight:800;color:var(--ink);line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .kpi-badge{margin-left:auto;font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap;flex:none}
+    .kpi-badge.up{background:var(--green-bg);color:var(--green)}
+    .kpi-badge.down{background:var(--red-bg);color:var(--red)}
+    .row4{margin-top:18px}
     .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
     .card-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
     .card-head .h-ico{
@@ -352,17 +367,20 @@ if (strlen($userInitials) < 2) $userInitials = 'AD';
 
     /* ---------- Responsive ---------- */
     @media (max-width:1120px){
-      .grid{grid-template-columns:270px minmax(0,1fr);grid-template-areas:"left chart" "right right" "history history"}
-      .col-right{flex-direction:row}
-      .col-right>.card{flex:1}
+      .topbar{display:flex}
+      .topnav{margin:0 auto}
+      .top-actions{margin-left:auto}
+      .grid{grid-template-columns:290px minmax(0,1fr);grid-template-areas:"ticket chart" "kpi kpi" "saldo side" "history history"}
+      .kpi-strip{grid-template-columns:repeat(2,minmax(0,1fr))}
     }
     @media (max-width:900px){
       .grid-2{grid-template-columns:1fr}
     }
     @media (max-width:820px){
       .topnav{display:none}
-      .grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"left" "chart" "right" "history"}
-      .col-right{flex-direction:column}
+      .frame{padding:16px 18px 20px}
+      .grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"ticket" "chart" "kpi" "saldo" "history" "side"}
+      .kpi-strip{grid-template-columns:repeat(2,minmax(0,1fr))}
       .layout{flex-direction:column}
       .rail{
         flex-direction:row;flex-wrap:wrap;width:100%;border-radius:22px;padding:10px 12px;
@@ -374,8 +392,9 @@ if (strlen($userInitials) < 2) $userInitials = 'AD';
       #railTip{display:none}
     }
     @media (max-width:640px){
-      body{padding:0}
-      .frame{padding:10px 10px 16px;border-radius:0}
+      .kpi-strip{grid-template-columns:minmax(0,1fr)}
+      body{padding:12px 8px 20px}
+      .frame{padding:12px 12px 16px;border-radius:22px}
       .topbar{padding:8px 8px 8px 14px}
       .logo-ticket{height:34px}
       .logo-word{font-size:17px}
@@ -415,46 +434,44 @@ if (strlen($userInitials) < 2) $userInitials = 'AD';
     <section class="view active" id="view-ringkasan" aria-label="Ringkasan">
       <div class="grid">
 
-        <!-- LEFT: ticket card + weekly -->
-        <div class="col-left">
-          <section class="card" aria-labelledby="targetTitle">
-            <div class="card-head">
+        <!-- 1. TICKET CARD: Target Penjualan -->
+        <section class="card ticket-card" aria-labelledby="targetTitle">
+          <div class="card-head">
+            <div>
+              <h2 id="targetTitle">Target Penjualan</h2>
+              <p>Total target penjualan tiket</p>
+            </div>
+            <button class="expand-btn js-soon" type="button" data-feature="Keuangan" aria-label="Lihat detail keuangan">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
+            </button>
+          </div>
+
+          <div class="ticket">
+            <div class="ticket-top">
               <div>
-                <h2 id="targetTitle">Target Penjualan</h2>
-                <p>Total target penjualan tiket</p>
+                <div class="ticket-brand">NOVA <em>LIVE</em></div>
+                <div class="ticket-sub">KARTU TIKET EVENT</div>
               </div>
-              <button class="expand-btn js-soon" type="button" data-feature="Keuangan" aria-label="Lihat detail keuangan">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
-              </button>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#EAD4A2" stroke-width="2" stroke-linecap="round"><path d="M6 9a9 9 0 0 1 0 6M9.5 6.5a13 13 0 0 1 0 11M13 4a17 17 0 0 1 0 16" transform="rotate(90 12 12)"/></svg>
             </div>
-
-            <div class="ticket">
-              <div class="ticket-top">
-                <div>
-                  <div class="ticket-brand">NOVA <em>LIVE</em></div>
-                  <div class="ticket-sub">KARTU TIKET EVENT</div>
-                </div>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#EAD4A2" stroke-width="2" stroke-linecap="round"><path d="M6 9a9 9 0 0 1 0 6M9.5 6.5a13 13 0 0 1 0 11M13 4a17 17 0 0 1 0 16" transform="rotate(90 12 12)"/></svg>
-              </div>
-              <div class="ticket-amount"><small>TOTAL PENDAPATAN</small><?= rupiah($totalRevenue) ?></div>
-              <div class="ticket-meta">
-                <span class="num">•••• 9090</span>
-                <span class="exp"><span>BERLAKU S.D.</span>09/26</span>
-              </div>
-              <div class="perf" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="ticket-amount"><small>TOTAL PENDAPATAN</small><?= rupiah($totalRevenue) ?></div>
+            <div class="ticket-meta">
+              <span class="num">•••• 9090</span>
+              <span class="exp"><span>BERLAKU S.D.</span>09/26</span>
             </div>
+            <div class="perf" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
 
-            <div class="weekly">
-              <div>
-                <p>Tiket Terjual</p>
-                <strong><?= number_format($totalSold, 0, ',', '.') ?></strong>
-              </div>
-              <span class="badge-pct">+2,8%</span>
+          <div class="weekly">
+            <div>
+              <p>Tiket Terjual</p>
+              <strong><?= number_format($totalSold, 0, ',', '.') ?></strong>
             </div>
-          </section>
-        </div>
+            <span class="badge-pct">+2,8%</span>
+          </div>
+        </section>
 
-        <!-- CENTER: bar chart -->
+        <!-- 2. CHART CARD: Penjualan Tiket -->
         <section class="card chart-card" aria-labelledby="chartTitle">
           <div class="card-head">
             <span class="h-ico">
@@ -483,78 +500,88 @@ if (strlen($userInitials) < 2) $userInitials = 'AD';
           <p class="chart-foot" id="chartFoot"></p>
         </section>
 
-        <!-- RIGHT: saldo + pendapatan -->
-        <div class="col-right">
-          <section class="card" aria-labelledby="saldoTitle">
-            <div class="card-head">
-              <div>
-                <h2 id="saldoTitle">Saldo Penyelenggara</h2>
-                <p>Total saldo akun penjual</p>
-              </div>
-              <button class="expand-btn js-soon" type="button" data-feature="Keuangan" aria-label="Lihat detail saldo">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
-              </button>
+        <!-- 3. SALDO CARD: Saldo Penyelenggara -->
+        <section class="card saldo-card" aria-labelledby="saldoTitle">
+          <div class="card-head">
+            <div>
+              <h2 id="saldoTitle">Saldo Penyelenggara</h2>
+              <p>Total saldo akun penjual</p>
             </div>
-            <p class="saldo-label">Total Saldo</p>
-            <p class="saldo-amount"><?= rupiah($totalRevenue) ?></p>
-            <svg class="area-chart" viewBox="0 0 300 96" role="img" aria-label="Grafik area pergerakan saldo yang bergerak naik turun dan berakhir menguat">
-              <defs>
-                <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#23649A" stop-opacity=".28"/>
-                  <stop offset="100%" stop-color="#23649A" stop-opacity=".02"/>
-                </linearGradient>
-              </defs>
-              <path d="M2 62 C 22 60, 30 34, 48 30 C 66 26, 74 52, 92 54 C 110 56, 118 22, 138 20 C 158 18, 166 46, 184 50 C 202 54, 210 74, 228 74 C 246 74, 254 44, 272 34 C 284 27, 292 26, 298 24 L 298 94 L 2 94 Z" fill="url(#areaFill)"/>
-              <path d="M2 62 C 22 60, 30 34, 48 30 C 66 26, 74 52, 92 54 C 110 56, 118 22, 138 20 C 158 18, 166 46, 184 50 C 202 54, 210 74, 228 74 C 246 74, 254 44, 272 34 C 284 27, 292 26, 298 24" fill="none" stroke="#15497A" stroke-width="2.4" stroke-linecap="round"/>
-              <circle cx="138" cy="20" r="3.4" fill="#D4B475" stroke="#fff" stroke-width="1.6"/>
-              <circle cx="228" cy="74" r="3.4" fill="#15497A" stroke="#fff" stroke-width="1.6"/>
-            </svg>
-            <div class="saldo-actions">
-              <button class="btn-navy js-soon" id="tarikBtn" data-feature="Tarik Dana" type="button">
-                Tarik Dana
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-              </button>
-              <button class="btn-ghost js-soon" id="terimaBtn" data-feature="Terima Dana" type="button">
-                Terima
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
-              </button>
-            </div>
-          </section>
+            <button class="expand-btn js-soon" type="button" data-feature="Keuangan" aria-label="Lihat detail saldo">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
+            </button>
+          </div>
+          <p class="saldo-label">Total Saldo</p>
+          <p class="saldo-amount"><?= rupiah($totalRevenue) ?></p>
+          <svg class="area-chart" viewBox="0 0 300 96" role="img" aria-label="Grafik area pergerakan saldo yang bergerak naik turun dan berakhir menguat">
+            <defs>
+              <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#23649A" stop-opacity=".28"/>
+                <stop offset="100%" stop-color="#23649A" stop-opacity=".02"/>
+              </linearGradient>
+            </defs>
+            <path d="M2 62 C 22 60, 30 34, 48 30 C 66 26, 74 52, 92 54 C 110 56, 118 22, 138 20 C 158 18, 166 46, 184 50 C 202 54, 210 74, 228 74 C 246 74, 254 44, 272 34 C 284 27, 292 26, 298 24 L 298 94 L 2 94 Z" fill="url(#areaFill)"/>
+            <path d="M2 62 C 22 60, 30 34, 48 30 C 66 26, 74 52, 92 54 C 110 56, 118 22, 138 20 C 158 18, 166 46, 184 50 C 202 54, 210 74, 228 74 C 246 74, 254 44, 272 34 C 284 27, 292 26, 298 24" fill="none" stroke="#15497A" stroke-width="2.4" stroke-linecap="round"/>
+            <circle cx="138" cy="20" r="3.4" fill="#D4B475" stroke="#fff" stroke-width="1.6"/>
+            <circle cx="228" cy="74" r="3.4" fill="#15497A" stroke="#fff" stroke-width="1.6"/>
+          </svg>
+          <div class="saldo-actions">
+            <button class="btn-navy js-soon" id="tarikBtn" data-feature="Tarik Dana" type="button">
+              Tarik Dana
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+            </button>
+            <button class="btn-ghost js-soon" id="terimaBtn" data-feature="Terima Dana" type="button">
+              Terima
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+            </button>
+          </div>
+        </section>
 
-          <section class="card" aria-labelledby="pendapatanTitle">
-            <div class="card-head">
-              <span class="h-ico">
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M7 15h4"/></svg>
-              </span>
-              <div>
-                <h2 id="pendapatanTitle">Total Pesanan</h2>
-                <p><?= (int)$totalEvents ?> Event Aktif · <?= (int)$totalOrders ?> Total Pesanan</p>
-              </div>
+        <!-- 4. BARIS 2: STRIP 4 KPI KECIL (DARI DATABASE) -->
+        <div class="kpi-strip" aria-label="Indikator utama">
+          <div class="kpi-mini">
+            <div class="kpi-mini-head">
+              <span class="kpi-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6z"/><path d="M13 5v2M13 11v2M13 17v2"/></svg></span>
+              Tiket Terjual
             </div>
-            <p class="big-amount"><?= (int)$totalOrders ?> Pesanan</p>
-
-            <div class="sub-card">
-              <div class="sub-head">
-                <div>
-                  <h3>Pembayaran Mendatang</h3>
-                  <p>Pembayaran terbaru ke penyelenggara</p>
-                </div>
-                <a href="<?= base_url('dashboard/orders') ?>" class="expand-btn" aria-label="Lihat semua pembayaran mendatang" style="width:28px;height:28px">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
-                </a>
-              </div>
-              <div class="ava-stack" aria-label="Penyelenggara dengan pembayaran mendatang: Rizky, Dewi, Satria, Bima, dan 2 lainnya">
-                <span class="ava" style="background:#23649A" title="Rizky — Tulus Live in Concert">R</span>
-                <span class="ava" style="background:#D4B475;color:#0E3254" title="Dewi — Nadin Amizah">D</span>
-                <span class="ava" style="background:#509FC8" title="Satria — Midnight Jazz Session">S</span>
-                <span class="ava" style="background:#15497A" title="Bima — Pameran Fotografi Analog">B</span>
-                <span class="ava more" title="2 penyelenggara lainnya">+2</span>
-              </div>
+            <div class="kpi-mini-row">
+              <span class="kpi-mini-val"><?= number_format($totalSold, 0, ',', '.') ?></span>
+              <span class="kpi-badge up">↑ 12,4%</span>
             </div>
-          </section>
+          </div>
+          <div class="kpi-mini">
+            <div class="kpi-mini-head">
+              <span class="kpi-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M7 15h4"/></svg></span>
+              Total Pendapatan
+            </div>
+            <div class="kpi-mini-row">
+              <span class="kpi-mini-val"><?= rupiah($totalRevenue) ?></span>
+              <span class="kpi-badge up">↑ 8,7%</span>
+            </div>
+          </div>
+          <div class="kpi-mini">
+            <div class="kpi-mini-head">
+              <span class="kpi-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h2l2.4 11.2a1.5 1.5 0 0 0 1.5 1.2h7.9a1.5 1.5 0 0 0 1.5-1.2L20.5 8H7"/><circle cx="10" cy="21" r="1"/><circle cx="18" cy="21" r="1"/></svg></span>
+              Total Pesanan
+            </div>
+            <div class="kpi-mini-row">
+              <span class="kpi-mini-val"><?= (int)$totalOrders ?></span>
+              <span class="kpi-badge down">↓ 2,5%</span>
+            </div>
+          </div>
+          <div class="kpi-mini">
+            <div class="kpi-mini-head">
+              <span class="kpi-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4M9 16.5l2 2 4-4.5"/></svg></span>
+              Event Aktif
+            </div>
+            <div class="kpi-mini-row">
+              <span class="kpi-mini-val"><?= (int)$totalEvents ?></span>
+              <span class="kpi-badge up">↑ 16,7%</span>
+            </div>
+          </div>
         </div>
 
-        <!-- BOTTOM: history table -->
+        <!-- 5. BOTTOM LEFT: history table -->
         <section class="card history-card" aria-labelledby="riwayatTitle">
           <div class="card-head">
             <div>
@@ -611,6 +638,39 @@ if (strlen($userInitials) < 2) $userInitials = 'AD';
               </tr>
             </tbody>
           </table>
+        </section>
+
+        <!-- 6. BOTTOM RIGHT: side-card (Total Pesanan & Pembayaran Mendatang) -->
+        <section class="card side-card" aria-labelledby="pendapatanTitle">
+          <div class="card-head">
+            <span class="h-ico">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M7 15h4"/></svg>
+            </span>
+            <div>
+              <h2 id="pendapatanTitle">Total Pesanan</h2>
+              <p><?= (int)$totalEvents ?> Event Aktif · <?= (int)$totalOrders ?> Total Pesanan</p>
+            </div>
+          </div>
+          <p class="big-amount"><?= (int)$totalOrders ?> Pesanan</p>
+
+          <div class="sub-card">
+            <div class="sub-head">
+              <div>
+                <h3>Pembayaran Mendatang</h3>
+                <p>Pembayaran terbaru ke penyelenggara</p>
+              </div>
+              <a href="<?= base_url('dashboard/orders') ?>" class="expand-btn" aria-label="Lihat semua pembayaran mendatang" style="width:28px;height:28px">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
+              </a>
+            </div>
+            <div class="ava-stack" aria-label="Penyelenggara dengan pembayaran mendatang: Rizky, Dewi, Satria, Bima, dan 2 lainnya">
+              <span class="ava" style="background:#23649A" title="Rizky — Tulus Live in Concert">R</span>
+              <span class="ava" style="background:#D4B475;color:#0E3254" title="Dewi — Nadin Amizah">D</span>
+              <span class="ava" style="background:#509FC8" title="Satria — Midnight Jazz Session">S</span>
+              <span class="ava" style="background:#15497A" title="Bima — Pameran Fotografi Analog">B</span>
+              <span class="ava more" title="2 penyelenggara lainnya">+2</span>
+            </div>
+          </div>
         </section>
 
       </div><!-- /.grid -->

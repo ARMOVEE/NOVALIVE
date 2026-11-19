@@ -260,6 +260,27 @@ class Event extends Model {
     }
 
     /**
+     * Event berikutnya yang segera berlangsung (WHERE event_date >= CURDATE() AND deleted_at IS NULL)
+     */
+    public function upcoming(int $limit = 5): array {
+        $sql = "
+            SELECT e.*, 
+                   c.name AS category_name, c.color AS category_color,
+                   ci.name AS city_name, ci.slug AS city_slug
+            FROM events e
+            LEFT JOIN categories c ON e.category_id = c.id
+            LEFT JOIN cities ci ON e.city_id = ci.id
+            WHERE e.event_date >= CURDATE() AND e.deleted_at IS NULL
+            ORDER BY e.event_date ASC, e.id ASC
+            LIMIT :limit
+        ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    /**
      * Mengambil event berdasarkan ID kota
      */
     public function byCity(int $cityId, int $limit = 20): array {

@@ -19,11 +19,12 @@ class DashboardController extends Controller {
     protected function getSidebarCounts(): array {
         $eventModel = $this->model('Event');
         $orderModel = $this->model('Order');
+        $refundModel = $this->model('Refund');
 
         return [
             'events' => $eventModel->totalEvents(),
             'orders' => $orderModel->count(),
-            'refund' => 2
+            'refund' => $refundModel->countPending()
         ];
     }
 
@@ -43,7 +44,7 @@ class DashboardController extends Controller {
 
         $recentOrders = $orderModel->recent(5);
         $topSelling = $eventModel->popular(4);
-        $upcomingEvents = $eventModel->seru(4);
+        $upcomingEvents = $eventModel->upcoming(5);
 
         $sidebarCounts = $this->getSidebarCounts();
 
@@ -567,7 +568,7 @@ class DashboardController extends Controller {
     }
 
     /**
-     * Sub-tab Check-in Tiket (Menu Pesanan)
+     * 3.1 Sub-tab Check-in Tiket (Menu Pesanan)
      */
     public function checkin(): void {
         $this->authorize('orders.view');
@@ -576,28 +577,86 @@ class DashboardController extends Controller {
         $orderModel = $this->model('Order');
 
         $events = $eventModel->all();
-        $orders = $orderModel->all();
+        $selectedEventId = (int)query_param('event_id', 0);
+        $checkinStats = $orderModel->getCheckinStats($selectedEventId);
+        $todayCheckins = $orderModel->getTodayCheckins($selectedEventId);
         $sidebarCounts = $this->getSidebarCounts();
 
         $this->view('dashboard/checkin', [
-            'pageTitle'     => 'NOVA LIVE — Check-in Tiket',
-            'activeNav'     => 'orders',
-            'activeMenu'    => 'pesanan',
-            'activeTab'     => 'checkin',
-            'events'        => $events,
-            'orders'        => $orders,
-            'sidebarCounts' => $sidebarCounts
+            'pageTitle'       => 'NOVA LIVE — Check-in Tiket',
+            'activeNav'       => 'orders',
+            'activeMenu'      => 'pesanan',
+            'activeTab'       => 'checkin',
+            'events'          => $events,
+            'selectedEventId' => $selectedEventId,
+            'checkinStats'    => $checkinStats,
+            'todayCheckins'   => $todayCheckins,
+            'sidebarCounts'   => $sidebarCounts
         ], false);
     }
 
     /**
-     * Sub-tab Refund / Pengembalian Dana (Menu Pesanan)
+     * Memproses Validasi Check-in Tiket (POST)
+     */
+    public function processCheckin(): void {
+        $this->authorize('orders.view');
+        $this->validateCsrf();
+
+        $code = trim(post_data('ticket_code', ''));
+        $eventId = (int)post_data('event_id', 0);
+
+        if ($code === '') {
+            $this->flash('error', 'Kode tiket tidak boleh kosong.');
+            $this->redirect('dashboard/orders/checkin' . ($eventId > 0 ? '?event_id=' . $eventId : ''));
+        }
+
+        $orderModel = $this->model('Order');
+        $order = $orderModel->findByTicketCode($code);
+
+        if (!$order) {
+            $this->flash('error', "Tiket dengan kode '{$code}' tidak ditemukan di sistem.");
+            $this->redirect('dashboard/orders/checkin' . ($eventId > 0 ? '?event_id=' . $eventId : ''));
+        }
+
+        if (in_array($order['status'], ['Menunggu', 'Dibatalkan'], true)) {
+            $this->flash('error', "Tiket tidak dapat di-check-in karena status pesanan: {$order['status']}.");
+            $this->redirect('dashboard/orders/checkin' . ($eventId > 0 ? '?event_id=' . $eventId : ''));
+        }
+
+        if (!empty($order['checked_in_at'])) {
+            $prevTime = date('d M Y, H:i', strtotime($order['checked_in_at'])) . ' WIB';
+            $this->flash('error', "Tiket '{$code}' SUDAH PERNAH CHECK-IN pada {$prevTime} ({$order['buyer_name']}).");
+            $this->redirect('dashboard/orders/checkin' . ($eventId > 0 ? '?event_id=' . $eventId : ''));
+        }
+
+        // Sukses check-in
+        $orderModel->markCheckedIn((int)$order['id']);
+        $this->logActivity('order.checkin', 'order', (int)$order['id'], "Check-in tiket {$code} untuk {$order['buyer_name']} ({$order['event_title']})");
+
+        $this->flash('success', "Check-in BERHASIL! Selamat datang, {$order['buyer_name']} ({$order['qty']} tiket · {$order['event_title']}).");
+        $this->redirect('dashboard/orders/checkin' . ($eventId > 0 ? '?event_id=' . $eventId : ''));
+    }
+
+    /**
+     * 3.2 Sub-tab Refund / Pengembalian Dana (Menu Pesanan)
      */
     public function refunds(): void {
         $this->authorize('orders.view');
 
-        $orderModel = $this->model('Order');
-        $refundOrders = $orderModel->paginate(['status' => 'Dibatalkan'], 1, 20);
+        $refundModel = $this->model('Refund');
+        $status = query_param('status', '');
+        $search = query_param('search', '');
+
+        $filters = [];
+        if ($status !== '' && $status !== 'Semua') {
+            $filters['status'] = $status;
+        }
+        if ($search !== '') {
+            $filters['search'] = $search;
+        }
+
+        $refunds = $refundModel->allFiltered($filters);
+        $statusCounts = $refundModel->countsByStatus();
         $sidebarCounts = $this->getSidebarCounts();
 
         $this->view('dashboard/refunds', [
@@ -605,192 +664,185 @@ class DashboardController extends Controller {
             'activeNav'     => 'orders',
             'activeMenu'    => 'pesanan',
             'activeTab'     => 'refund',
-            'refundOrders'  => $refundOrders['data'] ?? [],
+            'refunds'       => $refunds,
+            'statusCounts'  => $statusCounts,
+            'currentStatus' => $status ?: 'Semua',
+            'search'        => $search,
             'sidebarCounts' => $sidebarCounts
         ], false);
     }
 
     /**
-     * Sub-tab E-Tiket / Dokumen (Menu Pesanan & Topbar Dokumen)
+     * Menyetujui Refund (POST)
+     */
+    public function approveRefund(string $id): void {
+        $this->authorize('orders.view');
+        $this->validateCsrf();
+
+        $refundId = (int)$id;
+        $refundModel = $this->model('Refund');
+        $refund = $refundModel->find($refundId);
+
+        if (!$refund || $refund['status'] !== 'Diajukan') {
+            $this->flash('error', 'Permohonan refund tidak ditemukan atau sudah diproses.');
+            $this->redirect('dashboard/orders/refunds');
+        }
+
+        $userId = (int)($_SESSION['user']['id'] ?? 1);
+        $success = $refundModel->approve($refundId, $userId);
+
+        if ($success) {
+            $this->logActivity('refund.approve', 'refund', $refundId, "Menyetujui refund #{$refundId} invoice {$refund['invoice']} senilai " . rupiah($refund['amount']));
+            $this->flash('success', "Refund #{$refundId} untuk pesanan {$refund['invoice']} berhasil disetujui. Kuota {$refund['qty']} tiket telah dikembalikan ke event.");
+        } else {
+            $this->flash('error', 'Gagal memproses persetujuan refund.');
+        }
+
+        $this->redirect('dashboard/orders/refunds');
+    }
+
+    /**
+     * Menolak Refund (POST)
+     */
+    public function rejectRefund(string $id): void {
+        $this->authorize('orders.view');
+        $this->validateCsrf();
+
+        $refundId = (int)$id;
+        $reason = trim(post_data('reject_reason', 'Tidak memenuhi syarat pengembalian dana'));
+        $refundModel = $this->model('Refund');
+        $refund = $refundModel->find($refundId);
+
+        if (!$refund || $refund['status'] !== 'Diajukan') {
+            $this->flash('error', 'Permohonan refund tidak ditemukan atau sudah diproses.');
+            $this->redirect('dashboard/orders/refunds');
+        }
+
+        $userId = (int)($_SESSION['user']['id'] ?? 1);
+        $success = $refundModel->reject($refundId, $userId, $reason);
+
+        if ($success) {
+            $this->logActivity('refund.reject', 'refund', $refundId, "Menolak refund #{$refundId} invoice {$refund['invoice']}. Alasan: {$reason}");
+            $this->flash('success', "Permohonan refund #{$refundId} berhasil ditolak.");
+        } else {
+            $this->flash('error', 'Gagal memproses penolakan refund.');
+        }
+
+        $this->redirect('dashboard/orders/refunds');
+    }
+
+    /**
+     * Mengajukan Refund Baru dari Detail Pesanan (POST)
+     */
+    public function createRefund(): void {
+        $this->authorize('orders.view');
+        $this->validateCsrf();
+
+        $orderId = (int)post_data('order_id', 0);
+        $reason = trim(post_data('reason', 'Permohonan pembatalan dari pembeli'));
+
+        $orderModel = $this->model('Order');
+        $order = $orderModel->find($orderId);
+
+        if (!$order) {
+            $this->flash('error', 'Data pesanan tidak ditemukan.');
+            $this->redirect('dashboard/orders');
+        }
+
+        if (!in_array($order['status'], ['Terkirim', 'Selesai'], true)) {
+            $this->flash('error', "Refund hanya dapat diajukan untuk pesanan berstatus Terkirim atau Selesai (status saat ini: {$order['status']}).");
+            $this->redirect('dashboard/orders');
+        }
+
+        if (!empty($order['checked_in_at'])) {
+            $this->flash('error', 'Tiket pesanan ini sudah di-check-in, tidak dapat mengajukan refund.');
+            $this->redirect('dashboard/orders');
+        }
+
+        $refundModel = $this->model('Refund');
+        $existing = $refundModel->findByOrderId($orderId);
+        if ($existing) {
+            $this->flash('error', "Pesanan {$order['invoice']} sudah memiliki permohonan refund sebelumnya (Status: {$existing['status']}).");
+            $this->redirect('dashboard/orders');
+        }
+
+        $refundId = $refundModel->createRefund($orderId, $reason, (float)$order['total_price']);
+        $this->logActivity('refund.create', 'refund', $refundId, "Mengajukan refund baru untuk pesanan {$order['invoice']} senilai " . rupiah($order['total_price']));
+
+        $this->flash('success', "Permohonan refund untuk pesanan {$order['invoice']} berhasil diajukan.");
+        $this->redirect('dashboard/orders/refunds');
+    }
+
+    /**
+     * 3.3 Sub-tab E-Tiket / Dokumen (Menu Pesanan & Topbar Dokumen)
      */
     public function tickets(): void {
         $this->authorize('orders.view');
 
+        $page = max(1, (int)query_param('page', 1));
+        $filters = [
+            'search'   => query_param('search', ''),
+            'event_id' => query_param('event_id', '')
+        ];
+
         $orderModel = $this->model('Order');
         $eventModel = $this->model('Event');
 
-        $orders = $orderModel->recent(20);
+        $ticketsData = $orderModel->tickets($filters, $page, 15);
         $events = $eventModel->all();
         $sidebarCounts = $this->getSidebarCounts();
 
-        $this->view('dashboard/tickets', [
+        $this->view('dashboard/tickets', array_merge($ticketsData, [
             'pageTitle'     => 'NOVA LIVE — Pratinjau E-Tiket',
             'activeNav'     => 'tickets',
             'activeMenu'    => 'pesanan',
             'activeTab'     => 'etiket',
-            'orders'        => $orders,
             'events'        => $events,
+            'filters'       => $filters,
             'sidebarCounts' => $sidebarCounts
-        ], false);
+        ]), false);
     }
 
     /**
-     * 4. Menu Keuangan (Saldo & Pencairan Dana)
+     * Halaman Pratinjau / Siap Cetak E-Tiket
      */
-    public function finance(): void {
-        $this->authorize('dashboard.view');
+    public function showTicket(string $id): void {
+        $this->authorize('orders.view');
 
         $orderModel = $this->model('Order');
-        $totalRevenue = $orderModel->totalRevenue();
-        $sidebarCounts = $this->getSidebarCounts();
+        $order = $orderModel->find((int)$id);
 
-        $this->view('dashboard/finance', [
-            'pageTitle'     => 'NOVA LIVE — Keuangan & Pencairan Dana',
-            'activeNav'     => 'finance',
-            'activeMenu'    => 'keuangan',
-            'activeTab'     => 'finance',
-            'totalRevenue'  => $totalRevenue,
-            'sidebarCounts' => $sidebarCounts
+        if (!$order || empty($order['ticket_code'])) {
+            self::notFound('E-Tiket tidak ditemukan atau belum diterbitkan.');
+        }
+
+        $this->view('dashboard/ticket_detail', [
+            'pageTitle' => 'NOVA LIVE — E-Tiket Resmi ' . ($order['ticket_code'] ?? ''),
+            'order'     => $order
         ], false);
     }
 
     /**
-     * 5. Menu Homepage (Sub-tab Banner)
+     * Kirim Ulang E-Tiket (POST)
      */
-    public function homepage(): void {
-        $this->authorize('dashboard.view');
+    public function resendTicket(string $id): void {
+        $this->authorize('orders.view');
+        $this->validateCsrf();
 
-        $eventModel = $this->model('Event');
-        $events = $eventModel->all();
-        $sidebarCounts = $this->getSidebarCounts();
+        $orderId = (int)$id;
+        $orderModel = $this->model('Order');
+        $order = $orderModel->find($orderId);
 
-        $this->view('dashboard/homepage', [
-            'pageTitle'     => 'NOVA LIVE — Banner Homepage',
-            'activeNav'     => 'homepage',
-            'activeMenu'    => 'homepage',
-            'activeTab'     => 'banner',
-            'events'        => $events,
-            'sidebarCounts' => $sidebarCounts
-        ], false);
-    }
+        if (!$order || empty($order['ticket_code'])) {
+            $this->flash('error', 'Pesanan tidak ditemukan atau tidak memiliki kode e-tiket.');
+            $this->redirect('dashboard/orders/tickets');
+        }
 
-    /**
-     * Menu Homepage (Sub-tab Tampilan Homepage: Seru & Populer)
-     */
-    public function homepageDisplay(): void {
-        $this->authorize('dashboard.view');
+        // Tandai status Terkirim dan log ke activity_logs
+        $orderModel->updateStatus($orderId, 'Terkirim');
+        $this->logActivity('order.resend_ticket', 'order', $orderId, "Mengirim ulang e-tiket {$order['ticket_code']} ke pembeli {$order['buyer_email']}");
 
-        $eventModel = $this->model('Event');
-        $events = $eventModel->all();
-        $sidebarCounts = $this->getSidebarCounts();
-
-        $this->view('dashboard/homepage', [
-            'pageTitle'     => 'NOVA LIVE — Tampilan Homepage',
-            'activeNav'     => 'homepage',
-            'activeMenu'    => 'homepage',
-            'activeTab'     => 'tampilan',
-            'events'        => $events,
-            'sidebarCounts' => $sidebarCounts
-        ], false);
-    }
-
-    /**
-     * 6. Menu Laporan (Sub-tab Analitik / Topbar Laporan)
-     */
-    public function reports(): void {
-        $this->authorize('dashboard.view');
-
-        $categoryModel = $this->model('Category');
-        $cityModel = $this->model('City');
-        $categories = $categoryModel->allWithCount();
-        $cities = $cityModel->allWithCount();
-        $sidebarCounts = $this->getSidebarCounts();
-
-        $this->view('dashboard/reports', [
-            'pageTitle'     => 'NOVA LIVE — Analitik & Laporan',
-            'activeNav'     => 'reports',
-            'activeMenu'    => 'laporan',
-            'activeTab'     => 'analitik',
-            'categories'    => $categories,
-            'cities'        => $cities,
-            'sidebarCounts' => $sidebarCounts
-        ], false);
-    }
-
-    /**
-     * Sub-tab Log Aktivitas (Menu Laporan / Topbar Riwayat)
-     */
-    public function reportLogs(): void {
-        $this->authorize('dashboard.view');
-
-        $activityLogModel = $this->model('ActivityLog');
-        $page = max(1, (int)query_param('page', 1));
-        $logs = $activityLogModel->paginate($page, 20);
-        $sidebarCounts = $this->getSidebarCounts();
-
-        $this->view('dashboard/reports', [
-            'pageTitle'     => 'NOVA LIVE — Log Aktivitas Admin',
-            'activeNav'     => 'logs',
-            'activeMenu'    => 'laporan',
-            'activeTab'     => 'logs',
-            'logs'          => $logs['data'] ?? [],
-            'sidebarCounts' => $sidebarCounts
-        ], false);
-    }
-
-    /**
-     * Sub-tab Notifikasi ke Pembeli (Menu Laporan)
-     */
-    public function reportNotifications(): void {
-        $this->authorize('dashboard.view');
-
-        $eventModel = $this->model('Event');
-        $events = $eventModel->all();
-        $sidebarCounts = $this->getSidebarCounts();
-
-        $this->view('dashboard/reports', [
-            'pageTitle'     => 'NOVA LIVE — Notifikasi ke Pembeli',
-            'activeNav'     => 'reports',
-            'activeMenu'    => 'laporan',
-            'activeTab'     => 'notifikasi',
-            'events'        => $events,
-            'sidebarCounts' => $sidebarCounts
-        ], false);
-    }
-
-    /**
-     * 7. Menu Promosi (Kode Promo)
-     */
-    public function promotions(): void {
-        $this->authorize('dashboard.view');
-
-        $sidebarCounts = $this->getSidebarCounts();
-
-        $this->view('dashboard/promotions', [
-            'pageTitle'     => 'NOVA LIVE — Kode Promo & Promosi',
-            'activeNav'     => 'promotions',
-            'activeMenu'    => 'promosi',
-            'activeTab'     => 'promotions',
-            'sidebarCounts' => $sidebarCounts
-        ], false);
-    }
-
-    /**
-     * 8. Menu Pengaturan (Profil Penyelenggara / Topbar Kontak)
-     */
-    public function settings(): void {
-        $this->authorize('dashboard.view');
-
-        $currentUser = $_SESSION['user'] ?? ['full_name' => 'Admin NOVA LIVE', 'role' => 'admin'];
-        $sidebarCounts = $this->getSidebarCounts();
-
-        $this->view('dashboard/settings', [
-            'pageTitle'     => 'NOVA LIVE — Pengaturan & Kontak Penyelenggara',
-            'activeNav'     => 'settings',
-            'activeMenu'    => 'pengaturan',
-            'activeTab'     => 'settings',
-            'currentUser'   => $currentUser,
-            'sidebarCounts' => $sidebarCounts
-        ], false);
+        $this->flash('success', "E-tiket {$order['ticket_code']} untuk {$order['buyer_name']} berhasil dikirim ulang.");
+        $this->redirect('dashboard/orders/tickets');
     }
 }

@@ -83,36 +83,41 @@ class App {
                     $this->params = array_slice($url, 2);
                 }
             } elseif ($seg1 === 'orders') {
+                $seg4 = $url[4] ?? '';
                 if ($seg2 === 'checkin') {
-                    $this->method = 'checkin';
+                    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                        $this->method = 'processCheckin';
+                    } else {
+                        $this->method = 'checkin';
+                    }
                     $this->params = array_slice($url, 3);
                 } elseif ($seg2 === 'refunds') {
-                    $this->method = 'refunds';
-                    $this->params = array_slice($url, 3);
+                    if ($seg3 === 'approve' && $seg4 !== '') {
+                        $this->method = 'approveRefund';
+                        $this->params = [$seg4];
+                    } elseif ($seg3 === 'reject' && $seg4 !== '') {
+                        $this->method = 'rejectRefund';
+                        $this->params = [$seg4];
+                    } elseif ($seg3 === 'create') {
+                        $this->method = 'createRefund';
+                        $this->params = array_slice($url, 4);
+                    } else {
+                        $this->method = 'refunds';
+                        $this->params = array_slice($url, 3);
+                    }
                 } elseif ($seg2 === 'tickets') {
-                    $this->method = 'tickets';
-                    $this->params = array_slice($url, 3);
+                    if ($seg3 === 'resend' && $seg4 !== '') {
+                        $this->method = 'resendTicket';
+                        $this->params = [$seg4];
+                    } elseif ($seg3 !== '') {
+                        $this->method = 'showTicket';
+                        $this->params = [$seg3];
+                    } else {
+                        $this->method = 'tickets';
+                        $this->params = array_slice($url, 3);
+                    }
                 } else {
                     $this->method = 'orders';
-                    $this->params = array_slice($url, 2);
-                }
-            } elseif ($seg1 === 'homepage') {
-                if ($seg2 === 'display') {
-                    $this->method = 'homepageDisplay';
-                    $this->params = array_slice($url, 3);
-                } else {
-                    $this->method = 'homepage';
-                    $this->params = array_slice($url, 2);
-                }
-            } elseif ($seg1 === 'reports') {
-                if ($seg2 === 'logs') {
-                    $this->method = 'reportLogs';
-                    $this->params = array_slice($url, 3);
-                } elseif ($seg2 === 'notifications') {
-                    $this->method = 'reportNotifications';
-                    $this->params = array_slice($url, 3);
-                } else {
-                    $this->method = 'reports';
                     $this->params = array_slice($url, 2);
                 }
             } else {

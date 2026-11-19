@@ -388,6 +388,8 @@ if (strlen($userInitials) < 2) $userInitials = 'AD';
                     <td data-label="Status" class="no-label"><span class="badge <?= $cls ?>"><?= e($st) ?></span></td>
                     <td data-label="Aksi" class="no-label">
                       <button type="button" class="mini-btn js-order-detail"
+                        data-id="<?= (int)$o['id'] ?>"
+                        data-checkedin="<?= !empty($o['checked_in_at']) ? '1' : '0' ?>"
                         data-inv="<?= e($o['invoice']) ?>"
                         data-buyer="<?= e($o['buyer_name']) ?>"
                         data-email="<?= e($o['buyer_email']) ?>"
@@ -434,6 +436,30 @@ if (strlen($userInitials) < 2) $userInitials = 'AD';
         <span>Total Bayar</span>
         <span id="mdTotal">-</span>
       </div>
+
+      <div class="modal-actions" style="margin-top:20px;display:flex;gap:10px;justify-content:flex-end;align-items:center;">
+        <a id="btnEticket" href="#" class="btn-navy" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:10px;font-size:13px;font-weight:600;background:var(--navy);color:#fff;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg>
+          Lihat E-Tiket
+        </a>
+        <button type="button" id="btnOpenRefundForm" class="btn-danger" style="display:none;background:#DC2626;color:#fff;border-radius:10px;padding:8px 16px;font-size:13px;font-weight:600;border:none;cursor:pointer;">
+          Ajukan Refund
+        </button>
+      </div>
+
+      <!-- Form Pengajuan Refund -->
+      <form id="refundForm" method="POST" action="<?= base_url('dashboard/orders/refunds/create') ?>" style="display:none;margin-top:16px;padding-top:16px;border-top:1px solid var(--line);">
+        <?= csrf_field() ?>
+        <input type="hidden" name="order_id" id="refundOrderId" value="" />
+        <div style="margin-bottom:10px;">
+          <label for="refundReason" style="display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;color:var(--ink);">Alasan Pengajuan Refund:</label>
+          <textarea name="reason" id="refundReason" rows="2" style="width:100%;border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-family:inherit;font-size:13px;box-sizing:border-box;" required placeholder="Contoh: Pembeli berhalangan hadir karena keperluan mendesak..."></textarea>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;">
+          <button type="button" id="btnCancelRefund" style="background:#F1F3F4;border:none;border-radius:8px;padding:7px 14px;font-size:12.5px;font-weight:600;cursor:pointer;">Batal</button>
+          <button type="submit" style="background:#DC2626;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12.5px;font-weight:600;cursor:pointer;">Kirim Pengajuan</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -484,16 +510,58 @@ if (strlen($userInitials) < 2) $userInitials = 'AD';
       // Modal Detail Pesanan
       var modalBack = document.getElementById("orderModalBack");
       var closeBtn = document.getElementById("modalCloseBtn");
+      var btnEticket = document.getElementById("btnEticket");
+      var btnRefund = document.getElementById("btnOpenRefundForm");
+      var refundForm = document.getElementById("refundForm");
+      var refundOrderId = document.getElementById("refundOrderId");
+      var btnCancelRefund = document.getElementById("btnCancelRefund");
+
+      if (btnCancelRefund) {
+        btnCancelRefund.onclick = function() {
+          refundForm.style.display = "none";
+          if (btnRefund) btnRefund.style.display = "inline-flex";
+        };
+      }
 
       function openModal(btn) {
+        var orderId = btn.getAttribute("data-id") || "";
+        var st = btn.getAttribute("data-status") || "";
+        var checkedIn = btn.getAttribute("data-checkedin") === "1";
+        var ticketCode = btn.getAttribute("data-ticket") || "";
+
         document.getElementById("orderModalInv").textContent = "Invoice: " + (btn.getAttribute("data-inv") || "-") + " · " + (btn.getAttribute("data-date") || "");
         document.getElementById("mdBuyer").textContent = btn.getAttribute("data-buyer") || "-";
         document.getElementById("mdEmail").textContent = btn.getAttribute("data-email") || "-";
         document.getElementById("mdEvent").textContent = btn.getAttribute("data-event") || "-";
         document.getElementById("mdQty").textContent = (btn.getAttribute("data-qty") || "0") + " tiket";
-        document.getElementById("mdStatus").textContent = btn.getAttribute("data-status") || "-";
-        document.getElementById("mdTicket").textContent = btn.getAttribute("data-ticket") || "-";
+        document.getElementById("mdStatus").textContent = st;
+        document.getElementById("mdTicket").textContent = ticketCode;
         document.getElementById("mdTotal").textContent = btn.getAttribute("data-total") || "-";
+
+        if (btnEticket) {
+          if (ticketCode && ticketCode !== "-") {
+            btnEticket.href = "<?= base_url('dashboard/orders/tickets/') ?>" + orderId;
+            btnEticket.style.display = "inline-flex";
+          } else {
+            btnEticket.style.display = "none";
+          }
+        }
+
+        if (refundForm) refundForm.style.display = "none";
+
+        if (btnRefund) {
+          if ((st === "Terkirim" || st === "Selesai") && !checkedIn) {
+            btnRefund.style.display = "inline-flex";
+            btnRefund.onclick = function() {
+              if (refundOrderId) refundOrderId.value = orderId;
+              refundForm.style.display = "block";
+              btnRefund.style.display = "none";
+            };
+          } else {
+            btnRefund.style.display = "none";
+          }
+        }
+
         modalBack.classList.add("open");
       }
 
