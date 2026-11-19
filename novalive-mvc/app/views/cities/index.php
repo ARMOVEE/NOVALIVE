@@ -1,28 +1,55 @@
-<div style="max-width:1280px;margin:36px auto 60px;padding:0 24px;">
-  <div style="margin-bottom:32px;">
-    <h1 style="font-size:32px;font-weight:800;letter-spacing:-0.02em;color:var(--navy);">Kategori Kotamu</h1>
-    <p style="font-size:15px;color:var(--muted);margin-top:6px;">Pilih kota untuk menemukan berbagai pertunjukan, konser, dan festival menarik di sekitarmu</p>
-  </div>
+<?php
+/**
+ * View: Daftar Kota (/kota)
+ * Samakan persis dengan pola kartu Jelajahi Kotamu di Beranda (Langkah 6)
+ */
 
-  <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));gap:24px;">
-    <?php
-      $landmarkFiles = [
-        'jakarta'    => 'monas-jakarta-4k.webp',
-        'denpasar'   => 'pura-denpasar-4k.webp',
-        'bandung'    => 'gedung-sate-bandung-4k.webp',
-        'surabaya'   => 'patung-sura-baya-4k.webp',
-        'yogyakarta' => 'tugu-yogyakarta-4k.webp'
-      ];
+$cityConfig = [
+    'jakarta'    => ['displayName' => 'DKI Jakarta',   'accent' => '#F97316', 'photo' => 'monas-jakarta-4k.webp'],
+    'denpasar'   => ['displayName' => 'Kota Denpasar', 'accent' => '#14B8A6', 'photo' => 'pura-denpasar-4k.webp'],
+    'bandung'    => ['displayName' => 'Bandung',       'accent' => '#3B82F6', 'photo' => 'gedung-sate-bandung-4k.webp'],
+    'surabaya'   => ['displayName' => 'Kota Surabaya', 'accent' => '#22C55E', 'photo' => 'patung-sura-baya-4k.webp'],
+    'yogyakarta' => ['displayName' => 'Yogyakarta',    'accent' => '#EC4899', 'photo' => 'tugu-yogyakarta-4k.webp'],
+];
+?>
+
+<style>
+.kota-page { padding: 48px 0 70px; background: #FFFFFF; }
+.kota-head { margin-bottom: 32px; }
+.kota-head h1 { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; color: var(--navy2); margin: 0 0 6px; }
+.kota-head p { font-size: 15px; color: var(--muted); margin: 0; }
+.kota-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+.kota-card { position: relative; display: block; text-decoration: none; width: 100%; text-align: left; background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); padding: 16px 14px; min-height: 118px; cursor: pointer; font-family: var(--font-body); color: var(--ink); overflow: hidden; transition: transform .2s, box-shadow .2s, border-color .2s; }
+.kota-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--gold-deep); }
+.kota-name { display: block; font-family: var(--font-display); font-weight: 800; font-size: 1.02rem; line-height: 1.25; max-width: 56%; position: relative; z-index: 1; }
+.kota-arrow { position: absolute; left: 14px; bottom: 18px; color: var(--brand); z-index: 1; display: flex; }
+.kota-media { position: absolute; right: 6px; bottom: 15px; top: 10px; width: 46%; background: #fff; border-radius: 10px; display: flex; align-items: flex-end; justify-content: center; overflow: hidden; }
+.kota-media img { max-height: 100%; max-width: 100%; object-fit: contain; }
+.kota-bar { position: absolute; left: 16px; right: 16px; bottom: 5px; height: 5px; border-radius: 99px; background: var(--kota-accent); }
+@media (max-width: 1024px) { .kota-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 640px) { .kota-grid { grid-template-columns: repeat(2, 1fr); } .kota-card { min-height: 108px; } }
+@media (max-width: 420px) { .kota-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .kota-card:hover { transform: none; } }
+</style>
+
+<div class="wrap kota-page">
+  <div class="kota-head">
+    <h1>Jelajahi Event di Kotamu</h1>
+    <p>Pilih kotamu untuk menemukan berbagai pertunjukan, konser, dan festival menarik di sekitarmu.</p>
+  </div>
+  <div class="kota-grid">
+    <?php foreach ($cities as $ci):
+      $slug = strtolower($ci['slug']);
+      $cfg = $cityConfig[$slug] ?? [];
+      $displayName = $cfg['displayName'] ?? $ci['name'];
+      $accent = $cfg['accent'] ?? ($ci['accent'] ?? '#23649A');
+      $photo = $cfg['photo'] ?? ($slug . '-4k.webp');
     ?>
-    <?php foreach ($cities as $ci): ?>
-      <a href="<?= base_url('kota/' . $ci['slug']) ?>" style="background:var(--card);border-radius:18px;padding:24px;border:1px solid var(--line);box-shadow:var(--shadow);position:relative;overflow:hidden;min-height:160px;display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s;text-decoration:none;">
-        <span style="font-size:20px;font-weight:800;color:var(--navy);margin-bottom:4px;"><?= e($ci['name']) ?></span>
-        <span style="font-size:13.5px;color:var(--muted);"><?= (int)($ci['event_count'] ?? 0) ?> Event Tersedia</span>
-        <span style="font-size:18px;color:var(--brand);margin-top:auto;font-weight:700;">Lihat Event ↗</span>
-        <?php if (!empty($landmarkFiles[$ci['slug']])): ?>
-          <img src="<?= asset($landmarkFiles[$ci['slug']]) ?>" alt="<?= e($ci['name']) ?>" style="position:absolute;right:10px;bottom:8px;height:90px;object-fit:contain;pointer-events:none;opacity:.95;">
-        <?php endif; ?>
-        <div style="position:absolute;bottom:0;left:0;right:0;height:4px;background:<?= e($ci['accent'] ?? '#23649A') ?>;"></div>
+      <a class="kota-card" href="<?= base_url('kota/' . $slug) ?>" style="--kota-accent:<?= e($accent) ?>" aria-label="Lihat event di <?= e($displayName) ?>">
+        <span class="kota-name"><?= e($displayName) ?></span>
+        <span class="kota-arrow" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="kota-media"><img src="<?= asset($photo) ?>" alt="<?= e($displayName) ?>" loading="lazy"></span>
+        <span class="kota-bar" aria-hidden="true"></span>
       </a>
     <?php endforeach; ?>
   </div>
