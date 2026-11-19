@@ -147,59 +147,22 @@
     .minggu-scroll.scrollfx .minggu-row.current .minggu-date .w{color:rgba(255,255,255,.8)}
   }
 
-  /* Kotamu Grid */
-  .kota-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 20px;
-  }
-  .kota-card {
-    background: var(--card);
-    border-radius: 16px;
-    padding: 20px;
-    border: 1px solid var(--line);
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.2s, box-shadow 0.2s;
-    display: flex;
-    flex-direction: column;
-    min-height: 140px;
-    box-shadow: var(--shadow);
-  }
-  .kota-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-  }
-  .kota-card::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: var(--kota-accent, var(--brand));
-  }
-  .kota-name {
-    font-size: 18px;
-    font-weight: 800;
-    color: var(--navy);
-    margin-bottom: 4px;
-  }
-  .kota-arrow {
-    font-size: 16px;
-    color: var(--brand);
-    margin-top: 8px;
-    display: inline-block;
-  }
-  .kota-landmark-img {
-    position: absolute;
-    right: 12px;
-    bottom: 8px;
-    height: 80px;
-    object-fit: contain;
-    pointer-events: none;
-    opacity: 0.95;
-  }
+  /* JELAJAHI EVENT DI KOTAMU */
+  #kota{background:#fff}
+  .kota-more{color:var(--accent-ink);font-weight:700;text-decoration:none;white-space:nowrap;padding:10px 0}
+  .kota-row{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+  .kota-card{position:relative;display:block;text-decoration:none;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:16px 14px;min-height:118px;cursor:pointer;font-family:var(--font-body);color:var(--ink);overflow:hidden;transition:transform .2s,box-shadow .2s,border-color .2s}
+  .kota-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--gold-deep)}
+  .kota-card[aria-expanded="true"]{border-color:var(--brand);box-shadow:var(--shadow-lg)}
+  .kota-name{display:block;font-family:var(--font-display);font-weight:800;font-size:1.02rem;line-height:1.25;max-width:56%;position:relative;z-index:1}
+  .kota-arrow{position:absolute;left:14px;bottom:18px;color:var(--brand);z-index:1;display:flex}
+  .kota-media{position:absolute;right:6px;bottom:15px;top:10px;width:46%;background:#fff;border-radius:10px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+  .kota-media img{max-height:100%;max-width:100%;object-fit:contain}
+  .kota-bar{position:absolute;left:16px;right:16px;bottom:5px;height:5px;border-radius:99px;background:var(--kota-accent)}
+  @media(max-width:1024px){.kota-row{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:640px){.kota-row{grid-template-columns:repeat(2,1fr)}.kota-card{min-height:108px}}
+  @media(max-width:420px){.kota-row{grid-template-columns:1fr}}
+  @media (prefers-reduced-motion: reduce){ .kota-card:hover{transform:none} }
 </style>
 
 <!-- 1. BANNER: tumpukan 3 slide navy kosong -->
@@ -557,55 +520,60 @@ if (count($popular) < 4 && !empty($eventsPopular)) {
 
 /* Reveal */
 (function initReveals() {
-  var reveals = document.querySelectorAll(".reveal");
-  if ("IntersectionObserver" in window && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    var io = new IntersectionObserver(function(entries) {
-      entries.forEach(function(en) {
-        if (en.isIntersecting) {
-          en.target.classList.add("visible");
-          io.unobserve(en.target);
-        }
-      });
-    }, { threshold: 0.1 });
-    reveals.forEach(function(el) { io.observe(el); });
+  function setupReveals() {
+    var reveals = document.querySelectorAll(".reveal");
+    if ("IntersectionObserver" in window && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      var io = new IntersectionObserver(function(entries) {
+        entries.forEach(function(en) {
+          if (en.isIntersecting) {
+            en.target.classList.add("visible");
+            io.unobserve(en.target);
+          }
+        });
+      }, { threshold: 0.1 });
+      reveals.forEach(function(el) { io.observe(el); });
+    } else {
+      reveals.forEach(function(el) { el.classList.add("visible"); });
+    }
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupReveals);
   } else {
-    reveals.forEach(function(el) { el.classList.add("visible"); });
+    setupReveals();
   }
 })();
 </script>
 
-<!-- 5. JELAJAHI EVENT DI KOTAMU (5 Kota) -->
-<section class="section-wrap">
-  <div class="section-header">
-    <div style="display:flex;align-items:center;gap:8px;">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="color:var(--brand);"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      <h2>Jelajahi Event di Kotamu</h2>
+<!-- 5. JELAJAHI EVENT DI KOTAMU -->
+<section class="section" id="kota" aria-labelledby="kotaTitle">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2 id="kotaTitle"><svg class="seru-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s-7-5.6-7-11a7 7 0 1114 0c0 5.4-7 11-7 11z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="10" r="2.6" fill="currentColor"/></svg>Jelajahi Event di Kotamu</h2>
+      <a class="kota-more" href="<?= base_url('kota') ?>">Lihat Semua ›</a>
     </div>
-    <a href="<?= base_url('kota') ?>" class="section-link">
-      Semua Kota
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
-    </a>
-  </div>
-
-  <div class="kota-grid">
-    <?php
-      $landmarkFiles = [
-        'jakarta'    => 'monas-jakarta-4k.webp',
-        'denpasar'   => 'pura-denpasar-4k.webp',
-        'bandung'    => 'gedung-sate-bandung-4k.webp',
-        'surabaya'   => 'patung-sura-baya-4k.webp',
-        'yogyakarta' => 'tugu-yogyakarta-4k.webp'
-      ];
-    ?>
-    <?php foreach ($cities as $ci): ?>
-      <a href="<?= base_url('kota/' . $ci['slug']) ?>" class="kota-card" style="--kota-accent:<?= e($ci['accent'] ?? '#23649A') ?>;">
-        <span class="kota-name"><?= e($ci['name']) ?></span>
-        <span style="font-size:13px;color:var(--muted);"><?= (int)($ci['event_count'] ?? 0) ?> event aktif</span>
-        <span class="kota-arrow">↗</span>
-        <?php if (!empty($landmarkFiles[$ci['slug']])): ?>
-          <img src="<?= asset($landmarkFiles[$ci['slug']]) ?>" alt="<?= e($ci['name']) ?>" class="kota-landmark-img">
-        <?php endif; ?>
-      </a>
-    <?php endforeach; ?>
+    <div class="kota-row">
+      <?php
+        $cityConfig = [
+          'jakarta'    => ['displayName' => 'DKI Jakarta',   'accent' => '#F97316', 'photo' => 'monas-jakarta-4k.webp'],
+          'denpasar'   => ['displayName' => 'Kota Denpasar', 'accent' => '#14B8A6', 'photo' => 'pura-denpasar-4k.webp'],
+          'bandung'    => ['displayName' => 'Bandung',       'accent' => '#3B82F6', 'photo' => 'gedung-sate-bandung-4k.webp'],
+          'surabaya'   => ['displayName' => 'Kota Surabaya', 'accent' => '#22C55E', 'photo' => 'patung-sura-baya-4k.webp'],
+          'yogyakarta' => ['displayName' => 'Yogyakarta',    'accent' => '#EC4899', 'photo' => 'tugu-yogyakarta-4k.webp'],
+        ];
+        foreach ($cities as $ci):
+          $slug = strtolower($ci['slug']);
+          $cfg = $cityConfig[$slug] ?? [];
+          $displayName = $cfg['displayName'] ?? $ci['name'];
+          $accent = $cfg['accent'] ?? ($ci['accent'] ?? '#23649A');
+          $photo = $cfg['photo'] ?? ($slug . '-4k.webp');
+      ?>
+        <a class="kota-card reveal" href="<?= base_url('kota/' . $slug) ?>" style="--kota-accent:<?= e($accent) ?>" aria-label="Lihat event di <?= e($displayName) ?>">
+          <span class="kota-name"><?= e($displayName) ?></span>
+          <span class="kota-arrow" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="kota-media"><img src="<?= asset($photo) ?>" alt="<?= e($displayName) ?>" loading="lazy"></span>
+          <span class="kota-bar" aria-hidden="true"></span>
+        </a>
+      <?php endforeach; ?>
+    </div>
   </div>
 </section>
