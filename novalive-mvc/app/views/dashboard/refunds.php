@@ -12,8 +12,9 @@ $statusCounts = $statusCounts ?? ['Semua' => 0, 'Diajukan' => 0, 'Disetujui' => 
 $currentStatus = $currentStatus ?? 'Semua';
 $search = $search ?? '';
 
-$flashSuccess = flash('success');
-$flashError = flash('error');
+$flash = $flash ?? ($_SESSION['flash'] ?? []);
+$flashSuccess = $flash['success'] ?? null;
+$flashError = $flash['danger'] ?? ($flash['error'] ?? null);
 ?>
 <!doctype html>
 <html lang="id">

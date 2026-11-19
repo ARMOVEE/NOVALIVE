@@ -14,8 +14,9 @@ $total = $total ?? count($orders);
 $currentPage = $currentPage ?? 1;
 $totalPages = $totalPages ?? 1;
 
-$flashSuccess = flash('success');
-$flashError = flash('error');
+$flash = $flash ?? ($_SESSION['flash'] ?? []);
+$flashSuccess = $flash['success'] ?? null;
+$flashError = $flash['danger'] ?? ($flash['error'] ?? null);
 ?>
 <!doctype html>
 <html lang="id">

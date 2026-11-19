@@ -243,10 +243,15 @@ $popIds = !empty($popFeaturedIds) ? $popFeaturedIds : array_slice(array_keys($ev
         </a>
       </div>
 
-      <?php $flash = get_flash(); if ($flash): ?>
-        <div class="alert-flash <?= $flash['type'] === 'success' ? 'success' : 'error' ?>">
+      <?php
+        $flash = $flash ?? ($_SESSION['flash'] ?? []);
+        $flashMsg = $flash['success'] ?? ($flash['danger'] ?? ($flash['error'] ?? null));
+        $flashType = !empty($flash['success']) ? 'success' : 'error';
+      ?>
+      <?php if ($flashMsg): ?>
+        <div class="alert-flash <?= $flashType ?>">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-          <?= e($flash['message']) ?>
+          <?= e($flashMsg) ?>
         </div>
       <?php endif; ?>
 

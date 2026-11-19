@@ -12,8 +12,9 @@ $selectedEventId = (int)($selectedEventId ?? 0);
 $checkinStats = $checkinStats ?? ['checked_in' => 0, 'total_tickets' => 0, 'percentage' => 0];
 $todayCheckins = $todayCheckins ?? [];
 
-$flashSuccess = flash('success');
-$flashError = flash('error');
+$flash = $flash ?? ($_SESSION['flash'] ?? []);
+$flashSuccess = $flash['success'] ?? null;
+$flashError = $flash['danger'] ?? ($flash['error'] ?? null);
 ?>
 <!doctype html>
 <html lang="id">
