@@ -89,7 +89,7 @@ $flashSuccess = $flash['success'] ?? null;
       /* ---------- Phone card ---------- */
       .phone {
         width: 100%;
-        max-width: 440px;
+        max-width: 480px;
         background: var(--navy-deep);
         border-radius: 32px;
         box-shadow: var(--shadow-card);
@@ -99,13 +99,13 @@ $flashSuccess = $flash['success'] ?? null;
       /* ---------- Hero ---------- */
       .hero {
         position: relative;
-        height: 190px;
+        height: 205px;
         background: linear-gradient(180deg, #15497a 0%, #0e3254 78%);
         overflow: hidden;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding-bottom: 22px;
+        padding-bottom: 24px;
       }
       .hero::after {
         content: "";
@@ -120,7 +120,7 @@ $flashSuccess = $flash['success'] ?? null;
         position: relative;
         z-index: 1;
         width: 88%;
-        max-width: 330px;
+        max-width: 360px;
         height: auto;
         overflow: visible;
         display: block;
@@ -132,15 +132,15 @@ $flashSuccess = $flash['success'] ?? null;
         position: relative;
         z-index: 3;
         background: var(--sheet-bg);
-        border-radius: 26px 26px 0 0;
+        border-radius: 28px 28px 0 0;
         margin-top: -22px;
-        padding: 28px 32px 32px;
+        padding: 30px 36px 36px;
       }
       .sheet h1 {
         font-family: var(--font-display);
         font-weight: 800;
         font-size: 34px;
-        letter-spacing: -0.01em;
+        letter-spacing: -0.015em;
         text-align: center;
         margin: 0 0 8px;
         color: var(--ink);
@@ -148,9 +148,10 @@ $flashSuccess = $flash['success'] ?? null;
       .sheet .sub {
         text-align: center;
         color: var(--muted);
-        font-size: 15px;
+        font-size: 14.5px;
         line-height: 1.5;
-        margin: 0 0 22px;
+        margin: 0 auto 22px;
+        max-width: 400px;
       }
 
       /* ---------- Pembatas lekuk ke atas di tepi atas kartu form ---------- */
@@ -378,51 +379,135 @@ $flashSuccess = $flash['success'] ?? null;
 
       .demo-chip {
         margin-top: 22px;
-        text-align: center;
-        font-size: 12.5px;
+        background: #faf8f2;
+        border: 1px solid #ece7d8;
+        border-radius: 14px;
+        padding: 12px 14px;
+        text-align: left;
+        font-size: 12px;
         color: var(--muted);
-        line-height: 1.6;
+      }
+      .demo-chip-head {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: #4a607a;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        margin-bottom: 8px;
+      }
+      .demo-chip-head svg {
+        color: #23649a;
+        flex-shrink: 0;
+      }
+      .demo-chip-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .demo-chip-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        background: #ffffff;
+        border: 1px solid #e8e2d4;
+        border-radius: 8px;
+        padding: 6px 10px;
+        cursor: pointer;
+        transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+      }
+      .demo-chip-item:hover {
+        background: #f4f8fb;
+        border-color: #509fc8;
+        transform: translateY(-1px);
+      }
+      .badge-role {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 5px;
+        letter-spacing: 0.02em;
+        line-height: 1.3;
+        flex-shrink: 0;
+      }
+      .badge-role.user {
+        background: #e6f2f8;
+        color: #23649a;
+      }
+      .badge-role.admin {
+        background: #fdf3dc;
+        color: #9a741f;
+      }
+      .demo-chip-creds {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: #0e2a47;
+        flex-wrap: nowrap;
+        white-space: nowrap;
+      }
+      .demo-chip-sep {
+        color: #a8b8c8;
+      }
+      .demo-chip-pass {
+        color: #4a607a;
+        font-size: 11.5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
       }
       .demo-chip code {
-        background: var(--field-bg);
-        border: 1px solid var(--field-line);
-        border-radius: 6px;
-        padding: 2px 7px;
+        background: #faf8f2;
+        border: 1px solid #e0dacf;
+        border-radius: 5px;
+        padding: 1.5px 6px;
         font-size: 12px;
-        color: var(--ink);
+        font-weight: 600;
+        color: #0e2a47;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      }
+      .demo-chip-item:hover code {
+        border-color: #509fc8;
+        background: #ffffff;
       }
 
       .page-foot {
-        margin-top: 20px;
+        margin-top: 22px;
         text-align: center;
         font-size: 12.5px;
         font-weight: 500;
         color: #4a607a;
       }
 
-      /* Desktop (>= 1024px): kartu lebar 440px, tinggi mengisi ~80-85% layar */
+      /* Desktop (>= 1024px): kartu lebar 480px, pas dan proporsional */
       @media (min-width: 1024px) {
-        body { padding: clamp(32px, 7vh, 72px) 20px; }
-        .phone { width: 100%; max-width: 440px; }
+        body { padding: clamp(28px, 6vh, 64px) 20px; }
+        .phone { width: 100%; max-width: 480px; }
       }
 
       /* Laptop / Desktop dengan tinggi layar terbatas (mis. 1366x768):
          ketinggian kartu disesuaikan agar pas di viewport tanpa scroll vertikal */
       @media (max-height: 820px) and (min-width: 768px) {
         body { padding: 12px 14px 16px; }
-        .phone { max-width: 420px; }
-        .hero { height: 165px; padding-bottom: 18px; }
-        .hero-ticket { max-width: 290px; }
-        .sheet { padding: 20px 28px 24px; margin-top: -20px; }
+        .phone { max-width: 440px; }
+        .hero { height: 170px; padding-bottom: 20px; }
+        .hero-ticket { max-width: 300px; }
+        .sheet { padding: 22px 28px 24px; margin-top: -20px; }
         .sheet h1 { font-size: 28px; margin-bottom: 4px; }
         .sheet .sub { font-size: 13.5px; margin-bottom: 14px; line-height: 1.4; }
         .field-row { min-height: 48px; }
         .field-row input { font-size: 14px; min-height: 38px; }
         .action-row { margin-top: 14px; }
-        .btn-login { min-height: 46px; font-size: 15px; padding: 0 34px; }
+        .btn-login { min-height: 46px; font-size: 15px; padding: 0 36px; }
         .btn-full { min-height: 46px; margin-top: 14px; }
         .switch-line { margin-top: 14px; font-size: 13px; }
-        .demo-chip { margin-top: 14px; font-size: 11.5px; line-height: 1.5; }
+        .demo-chip { margin-top: 14px; padding: 8px 12px; }
+        .demo-chip-head { margin-bottom: 6px; font-size: 11px; }
         .page-foot { margin-top: 12px; font-size: 11.5px; }
       }
 
@@ -443,7 +528,9 @@ $flashSuccess = $flash['success'] ?? null;
         .btn-login { min-height: 46px; font-size: 14.5px; padding: 0 30px; }
         .btn-full { min-height: 46px; margin-top: 16px; }
         .switch-line { margin-top: 16px; font-size: 13px; }
-        .demo-chip { margin-top: 16px; font-size: 11.5px; }
+        .demo-chip { margin-top: 16px; padding: 10px 12px; }
+        .demo-chip-item { flex-direction: column; align-items: flex-start; gap: 4px; }
+        .demo-chip-creds { flex-wrap: wrap; }
         .page-foot { margin-top: 16px; font-size: 12px; }
       }
       @media (prefers-reduced-motion: reduce) {
@@ -559,7 +646,30 @@ $flashSuccess = $flash['success'] ?? null;
               <button type="button" class="link" id="gotoRegister">Daftar</button>
             </p>
 
-            <p class="demo-chip">Akun demo: <code>demo@novalive.id</code> · sandi <code>nova1234</code><br>Akun Admin: <code>novaLive.Admin@gmail.id</code> · sandi <code>NovaLive.Admin</code></p>
+            <div class="demo-chip">
+              <div class="demo-chip-head">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                <span>Akun Uji Coba (klik untuk isi otomatis):</span>
+              </div>
+              <div class="demo-chip-list">
+                <div class="demo-chip-item" data-fill="demo" title="Klik untuk gunakan akun Demo User">
+                  <span class="badge-role user">User</span>
+                  <div class="demo-chip-creds">
+                    <code>demo@novalive.id</code>
+                    <span class="demo-chip-sep">·</span>
+                    <span class="demo-chip-pass">sandi <code>nova1234</code></span>
+                  </div>
+                </div>
+                <div class="demo-chip-item" data-fill="admin" title="Klik untuk gunakan akun Admin">
+                  <span class="badge-role admin">Admin</span>
+                  <div class="demo-chip-creds">
+                    <code>novaLive.Admin@gmail.id</code>
+                    <span class="demo-chip-sep">·</span>
+                    <span class="demo-chip-pass">sandi <code>NovaLive.Admin</code></span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- ===== VIEW: LUPA KATA SANDI ===== -->
@@ -739,10 +849,29 @@ $flashSuccess = $flash['success'] ?? null;
         var loginNotice = document.getElementById("loginNotice");
         var loginBtn = document.getElementById("loginBtn");
 
+        function fillCreds(email, pass) {
+          var emEl = document.getElementById("loginEmail");
+          var pwEl = document.getElementById("loginPass");
+          if (emEl) emEl.value = email;
+          if (pwEl) pwEl.value = pass;
+        }
+
+        Array.prototype.forEach.call(document.querySelectorAll("[data-fill]"), function (item) {
+          item.addEventListener("click", function () {
+            var type = item.getAttribute("data-fill");
+            if (type === "demo") {
+              fillCreds(DEMO_EMAIL, DEMO_PASS);
+            } else if (type === "admin") {
+              fillCreds(ADMIN_EMAIL, ADMIN_PASS);
+            }
+          });
+        });
+
         Array.prototype.forEach.call(document.querySelectorAll(".demo-chip code"), function (c) {
           c.style.cursor = "pointer";
           c.title = "Klik untuk isi otomatis";
-          c.addEventListener("click", function () {
+          c.addEventListener("click", function (ev) {
+            ev.stopPropagation();
             var txt = c.textContent.trim();
             if (txt.indexOf("@") !== -1 || txt.toLowerCase() === "novalive.admin") {
               document.getElementById("loginEmail").value = txt;
