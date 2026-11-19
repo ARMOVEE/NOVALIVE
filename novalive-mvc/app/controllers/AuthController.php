@@ -14,8 +14,8 @@ class AuthController extends Controller {
         }
 
         $this->view('auth/login', [
-            'pageTitle' => 'Masuk ke Akun — NOVA LIVE'
-        ], true);
+            'pageTitle' => 'NOVA LIVE — Form Login'
+        ], false);
     }
 
     /**
@@ -41,6 +41,7 @@ class AuthController extends Controller {
             // Catat kegagalan tanpa membocorkan apakah email terdaftar (CWE-204)
             $this->logActivity('auth.failed', 'user', null, 'Percobaan login gagal untuk kredensial yang dimasukkan.');
             $this->flash('error', 'Email atau password salah.');
+            $this->flash('danger', 'Email atau password salah.');
             $this->redirect('login');
         }
 
