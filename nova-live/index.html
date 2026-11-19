@@ -76,9 +76,11 @@ section[id]{scroll-margin-top:96px}
 .mega-item:hover .mega-ic{background:var(--gold);color:var(--navy2)}
 .mega-explore{border-top:1px solid var(--line);margin-top:20px;padding-top:20px}
 .mega-explore h3{font-size:1.3rem;color:var(--navy);margin:0 0 14px}
+.mega-explore-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
 .mega-explore-card{display:flex;align-items:center;gap:16px;background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:16px 20px;text-decoration:none;color:var(--ink);min-height:3.5rem}
 .mega-explore-card:hover{border-color:var(--gold-deep);box-shadow:var(--shadow)}
 .mega-explore-ic{width:48px;height:48px;flex-shrink:0;border-radius:12px;background:var(--navy);color:var(--gold);display:flex;align-items:center;justify-content:center}
+.mega-explore-txt{flex:1;min-width:0}
 .mega-explore-txt strong{display:block;font-family:var(--font-display);font-size:1.05rem;color:var(--navy);line-height:1.3}
 .mega-explore-txt small{color:var(--muted);font-size:.9rem}
 .mega-arrow{margin-left:auto;font-size:1.7rem;line-height:1;color:var(--brand);flex-shrink:0}
@@ -87,6 +89,7 @@ section[id]{scroll-margin-top:96px}
   .mega-grid{grid-template-columns:repeat(2,1fr);gap:4px 8px}
   .mega-item{gap:10px;padding:9px 8px;font-size:.92rem}
   .mega-ic{width:40px;height:40px;border-radius:10px}
+  .mega-explore-grid{grid-template-columns:1fr;gap:12px}
   .mega-explore-card{padding:14px 16px}
 }
 .nav-search{flex:1;display:flex;align-items:center;background:#fff;border:1px solid var(--line);border-radius:999px;padding:0 6px 0 20px;height:48px;min-width:0;position:relative}
@@ -526,11 +529,18 @@ section[id]{scroll-margin-top:96px}
     </div>
     <div class="mega-explore">
       <h3>Jelajahi Event</h3>
-      <a class="mega-explore-card" href="NOVA LIVE — Jelajahi Event.html">
-        <span class="mega-explore-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg></span>
-        <span class="mega-explore-txt"><strong>Lihat Semua Event</strong><small>Telusuri semua event yang tersedia di NOVA LIVE dan temukan yang cocok untukmu.</small></span>
-        <span class="mega-arrow" aria-hidden="true">›</span>
-      </a>
+      <div class="mega-explore-grid">
+        <a class="mega-explore-card" href="NOVA LIVE — Jelajahi Event.html">
+          <span class="mega-explore-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg></span>
+          <span class="mega-explore-txt"><strong>Lihat Semua Event</strong><small>Telusuri semua event yang tersedia di NOVA LIVE dan temukan yang cocok untukmu.</small></span>
+          <span class="mega-arrow" aria-hidden="true">›</span>
+        </a>
+        <a class="mega-explore-card" href="NOVA LIVE — Halaman Kota.html">
+          <span class="mega-explore-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+          <span class="mega-explore-txt"><strong>Jelajahi Kotamu</strong><small>Temukan event seru di kotamu — Jakarta, Bandung, Surabaya, Yogyakarta, dan Denpasar.</small></span>
+          <span class="mega-arrow" aria-hidden="true">›</span>
+        </a>
+      </div>
     </div>
   </div>
 </header>
