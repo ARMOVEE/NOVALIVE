@@ -43,96 +43,44 @@
   }
   .section-link:hover { color: var(--navy); }
 
-  /* Event Grid & Card */
-  .event-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 24px;
-  }
-  .event-card {
-    background: var(--card);
-    border-radius: var(--radius);
-    overflow: hidden;
-    box-shadow: var(--shadow);
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    border: 1px solid var(--line);
-  }
-  .event-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-  }
-  .event-media {
-    aspect-ratio: 16/9;
-    background: var(--navy-deep);
-    position: relative;
-    overflow: hidden;
-  }
-  .event-media img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  .event-badge-tag {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    background: rgba(14, 50, 84, 0.9);
-    color: var(--gold);
-    font-size: 11.5px;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 6px;
-    backdrop-filter: blur(4px);
-  }
-  .event-body {
-    padding: 18px 20px 20px;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-  }
-  .event-city-meta {
-    font-size: 12.5px;
-    font-weight: 600;
-    color: var(--brand);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    margin-bottom: 6px;
-  }
-  .event-title {
-    font-size: 16.5px;
-    font-weight: 700;
-    line-height: 1.35;
-    margin-bottom: 10px;
-    color: var(--navy);
-  }
-  .event-date-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13.5px;
-    color: var(--muted);
-    margin-bottom: 14px;
-  }
-  .event-footer {
-    margin-top: auto;
-    padding-top: 14px;
-    border-top: 1px dashed var(--line);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .event-price-label {
-    font-size: 11.5px;
-    color: var(--muted);
-    display: block;
-  }
-  .event-price-val {
-    font-size: 16px;
-    font-weight: 800;
-    color: var(--navy);
-  }
+  /* Base Wraps & Cards umum */
+  .wrap{max-width:var(--wrap);margin:0 auto;padding:0 20px}
+  .section{padding:52px 0;position:relative}
+  .section.alt{background:var(--card)}
+  .section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:22px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;transition:transform .2s,box-shadow .2s}
+  .card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+  @media(prefers-reduced-motion:reduce){.card:hover{transform:none}}
+
+  /* EVENT SERU (Carousel) */
+  #seru{background:var(--cream);padding:52px 0;position:relative}
+  .seru-wrap{position:relative}
+  .seru-icon{vertical-align:-4px;margin-right:6px;color:var(--brand)}
+  .seru-row{display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:4px 4px 14px;margin:0 -4px}
+  .seru-row::-webkit-scrollbar{display:none}
+  .seru-card{flex:0 0 400px;width:400px;scroll-snap-align:start;display:flex;flex-direction:column;height:auto}
+  .seru-card img{height:170px;width:100%;object-fit:cover;border-bottom:1px solid var(--line);display:block}
+  .seru-placeholder{height:170px;width:100%;background:linear-gradient(135deg,#0E3254 0%,#23649A 100%);color:var(--gold);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:42px;font-weight:800;border-bottom:1px solid var(--line);user-select:none}
+  .seru-body{padding:16px;display:flex;flex-direction:column;flex:1}
+  .seru-body .meta{color:var(--muted);font-size:.85rem;margin:0}
+  .seru-body h3{font-size:1.02rem;margin:6px 0;line-height:1.35}
+  .seru-body h3 a{text-decoration:none;color:inherit;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .seru-body h3 a:hover{color:var(--brand)}
+  .seru-from{color:var(--muted);font-size:.85rem;margin:14px 0 2px;margin-top:auto;border-top:1px solid var(--line);padding-top:12px}
+  .seru-price{font-weight:800;font-size:1.05rem;margin:0;color:var(--navy)}
+  .seru-arrow{position:absolute;top:calc(50% + 16px);transform:translateY(-50%);width:46px;height:46px;border-radius:50%;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);font-size:1.6rem;line-height:1;color:var(--navy);z-index:5;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;font-family:inherit;transition:transform .2s,box-shadow .2s,background .2s}
+  .seru-arrow:hover{background:#fff;transform:translateY(-50%) scale(1.06);box-shadow:var(--shadow-lg)}
+  .seru-arrow:active{transform:translateY(-50%) scale(0.96)}
+  .seru-arrow.seru-prev{left:-22px}
+  .seru-arrow.seru-next{right:-22px}
+  @media(max-width:1240px){.seru-arrow.seru-prev{left:10px}.seru-arrow.seru-next{right:10px}}
+  @media(max-width:1024px){.seru-card{flex:0 0 340px;width:340px}}
+  @media(max-width:760px){.seru-card{flex:0 0 85%;width:85%}.seru-card img,.seru-placeholder{height:160px}.seru-arrow{display:none!important}}
+  @media(prefers-reduced-motion:reduce){.seru-arrow:hover{transform:translateY(-50%)}}
+
+  /* Reveal */
+  .reveal{opacity:1;transform:none}
+  .reveal.visible{opacity:1;transform:none}
 
   /* Kategori Horizontal */
   .cat-grid {
@@ -296,54 +244,92 @@
 })();
 </script>
 
-<!-- 2. EVENT SERU (10 Event) -->
-<section class="section-wrap">
-  <div class="section-header">
-    <div>
-      <h2>Event Seru Untukmu</h2>
-      <p style="font-size:14px;color:var(--muted);margin-top:4px;">Pilihan event paling dinanti dari berbagai kota di Indonesia</p>
+<!-- 2. EVENT SERU UNTUKMU (Carousel 10 Event) -->
+<section class="section alt" id="seru" aria-labelledby="seruTitle">
+  <div class="wrap seru-wrap">
+    <div class="section-head">
+      <h2 id="seruTitle"><svg class="seru-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 010 7M19 6a8.5 8.5 0 010 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Event Seru Untukmu</h2>
     </div>
-    <a href="<?= base_url('events') ?>" class="section-link">
-      Lihat Semua
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
-    </a>
-  </div>
-
-  <div class="event-grid">
-    <?php foreach ($eventsSeru as $e): ?>
-      <a href="<?= base_url('events/show/' . $e['id']) ?>" class="event-card">
-        <div class="event-media">
-          <?php $pUrl = poster_url($e['photo']); ?>
-          <?php if ($pUrl): ?>
-            <img src="<?= e($pUrl) ?>" alt="<?= e($e['title']) ?>" loading="lazy">
-          <?php else: ?>
-            <div style="background:linear-gradient(135deg, #0E3254 0%, #23649A 100%);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:800;width:100%;height:100%;">
-              <?= strtoupper(mb_substr($e['title'], 0, 1)) ?>
-            </div>
-          <?php endif; ?>
-          <?php if (!empty($e['badge'])): ?>
-            <span class="event-badge-tag"><?= e($e['badge']) ?></span>
-          <?php endif; ?>
-        </div>
-        <div class="event-body">
-          <div class="event-city-meta"><?= e($e['city_name'] ?? 'Indonesia') ?></div>
-          <h3 class="event-title"><?= e($e['title']) ?></h3>
-          <div class="event-date-row">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            <span><?= tanggal($e['event_date']) ?></span>
+    <div class="seru-row reveal">
+      <?php 
+        $seruList = $eventsSeru ?? $seru ?? [];
+        foreach ($seruList as $e): 
+      ?>
+        <article class="card seru-card">
+          <div class="seru-placeholder" aria-hidden="true">
+            <?= strtoupper(mb_substr($e['title'], 0, 1)) ?>
           </div>
-          <div class="event-footer">
-            <div>
-              <span class="event-price-label">Mulai dari</span>
-              <span class="event-price-val"><?= (float)$e['price'] > 0 ? rupiah($e['price']) : 'Gratis' ?></span>
-            </div>
-            <span style="font-size:12px;font-weight:700;color:var(--brand);"><?= e($e['category_name'] ?? '') ?></span>
+          <div class="seru-body">
+            <p class="meta"><?= e(ucwords(strtolower($e['city_name'] ?? 'Indonesia'))) ?></p>
+            <h3><a href="<?= base_url('events/show/' . $e['id']) ?>"><?= e($e['title']) ?></a></h3>
+            <p class="meta">Oleh <?= e($e['organizer'] ?? 'NOVA Live') ?></p>
+            <p class="seru-from">Mulai dari</p>
+            <p class="seru-price"><?= (float)$e['price'] > 0 ? rupiah($e['price']) : 'Gratis' ?></p>
           </div>
-        </div>
-      </a>
-    <?php endforeach; ?>
+        </article>
+      <?php endforeach; ?>
+    </div>
+    <button type="button" class="seru-arrow seru-prev" aria-label="Event sebelumnya">‹</button>
+    <button type="button" class="seru-arrow seru-next" aria-label="Event berikutnya">›</button>
   </div>
 </section>
+
+<script>
+/* Carousel Event Seru Untukmu: panah ‹ › */
+(function initSeruCarousel() {
+  var seruRow = document.querySelector(".seru-row");
+  var seruPrev = document.querySelector(".seru-arrow.seru-prev");
+  var seruNext = document.querySelector(".seru-arrow.seru-next");
+
+  function updateSeruArrows() {
+    if (!seruRow || !seruPrev || !seruNext) return;
+    var maxScroll = seruRow.scrollWidth - seruRow.clientWidth;
+    seruPrev.style.display = seruRow.scrollLeft <= 5 ? "none" : "flex";
+    seruNext.style.display = seruRow.scrollLeft >= maxScroll - 5 ? "none" : "flex";
+  }
+
+  if (seruRow && seruNext) {
+    seruNext.addEventListener("click", function (e) {
+      e.preventDefault();
+      var card = seruRow.querySelector(".seru-card");
+      var step = card ? card.offsetWidth + 20 : 420;
+      seruRow.scrollBy({ left: step, behavior: "smooth" });
+      setTimeout(updateSeruArrows, 350);
+    });
+  }
+  if (seruRow && seruPrev) {
+    seruPrev.addEventListener("click", function (e) {
+      e.preventDefault();
+      var card = seruRow.querySelector(".seru-card");
+      var step = card ? card.offsetWidth + 20 : 420;
+      seruRow.scrollBy({ left: -step, behavior: "smooth" });
+      setTimeout(updateSeruArrows, 350);
+    });
+  }
+
+  if (seruRow) {
+    seruRow.addEventListener("scroll", updateSeruArrows, { passive: true });
+    window.addEventListener("resize", updateSeruArrows);
+    updateSeruArrows();
+  }
+
+  /* Reveal */
+  var reveals = document.querySelectorAll(".reveal");
+  if ("IntersectionObserver" in window && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    var io = new IntersectionObserver(function(entries) {
+      entries.forEach(function(en) {
+        if (en.isIntersecting) {
+          en.target.classList.add("visible");
+          io.unobserve(en.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(function(el) { io.observe(el); });
+  } else {
+    reveals.forEach(function(el) { el.classList.add("visible"); });
+  }
+})();
+</script>
 
 <!-- 3. KATEGORI EVENT (8 Kategori) -->
 <section class="section-wrap">
