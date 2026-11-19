@@ -565,4 +565,232 @@ class DashboardController extends Controller {
             'sidebarCounts' => $sidebarCounts
         ]), false);
     }
+
+    /**
+     * Sub-tab Check-in Tiket (Menu Pesanan)
+     */
+    public function checkin(): void {
+        $this->authorize('orders.view');
+
+        $eventModel = $this->model('Event');
+        $orderModel = $this->model('Order');
+
+        $events = $eventModel->all();
+        $orders = $orderModel->all();
+        $sidebarCounts = $this->getSidebarCounts();
+
+        $this->view('dashboard/checkin', [
+            'pageTitle'     => 'NOVA LIVE — Check-in Tiket',
+            'activeNav'     => 'orders',
+            'activeMenu'    => 'pesanan',
+            'activeTab'     => 'checkin',
+            'events'        => $events,
+            'orders'        => $orders,
+            'sidebarCounts' => $sidebarCounts
+        ], false);
+    }
+
+    /**
+     * Sub-tab Refund / Pengembalian Dana (Menu Pesanan)
+     */
+    public function refunds(): void {
+        $this->authorize('orders.view');
+
+        $orderModel = $this->model('Order');
+        $refundOrders = $orderModel->paginate(['status' => 'Dibatalkan'], 1, 20);
+        $sidebarCounts = $this->getSidebarCounts();
+
+        $this->view('dashboard/refunds', [
+            'pageTitle'     => 'NOVA LIVE — Refund & Pengembalian Dana',
+            'activeNav'     => 'orders',
+            'activeMenu'    => 'pesanan',
+            'activeTab'     => 'refund',
+            'refundOrders'  => $refundOrders['data'] ?? [],
+            'sidebarCounts' => $sidebarCounts
+        ], false);
+    }
+
+    /**
+     * Sub-tab E-Tiket / Dokumen (Menu Pesanan & Topbar Dokumen)
+     */
+    public function tickets(): void {
+        $this->authorize('orders.view');
+
+        $orderModel = $this->model('Order');
+        $eventModel = $this->model('Event');
+
+        $orders = $orderModel->recent(20);
+        $events = $eventModel->all();
+        $sidebarCounts = $this->getSidebarCounts();
+
+        $this->view('dashboard/tickets', [
+            'pageTitle'     => 'NOVA LIVE — Pratinjau E-Tiket',
+            'activeNav'     => 'tickets',
+            'activeMenu'    => 'pesanan',
+            'activeTab'     => 'etiket',
+            'orders'        => $orders,
+            'events'        => $events,
+            'sidebarCounts' => $sidebarCounts
+        ], false);
+    }
+
+    /**
+     * 4. Menu Keuangan (Saldo & Pencairan Dana)
+     */
+    public function finance(): void {
+        $this->authorize('dashboard.view');
+
+        $orderModel = $this->model('Order');
+        $totalRevenue = $orderModel->totalRevenue();
+        $sidebarCounts = $this->getSidebarCounts();
+
+        $this->view('dashboard/finance', [
+            'pageTitle'     => 'NOVA LIVE — Keuangan & Pencairan Dana',
+            'activeNav'     => 'finance',
+            'activeMenu'    => 'keuangan',
+            'activeTab'     => 'finance',
+            'totalRevenue'  => $totalRevenue,
+            'sidebarCounts' => $sidebarCounts
+        ], false);
+    }
+
+    /**
+     * 5. Menu Homepage (Sub-tab Banner)
+     */
+    public function homepage(): void {
+        $this->authorize('dashboard.view');
+
+        $eventModel = $this->model('Event');
+        $events = $eventModel->all();
+        $sidebarCounts = $this->getSidebarCounts();
+
+        $this->view('dashboard/homepage', [
+            'pageTitle'     => 'NOVA LIVE — Banner Homepage',
+            'activeNav'     => 'homepage',
+            'activeMenu'    => 'homepage',
+            'activeTab'     => 'banner',
+            'events'        => $events,
+            'sidebarCounts' => $sidebarCounts
+        ], false);
+    }
+
+    /**
+     * Menu Homepage (Sub-tab Tampilan Homepage: Seru & Populer)
+     */
+    public function homepageDisplay(): void {
+        $this->authorize('dashboard.view');
+
+        $eventModel = $this->model('Event');
+        $events = $eventModel->all();
+        $sidebarCounts = $this->getSidebarCounts();
+
+        $this->view('dashboard/homepage', [
+            'pageTitle'     => 'NOVA LIVE — Tampilan Homepage',
+            'activeNav'     => 'homepage',
+            'activeMenu'    => 'homepage',
+            'activeTab'     => 'tampilan',
+            'events'        => $events,
+            'sidebarCounts' => $sidebarCounts
+        ], false);
+    }
+
+    /**
+     * 6. Menu Laporan (Sub-tab Analitik / Topbar Laporan)
+     */
+    public function reports(): void {
+        $this->authorize('dashboard.view');
+
+        $categoryModel = $this->model('Category');
+        $cityModel = $this->model('City');
+        $categories = $categoryModel->allWithCount();
+        $cities = $cityModel->allWithCount();
+        $sidebarCounts = $this->getSidebarCounts();
+
+        $this->view('dashboard/reports', [
+            'pageTitle'     => 'NOVA LIVE — Analitik & Laporan',
+            'activeNav'     => 'reports',
+            'activeMenu'    => 'laporan',
+            'activeTab'     => 'analitik',
+            'categories'    => $categories,
+            'cities'        => $cities,
+            'sidebarCounts' => $sidebarCounts
+        ], false);
+    }
+
+    /**
+     * Sub-tab Log Aktivitas (Menu Laporan / Topbar Riwayat)
+     */
+    public function reportLogs(): void {
+        $this->authorize('dashboard.view');
+
+        $activityLogModel = $this->model('ActivityLog');
+        $page = max(1, (int)query_param('page', 1));
+        $logs = $activityLogModel->paginate($page, 20);
+        $sidebarCounts = $this->getSidebarCounts();
+
+        $this->view('dashboard/reports', [
+            'pageTitle'     => 'NOVA LIVE — Log Aktivitas Admin',
+            'activeNav'     => 'logs',
+            'activeMenu'    => 'laporan',
+            'activeTab'     => 'logs',
+            'logs'          => $logs['data'] ?? [],
+            'sidebarCounts' => $sidebarCounts
+        ], false);
+    }
+
+    /**
+     * Sub-tab Notifikasi ke Pembeli (Menu Laporan)
+     */
+    public function reportNotifications(): void {
+        $this->authorize('dashboard.view');
+
+        $eventModel = $this->model('Event');
+        $events = $eventModel->all();
+        $sidebarCounts = $this->getSidebarCounts();
+
+        $this->view('dashboard/reports', [
+            'pageTitle'     => 'NOVA LIVE — Notifikasi ke Pembeli',
+            'activeNav'     => 'reports',
+            'activeMenu'    => 'laporan',
+            'activeTab'     => 'notifikasi',
+            'events'        => $events,
+            'sidebarCounts' => $sidebarCounts
+        ], false);
+    }
+
+    /**
+     * 7. Menu Promosi (Kode Promo)
+     */
+    public function promotions(): void {
+        $this->authorize('dashboard.view');
+
+        $sidebarCounts = $this->getSidebarCounts();
+
+        $this->view('dashboard/promotions', [
+            'pageTitle'     => 'NOVA LIVE — Kode Promo & Promosi',
+            'activeNav'     => 'promotions',
+            'activeMenu'    => 'promosi',
+            'activeTab'     => 'promotions',
+            'sidebarCounts' => $sidebarCounts
+        ], false);
+    }
+
+    /**
+     * 8. Menu Pengaturan (Profil Penyelenggara / Topbar Kontak)
+     */
+    public function settings(): void {
+        $this->authorize('dashboard.view');
+
+        $currentUser = $_SESSION['user'] ?? ['full_name' => 'Admin NOVA LIVE', 'role' => 'admin'];
+        $sidebarCounts = $this->getSidebarCounts();
+
+        $this->view('dashboard/settings', [
+            'pageTitle'     => 'NOVA LIVE — Pengaturan & Kontak Penyelenggara',
+            'activeNav'     => 'settings',
+            'activeMenu'    => 'pengaturan',
+            'activeTab'     => 'settings',
+            'currentUser'   => $currentUser,
+            'sidebarCounts' => $sidebarCounts
+        ], false);
+    }
 }

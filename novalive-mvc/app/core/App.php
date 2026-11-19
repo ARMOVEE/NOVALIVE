@@ -83,8 +83,38 @@ class App {
                     $this->params = array_slice($url, 2);
                 }
             } elseif ($seg1 === 'orders') {
-                $this->method = 'orders';
-                $this->params = array_slice($url, 2);
+                if ($seg2 === 'checkin') {
+                    $this->method = 'checkin';
+                    $this->params = array_slice($url, 3);
+                } elseif ($seg2 === 'refunds') {
+                    $this->method = 'refunds';
+                    $this->params = array_slice($url, 3);
+                } elseif ($seg2 === 'tickets') {
+                    $this->method = 'tickets';
+                    $this->params = array_slice($url, 3);
+                } else {
+                    $this->method = 'orders';
+                    $this->params = array_slice($url, 2);
+                }
+            } elseif ($seg1 === 'homepage') {
+                if ($seg2 === 'display') {
+                    $this->method = 'homepageDisplay';
+                    $this->params = array_slice($url, 3);
+                } else {
+                    $this->method = 'homepage';
+                    $this->params = array_slice($url, 2);
+                }
+            } elseif ($seg1 === 'reports') {
+                if ($seg2 === 'logs') {
+                    $this->method = 'reportLogs';
+                    $this->params = array_slice($url, 3);
+                } elseif ($seg2 === 'notifications') {
+                    $this->method = 'reportNotifications';
+                    $this->params = array_slice($url, 3);
+                } else {
+                    $this->method = 'reports';
+                    $this->params = array_slice($url, 2);
+                }
             } else {
                 $this->method = ($seg1 !== '' && method_exists('DashboardController', $seg1)) ? $seg1 : 'index';
                 $this->params = array_slice($url, 2);

@@ -69,10 +69,10 @@ if (empty($shellFooter)):
 
         <nav class="topnav" aria-label="Navigasi utama">
           <a href="<?= base_url('dashboard') ?>" class="<?= ($activeNav ?? '') === 'ringkasan' ? 'active' : '' ?>">Dashboard</a>
-          <button type="button" class="js-soon" data-feature="Laporan">Laporan</button>
-          <button type="button" class="js-soon" data-feature="Dokumen">Dokumen</button>
-          <button type="button" class="js-soon" data-feature="Riwayat">Riwayat</button>
-          <button type="button" class="js-soon" data-feature="Kontak">Kontak</button>
+          <a href="<?= base_url('dashboard/reports') ?>" class="<?= ($activeNav ?? '') === 'reports' ? 'active' : '' ?>">Laporan</a>
+          <a href="<?= base_url('dashboard/orders/tickets') ?>" class="<?= ($activeNav ?? '') === 'tickets' ? 'active' : '' ?>">Dokumen</a>
+          <a href="<?= base_url('dashboard/reports/logs') ?>" class="<?= ($activeNav ?? '') === 'logs' ? 'active' : '' ?>">Riwayat</a>
+          <a href="<?= base_url('dashboard/settings') ?>" class="<?= ($activeNav ?? '') === 'settings' ? 'active' : '' ?>">Kontak</a>
         </nav>
 
         <div class="top-actions">
@@ -86,10 +86,10 @@ if (empty($shellFooter)):
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9a6 6 0 1 0-12 0c0 6-2.5 7-2.5 7h17S18 15 18 9"/><path d="M10 20a2.2 2.2 0 0 0 4 0"/></svg>
             <span class="dot" aria-hidden="true"></span>
           </button>
-          <button class="avatar-btn js-soon" type="button" id="avatarBtn" data-feature="Pengaturan Profil" aria-label="Profil penyelenggara — Pengaturan" title="Pengaturan — Profil Penyelenggara">
+          <a class="avatar-btn" href="<?= base_url('dashboard/settings') ?>" id="avatarBtn" aria-label="Profil penyelenggara — Pengaturan" title="Pengaturan — Profil Penyelenggara">
             <span class="avatar" id="topAvatar" aria-hidden="true"><?= e($userInitials) ?></span>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5B6B78" stroke-width="2.4" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
-          </button>
+          </a>
         </div>
 
         <div class="pop" id="bellPop" role="dialog" aria-label="Notifikasi">
@@ -133,7 +133,10 @@ if (empty($shellFooter)):
         </div>
       </div>
 
-      <!-- Shared Tabs Styling & Full-Width Frame Override -->
+      <!-- Link shared Dashboard Views CSS -->
+      <link rel="stylesheet" href="<?= base_url('assets/css/dashboard-views.css') ?>" />
+
+      <!-- Shared Tabs Styling, Centered Topbar, & Full-Width Frame Override -->
       <style>
         html,body{margin:0!important;padding:0!important;background:var(--panel)!important}
         .frame{
@@ -143,6 +146,28 @@ if (empty($shellFooter)):
         }
         @media (max-width:640px){
           .frame{padding:10px 10px 16px!important}
+        }
+        /* True Center Topbar Navigation */
+        .topbar{
+          position:relative!important;
+          display:flex!important;
+          align-items:center!important;
+          justify-content:space-between!important;
+        }
+        .topnav{
+          position:absolute!important;
+          left:50%!important;
+          transform:translateX(-50%)!important;
+          display:flex!important;
+          gap:4px!important;
+          background:#F1F3F4!important;
+          border-radius:999px!important;
+          padding:4px!important;
+          z-index:2!important;
+          margin:0!important;
+        }
+        @media (max-width:820px){
+          .topnav{display:none!important}
         }
         .tabs{
           display:flex;gap:2px;background:#F1F3F4;border-radius:999px;padding:4px;
@@ -180,35 +205,35 @@ if (empty($shellFooter)):
           </a>
 
           <!-- 3. Pesanan -->
-          <a href="<?= base_url('dashboard/orders') ?>" class="<?= (($activeNav ?? '') === 'orders' || ($activeMenu ?? '') === 'pesanan') ? 'active' : '' ?>" data-tip="Pesanan" aria-label="Pesanan" title="Pesanan">
+          <a href="<?= base_url('dashboard/orders') ?>" class="<?= (in_array($activeNav ?? '', ['orders', 'checkin', 'refund', 'tickets']) || ($activeMenu ?? '') === 'pesanan') ? 'active' : '' ?>" data-tip="Pesanan" aria-label="Pesanan" title="Pesanan">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h2l2.4 11.2a1.5 1.5 0 0 0 1.5 1.2h7.9a1.5 1.5 0 0 0 1.5-1.2L20.5 8H7"/><circle cx="10" cy="21" r="1"/><circle cx="18" cy="21" r="1"/></svg>
             <span class="rail-badge" id="navOrderCount"><?= (int)($sidebarCounts['orders'] ?? 8) ?></span>
           </a>
 
           <!-- 4. Keuangan -->
-          <button type="button" class="js-soon" data-feature="Keuangan" data-tip="Keuangan" aria-label="Keuangan" title="Keuangan">
+          <a href="<?= base_url('dashboard/finance') ?>" class="<?= (($activeNav ?? '') === 'finance' || ($activeMenu ?? '') === 'keuangan') ? 'active' : '' ?>" data-tip="Keuangan" aria-label="Keuangan" title="Keuangan">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10.5h18M7 15h4"/></svg>
-          </button>
+          </a>
 
           <!-- 5. Homepage -->
-          <button type="button" class="js-soon" data-feature="Homepage" data-tip="Homepage" aria-label="Homepage" title="Homepage">
+          <a href="<?= base_url('dashboard/homepage') ?>" class="<?= (in_array($activeNav ?? '', ['homepage', 'banner', 'tampilan']) || ($activeMenu ?? '') === 'homepage') ? 'active' : '' ?>" data-tip="Homepage" aria-label="Homepage" title="Homepage">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 4v5.5"/></svg>
-          </button>
+          </a>
 
           <!-- 6. Laporan -->
-          <button type="button" class="js-soon" data-feature="Laporan" data-tip="Laporan" aria-label="Laporan" title="Laporan">
+          <a href="<?= base_url('dashboard/reports') ?>" class="<?= (in_array($activeNav ?? '', ['reports', 'logs', 'notifications']) || ($activeMenu ?? '') === 'laporan') ? 'active' : '' ?>" data-tip="Laporan" aria-label="Laporan" title="Laporan">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M5 20v-6M11 20V6M17 20v-9"/><path d="M3 20h18"/></svg>
-          </button>
+          </a>
 
           <!-- 7. Promosi -->
-          <button type="button" class="js-soon" data-feature="Promosi" data-tip="Promosi" aria-label="Promosi" title="Promosi">
+          <a href="<?= base_url('dashboard/promotions') ?>" class="<?= (($activeNav ?? '') === 'promotions' || ($activeMenu ?? '') === 'promosi') ? 'active' : '' ?>" data-tip="Promosi" aria-label="Promosi" title="Promosi">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M3 11V7a2 2 0 0 1 2-2h4l9 9-4 4-9-9z"/><circle cx="8" cy="9" r="1.4"/></svg>
-          </button>
+          </a>
 
           <!-- 8. Pengaturan -->
-          <button type="button" class="js-soon" data-feature="Pengaturan" data-tip="Pengaturan" aria-label="Pengaturan" title="Pengaturan">
+          <a href="<?= base_url('dashboard/settings') ?>" class="<?= (($activeNav ?? '') === 'settings' || ($activeMenu ?? '') === 'pengaturan') ? 'active' : '' ?>" data-tip="Pengaturan" aria-label="Pengaturan" title="Pengaturan">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19 12a7 7 0 0 0-.14-1.4l2-1.55-2-3.46-2.36.95a7 7 0 0 0-2.42-1.4L13.7 2.6h-3.4l-.38 2.54a7 7 0 0 0-2.42 1.4l-2.36-.95-2 3.46 2 1.55a7 7 0 0 0 0 2.8l-2 1.55 2 3.46 2.36-.95a7 7 0 0 0 2.42 1.4l.38 2.54h3.4l.38-2.54a7 7 0 0 0 2.42-1.4l2.36.95 2-3.46-2-1.55c.1-.45.14-.92.14-1.4z"/></svg>
-          </button>
+          </a>
 
           <span class="spacer"></span>
 
@@ -233,9 +258,20 @@ if (empty($shellFooter)):
           <?php elseif (($activeMenu ?? '') === 'pesanan'): ?>
             <div class="tabs" role="tablist" aria-label="Tab menu">
               <a href="<?= base_url('dashboard/orders') ?>" class="<?= ($activeTab ?? 'pesanan') === 'pesanan' ? 'active' : '' ?>" role="tab">Pesanan</a>
-              <button type="button" class="js-soon" data-feature="Check-in" role="tab">Check-in</button>
-              <button type="button" class="js-soon" data-feature="Refund" role="tab">Refund <span class="tab-badge" id="navRefundCount"><?= (int)($sidebarCounts['refund'] ?? 2) ?></span></button>
-              <button type="button" class="js-soon" data-feature="E-Tiket" role="tab">E-Tiket</button>
+              <a href="<?= base_url('dashboard/orders/checkin') ?>" class="<?= ($activeTab ?? '') === 'checkin' ? 'active' : '' ?>" role="tab">Check-in</a>
+              <a href="<?= base_url('dashboard/orders/refunds') ?>" class="<?= ($activeTab ?? '') === 'refund' ? 'active' : '' ?>" role="tab">Refund <span class="tab-badge" id="navRefundCount"><?= (int)($sidebarCounts['refund'] ?? 2) ?></span></a>
+              <a href="<?= base_url('dashboard/orders/tickets') ?>" class="<?= ($activeTab ?? '') === 'etiket' ? 'active' : '' ?>" role="tab">E-Tiket</a>
+            </div>
+          <?php elseif (($activeMenu ?? '') === 'homepage'): ?>
+            <div class="tabs" role="tablist" aria-label="Tab menu">
+              <a href="<?= base_url('dashboard/homepage') ?>" class="<?= ($activeTab ?? 'banner') === 'banner' ? 'active' : '' ?>" role="tab">Banner</a>
+              <a href="<?= base_url('dashboard/homepage/display') ?>" class="<?= ($activeTab ?? '') === 'tampilan' ? 'active' : '' ?>" role="tab">Tampilan Homepage</a>
+            </div>
+          <?php elseif (($activeMenu ?? '') === 'laporan'): ?>
+            <div class="tabs" role="tablist" aria-label="Tab menu">
+              <a href="<?= base_url('dashboard/reports') ?>" class="<?= ($activeTab ?? 'analitik') === 'analitik' ? 'active' : '' ?>" role="tab">Analitik</a>
+              <a href="<?= base_url('dashboard/reports/logs') ?>" class="<?= ($activeTab ?? '') === 'logs' ? 'active' : '' ?>" role="tab">Log Aktivitas</a>
+              <a href="<?= base_url('dashboard/reports/notifications') ?>" class="<?= ($activeTab ?? '') === 'notifikasi' ? 'active' : '' ?>" role="tab">Notifikasi</a>
             </div>
           <?php endif; ?>
 <?php else: ?>

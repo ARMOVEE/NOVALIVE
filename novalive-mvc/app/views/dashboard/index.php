@@ -72,7 +72,7 @@ if (strlen($userInitials) < 2) $userInitials = 'AD';
 
     /* ---------- Top bar ---------- */
     .topbar{
-      display:flex;align-items:center;gap:18px;
+      display:flex;align-items:center;justify-content:space-between;
       background:var(--card);
       border-radius:999px;
       padding:10px 12px 10px 20px;
@@ -84,7 +84,11 @@ if (strlen($userInitials) < 2) $userInitials = 'AD';
     .logo-ticket{height:40px;width:auto;overflow:visible;cursor:pointer;flex:none}
     .logo-word{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:19px;letter-spacing:.2px;color:var(--navy);white-space:nowrap}
     .logo-word em{font-style:normal;color:var(--gold-deep)}
-    .topnav{display:flex;gap:4px;margin:0 auto;background:#F1F3F4;border-radius:999px;padding:4px}
+    .topnav{
+      position:absolute;left:50%;transform:translateX(-50%);
+      display:flex;gap:4px;margin:0;background:#F1F3F4;border-radius:999px;padding:4px;
+      z-index:2;
+    }
     .topnav a, .topnav button{
       padding:8px 18px;border-radius:999px;font-size:13.5px;font-weight:600;color:#5B6B78;min-height:36px;
       transition:background .15s,color .15s;text-decoration:none;display:inline-flex;align-items:center;
