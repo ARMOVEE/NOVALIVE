@@ -1,74 +1,20 @@
 <style>
-  .hero-banner {
-    max-width: 1280px;
-    margin: 24px auto 40px;
-    padding: 0 24px;
-  }
-  .hero-slide {
-    background: linear-gradient(135deg, #0E3254 0%, #15497A 60%, #23649A 100%);
-    border-radius: 20px;
-    padding: 56px 48px;
-    color: #fff;
-    position: relative;
-    overflow: hidden;
-    box-shadow: var(--shadow-lg);
-  }
-  .hero-slide::after {
-    content: '';
-    position: absolute;
-    right: -40px;
-    bottom: -40px;
-    width: 320px;
-    height: 320px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(234, 212, 162, 0.15) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .hero-badge {
-    display: inline-block;
-    background: rgba(234, 212, 162, 0.2);
-    color: var(--gold);
-    border: 1px solid rgba(234, 212, 162, 0.4);
-    font-size: 13px;
-    font-weight: 700;
-    padding: 6px 14px;
-    border-radius: 999px;
-    margin-bottom: 16px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-  .hero-title {
-    font-size: clamp(32px, 4.5vw, 48px);
-    font-weight: 800;
-    line-height: 1.15;
-    color: #fff;
-    max-width: 650px;
-    margin-bottom: 16px;
-  }
-  .hero-desc {
-    font-size: 16px;
-    color: #C4D6E8;
-    max-width: 520px;
-    line-height: 1.6;
-    margin-bottom: 28px;
-  }
-  .hero-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--gold);
-    color: var(--navy-deep);
-    font-weight: 700;
-    font-size: 15px;
-    padding: 12px 28px;
-    border-radius: 999px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-    transition: transform 0.2s, background 0.2s;
-  }
-  .hero-btn:hover {
-    background: #f0deb3;
-    transform: translateY(-2px);
-  }
+  /* BANNER: tumpukan 3 slide navy kosong (sesuai Figma) */
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  .banner-stack-sec{background:var(--nav-bg);padding:34px 20px 30px}
+  .banner-stack{position:relative;max-width:1374px;margin:0 auto;aspect-ratio:1374/499}
+  .banner-slide{position:absolute;left:50%;transform:translateX(-50%);background:#15497A;border-radius:20px;transition:top .45s ease,height .45s ease,width .45s ease,opacity .45s ease,background .45s ease}
+  .banner-slide.back{width:95.12%;height:49.7%;top:21.04%;background:rgba(21,73,122,.5);opacity:1;z-index:1}
+  .banner-slide.mid{width:89.3%;height:65.73%;top:13.03%;background:rgba(21,73,122,.75);opacity:1;z-index:2}
+  .banner-slide.front{width:83.48%;height:81.76%;top:5.01%;background:#15497A;opacity:1;z-index:3}
+  .banner-arrow{position:absolute;top:45.89%;transform:translateY(-50%);width:46px;height:46px;min-height:46px;border-radius:50%;background:#fff;border:0;box-shadow:var(--shadow-lg);font-size:1.6rem;line-height:1;color:var(--navy);z-index:4;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0 0 4px}
+  .banner-arrow:hover{color:var(--brand)}
+  .banner-arrow.prev{left:6.55%}
+  .banner-arrow.next{right:6.55%}
+  .banner-dots{position:absolute;left:50%;transform:translateX(-50%);bottom:2.5%;background:#F5EFE0;border-radius:999px;padding:8px 12px;display:flex;gap:7px;align-items:center;box-shadow:var(--shadow);z-index:4}
+  .banner-dots span{width:8px;height:8px;border-radius:999px;background:rgba(21,73,122,.45);transition:width .3s ease,background .3s ease}
+  .banner-dots span.on{width:24px;background:#23649A}
+  @media(max-width:760px){ .banner-arrow{width:40px;height:40px;min-height:40px;font-size:1.35rem} .banner-arrow.prev{left:2%} .banner-arrow.next{right:2%} }
 
   /* Section Styles */
   .section-wrap {
@@ -286,18 +232,69 @@
   }
 </style>
 
-<!-- 1. HERO BANNER -->
-<section class="hero-banner">
-  <div class="hero-slide">
-    <span class="hero-badge">Jelajahi Pengalaman Baru</span>
-    <h1 class="hero-title">Ribuan Event Pilihan Siap Menyambutmu</h1>
-    <p class="hero-desc">Beli tiket konser musik spektakuler, pameran seni kontemporer, wahana wisata, hingga kejuaraan olahraga favoritmu di NOVA LIVE.</p>
-    <a href="<?= base_url('events') ?>" class="hero-btn">
-      <span>Lihat Semua Event</span>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </a>
+<!-- 1. BANNER: tumpukan 3 slide navy kosong -->
+<section class="banner-stack-sec" aria-label="Banner">
+  <h1 class="sr-only">NOVA LIVE — Platform Tiket Event Indonesia</h1>
+  <div class="banner-stack reveal">
+    <div class="banner-slide back" aria-hidden="true"></div>
+    <div class="banner-slide mid" aria-hidden="true"></div>
+    <div class="banner-slide front" aria-hidden="true"></div>
+    <button type="button" class="banner-arrow prev" id="bannerPrev" aria-label="Slide sebelumnya">‹</button>
+    <button type="button" class="banner-arrow next" id="bannerNext" aria-label="Slide berikutnya">›</button>
+    <div class="banner-dots" id="bannerDots" aria-hidden="true"><span class="on"></span><span></span><span></span></div>
   </div>
 </section>
+
+<script>
+(function(){
+  var slides = document.querySelectorAll(".banner-slide");
+  var dots = document.querySelectorAll("#bannerDots span");
+  var prev = document.getElementById("bannerPrev");
+  var next = document.getElementById("bannerNext");
+  var stack = document.querySelector(".banner-stack");
+  if (!slides.length || !prev || !next) return;
+  var pos = ["back", "mid", "front"];
+  var cur = 2;
+  function render(){
+    slides.forEach(function(s, i){
+      s.classList.remove("back", "mid", "front");
+      s.classList.add(pos[(i - cur + 5) % 3]);
+    });
+    dots.forEach(function(d, i){ d.classList.toggle("on", i === cur); });
+  }
+  render();
+
+  /* Auto-slide: putar tumpukan tiap 4 detik (loop).
+     Pause saat kursor di atas banner atau kontrol banner difokuskan.
+     Tidak jalan kalau pengguna memakai reduced-motion. */
+  var DELAY = 4000;
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var timer = null;
+  var hovering = false;
+  var focused = false;
+  function stopAuto(){
+    if (timer !== null){ clearInterval(timer); timer = null; }
+  }
+  function startAuto(){
+    stopAuto();
+    if (reduced || hovering || focused) return;
+    timer = setInterval(function(){ cur = (cur + 1) % 3; render(); }, DELAY);
+  }
+  next.addEventListener("click", function(){ cur = (cur + 1) % 3; render(); startAuto(); });
+  prev.addEventListener("click", function(){ cur = (cur + 2) % 3; render(); startAuto(); });
+  dots.forEach(function(d, i){
+    d.style.cursor = "pointer";
+    d.addEventListener("click", function(){ cur = i; render(); startAuto(); });
+  });
+  if (stack){
+    stack.addEventListener("mouseenter", function(){ hovering = true; stopAuto(); });
+    stack.addEventListener("mouseleave", function(){ hovering = false; startAuto(); });
+    stack.addEventListener("focusin", function(){ focused = true; stopAuto(); });
+    stack.addEventListener("focusout", function(){ focused = false; startAuto(); });
+  }
+  startAuto();
+})();
+</script>
 
 <!-- 2. EVENT SERU (10 Event) -->
 <section class="section-wrap">
