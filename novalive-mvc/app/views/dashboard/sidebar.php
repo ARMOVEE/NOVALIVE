@@ -133,8 +133,17 @@ if (empty($shellFooter)):
         </div>
       </div>
 
-      <!-- Shared Tabs Styling -->
+      <!-- Shared Tabs Styling & Full-Width Frame Override -->
       <style>
+        html,body{margin:0!important;padding:0!important;background:var(--panel)!important}
+        .frame{
+          width:100%!important;max-width:none!important;margin:0!important;
+          border-radius:0!important;box-shadow:none!important;border:none!important;
+          padding:16px 20px 24px!important;box-sizing:border-box!important;
+        }
+        @media (max-width:640px){
+          .frame{padding:10px 10px 16px!important}
+        }
         .tabs{
           display:flex;gap:2px;background:#F1F3F4;border-radius:999px;padding:4px;
           width:fit-content;max-width:100%;overflow-x:auto;scrollbar-width:none;

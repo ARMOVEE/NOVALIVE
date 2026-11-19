@@ -49,20 +49,25 @@ if (strlen($userInitials) < 2) $userInitials = 'AD';
     html,body{margin:0;padding:0}
     body{
       font-family:'Inter',system-ui,sans-serif;
-      background:var(--page);
+      background:var(--panel);
       color:var(--ink);
       -webkit-font-smoothing:antialiased;
-      padding:22px 18px 30px;
+      min-height:100vh;
+      margin:0;
+      padding:0;
     }
     h1,h2,h3,.pj{font-family:'Plus Jakarta Sans','Inter',sans-serif}
     button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
     a{text-decoration:none;color:inherit}
     .frame{
-      max-width:1240px;margin:0 auto;
+      width:100%;
+      max-width:none;
+      margin:0;
       background:var(--panel);
-      border-radius:30px;
-      padding:18px 22px 24px;
-      box-shadow:0 24px 60px rgba(14,50,84,.10);
+      border-radius:0;
+      padding:16px 20px 24px;
+      box-shadow:none;
+      border:none;
     }
 
     /* ---------- Top bar ---------- */
@@ -275,8 +280,8 @@ if (strlen($userInitials) < 2) $userInitials = 'AD';
       #railTip{display:none}
     }
     @media (max-width:640px){
-      body{padding:12px 8px 20px}
-      .frame{padding:12px 12px 16px;border-radius:22px}
+      body{padding:0}
+      .frame{padding:10px 10px 16px;border-radius:0}
       .topbar{padding:8px 8px 8px 14px}
       .logo-ticket{height:34px}
       .logo-word{font-size:17px}

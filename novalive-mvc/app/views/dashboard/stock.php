@@ -49,17 +49,17 @@ if (strlen($userInitials) < 2) $userInitials = 'AD';
     html,body{margin:0;padding:0}
     body{
       font-family:'Inter',system-ui,-apple-system,sans-serif;
-      background:var(--page);color:var(--ink);
-      min-height:100vh;padding:22px 18px 40px;
+      background:var(--panel);color:var(--ink);
+      min-height:100vh;margin:0;padding:0;
     }
     a{color:inherit;text-decoration:none}
     button{font-family:inherit;background:none;border:none;padding:0;cursor:pointer;color:inherit}
 
     /* ---------- Outer card shell ---------- */
     .frame{
-      max-width:1440px;margin:0 auto;background:var(--panel);
-      border-radius:32px;box-shadow:0 24px 60px rgba(14,50,84,.08);
-      padding:18px 20px 24px;border:1px solid rgba(255,255,255,.7);
+      width:100%;max-width:none;margin:0;background:var(--panel);
+      border-radius:0;box-shadow:none;
+      padding:16px 20px 24px;border:none;
     }
 
     /* ---------- Top bar ---------- */
@@ -273,8 +273,8 @@ if (strlen($userInitials) < 2) $userInitials = 'AD';
       #railTip{display:none}
     }
     @media (max-width:640px){
-      body{padding:12px 8px 20px}
-      .frame{padding:12px 12px 16px;border-radius:22px}
+      body{padding:0}
+      .frame{padding:10px 10px 16px;border-radius:0}
       .topbar{padding:8px 8px 8px 14px}
       .logo-ticket{height:34px}
       .logo-word{font-size:17px}
