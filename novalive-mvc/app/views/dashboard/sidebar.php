@@ -239,9 +239,9 @@ if (empty($shellFooter)):
           </a>
 
           <!-- 5. Homepage -->
-          <button type="button" class="js-soon" data-feature="Homepage" data-tip="Homepage" aria-label="Homepage" title="Homepage">
+          <a href="<?= base_url('dashboard/homepage/banners') ?>" class="<?= (in_array($activeNav ?? '', ['banners', 'layout']) || ($activeMenu ?? '') === 'homepage') ? 'active' : '' ?>" data-tip="Homepage" aria-label="Homepage" title="Homepage">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 4v5.5"/></svg>
-          </button>
+          </a>
 
           <!-- 6. Laporan -->
           <a href="<?= base_url('dashboard/reports/analytics') ?>" class="<?= (in_array($activeNav ?? '', ['analytics', 'logs', 'notifications']) || ($activeMenu ?? '') === 'laporan') ? 'active' : '' ?>" data-tip="Laporan" aria-label="Laporan" title="Laporan">
@@ -287,6 +287,11 @@ if (empty($shellFooter)):
               <a href="<?= base_url('dashboard/orders/checkin') ?>" class="<?= ($activeTab ?? '') === 'checkin' ? 'active' : '' ?>" role="tab">Check-in</a>
               <a href="<?= base_url('dashboard/orders/refunds') ?>" class="<?= ($activeTab ?? '') === 'refund' ? 'active' : '' ?>" role="tab">Refund <span class="tab-badge" id="navRefundCount"><?= (int)($sidebarCounts['refund'] ?? 2) ?></span></a>
               <a href="<?= base_url('dashboard/orders/tickets') ?>" class="<?= ($activeTab ?? '') === 'etiket' ? 'active' : '' ?>" role="tab">E-Tiket</a>
+            </div>
+          <?php elseif (($activeMenu ?? '') === 'homepage'): ?>
+            <div class="tabs" role="tablist" aria-label="Tab menu">
+              <a href="<?= base_url('dashboard/homepage/banners') ?>" class="<?= ($activeTab ?? 'banners') === 'banners' ? 'active' : '' ?>" role="tab">Banner Slide</a>
+              <a href="<?= base_url('dashboard/homepage/layout') ?>" class="<?= ($activeTab ?? '') === 'layout' ? 'active' : '' ?>" role="tab">Tata Letak Homepage</a>
             </div>
           <?php elseif (($activeMenu ?? '') === 'laporan'): ?>
             <div class="tabs" role="tablist" aria-label="Tab menu">

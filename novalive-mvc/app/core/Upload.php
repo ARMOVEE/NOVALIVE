@@ -13,10 +13,10 @@ class Upload {
 
     /**
      * Memproses upload berkas gambar
-     * Mengembalikan string path relatif ('uploads/random.jpg') atau null jika tidak ada berkas yang diunggah
+     * Mengembalikan string path relatif ('uploads/random.jpg' atau 'uploads/banners/random.jpg') atau null jika tidak ada berkas yang diunggah
      * Melempar Exception jika berkas diunggah namun tidak valid
      */
-    public static function image(string $field = 'photo'): ?string {
+    public static function image(string $field = 'photo', string $subfolder = ''): ?string {
         if (!isset($_FILES[$field])) {
             return null;
         }
@@ -58,7 +58,8 @@ class Upload {
         $extension = self::$allowedMimes[$mime];
         $randomName = bin2hex(random_bytes(16)) . '.' . $extension;
 
-        $targetDir = ROOT_PATH . '/public/uploads';
+        $sub = trim($subfolder, '/\\');
+        $targetDir = ROOT_PATH . '/public/uploads' . ($sub !== '' ? '/' . $sub : '');
         if (!is_dir($targetDir)) {
             @mkdir($targetDir, 0755, true);
         }
@@ -69,7 +70,7 @@ class Upload {
             throw new Exception('Gagal menyimpan berkas yang diunggah ke server.');
         }
 
-        return 'uploads/' . $randomName;
+        return 'uploads/' . ($sub !== '' ? $sub . '/' : '') . $randomName;
     }
 
     /**

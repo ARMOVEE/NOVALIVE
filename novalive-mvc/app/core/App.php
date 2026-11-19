@@ -162,6 +162,45 @@ class App {
                     $this->method = 'analytics';
                     $this->params = array_slice($url, 2);
                 }
+            } elseif ($seg1 === 'homepage') {
+                $seg4 = $url[4] ?? '';
+                if ($seg2 === 'layout' || $seg2 === 'tampilan') {
+                    if ($seg3 === 'update') {
+                        $this->method = 'updateHomepageLayout';
+                        $this->params = [];
+                    } elseif ($seg3 === 'featured') {
+                        $this->method = 'updateFeaturedEvents';
+                        $this->params = [];
+                    } else {
+                        $this->method = 'homepageLayout';
+                        $this->params = array_slice($url, 3);
+                    }
+                } else {
+                    if ($seg2 === 'banners' || $seg2 === '') {
+                        if ($seg3 === 'store') {
+                            $this->method = 'storeBanner';
+                            $this->params = [];
+                        } elseif ($seg3 === 'update' && $seg4 !== '') {
+                            $this->method = 'updateBanner';
+                            $this->params = [$seg4];
+                        } elseif ($seg3 === 'toggle' && $seg4 !== '') {
+                            $this->method = 'toggleBanner';
+                            $this->params = [$seg4];
+                        } elseif ($seg3 === 'reorder' && $seg4 !== '') {
+                            $this->method = 'reorderBanner';
+                            $this->params = [$seg4, $url[5] ?? 'up'];
+                        } elseif ($seg3 === 'delete' && $seg4 !== '') {
+                            $this->method = 'deleteBanner';
+                            $this->params = [$seg4];
+                        } else {
+                            $this->method = 'banners';
+                            $this->params = array_slice($url, 3);
+                        }
+                    } else {
+                        $this->method = 'banners';
+                        $this->params = array_slice($url, 2);
+                    }
+                }
             } else {
                 $this->method = ($seg1 !== '' && method_exists('DashboardController', $seg1)) ? $seg1 : 'index';
                 $this->params = array_slice($url, 2);

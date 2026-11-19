@@ -165,16 +165,59 @@
   @media (prefers-reduced-motion: reduce){ .kota-card:hover{transform:none} }
 </style>
 
-<!-- 1. BANNER: tumpukan 3 slide navy kosong -->
+<?php
+$secSeru = $sections['event_seru'] ?? ['title' => 'Event Seru Untukmu', 'is_visible' => 1, 'item_limit' => 10];
+$secKat = $sections['kategori'] ?? ['title' => 'Kategori Event', 'is_visible' => 1, 'item_limit' => 8];
+$secPop = $sections['event_populer'] ?? ['title' => 'Event Populer', 'is_visible' => 1, 'item_limit' => 4];
+$secKota = $sections['jelajahi_kota'] ?? ['title' => 'Jelajahi Event di Kotamu', 'is_visible' => 1, 'item_limit' => 6];
+
+$activeBanners = !empty($banners) ? $banners : [
+  ['image' => null, 'title' => null, 'subtitle' => null, 'link_url' => null, 'bg_color' => '#15497A'],
+  ['image' => null, 'title' => null, 'subtitle' => null, 'link_url' => null, 'bg_color' => '#15497A'],
+  ['image' => null, 'title' => null, 'subtitle' => null, 'link_url' => null, 'bg_color' => '#15497A'],
+];
+while (count($activeBanners) < 3) {
+  $activeBanners[] = ['image' => null, 'title' => null, 'subtitle' => null, 'link_url' => null, 'bg_color' => '#15497A'];
+}
+?>
+
+<!-- 1. BANNER: tumpukan slide dinamis -->
 <section class="banner-stack-sec" aria-label="Banner">
   <h1 class="sr-only">NOVA LIVE — Platform Tiket Event Indonesia</h1>
   <div class="banner-stack reveal">
-    <div class="banner-slide back" aria-hidden="true"></div>
-    <div class="banner-slide mid" aria-hidden="true"></div>
-    <div class="banner-slide front" aria-hidden="true"></div>
+    <?php foreach ($activeBanners as $idx => $b): 
+      $posClass = ($idx === 0) ? 'back' : (($idx === 1) ? 'mid' : 'front');
+      $hasImg = !empty($b['image']);
+      $bgStyle = '';
+      if ($hasImg) {
+          $bgStyle = "background-image:url('" . base_url($b['image']) . "');background-size:cover;background-position:center;";
+      } elseif (!empty($b['bg_color']) && $b['bg_color'] !== '#15497A') {
+          $bgStyle = "background:" . htmlspecialchars($b['bg_color']) . ";";
+      }
+    ?>
+      <div class="banner-slide <?= $posClass ?>" style="<?= $bgStyle ?>" aria-hidden="<?= $posClass === 'front' ? 'false' : 'true' ?>">
+        <?php if (!empty($b['title']) || !empty($b['subtitle'])): ?>
+          <div class="banner-caption" style="position:relative;z-index:2;padding:32px 38px;height:100%;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;color:#fff;background:linear-gradient(90deg,rgba(7,18,34,.65),transparent 75%);border-radius:inherit;">
+            <?php if (!empty($b['title'])): ?>
+              <h2 style="font-size:clamp(1.2rem,2.4vw,2rem);font-weight:800;margin:0 0 8px;color:#fff;"><?= htmlspecialchars($b['title']) ?></h2>
+            <?php endif; ?>
+            <?php if (!empty($b['subtitle'])): ?>
+              <p style="font-size:clamp(0.85rem,1.2vw,1.05rem);color:#D9E6F2;margin:0 0 16px;max-width:600px;line-height:1.45;"><?= htmlspecialchars($b['subtitle']) ?></p>
+            <?php endif; ?>
+            <?php if (!empty($b['link_url'])): ?>
+              <a href="<?= htmlspecialchars($b['link_url']) ?>" style="align-self:flex-start;background:var(--gold,#C5A880);color:var(--navy,#0E3254);font-weight:700;padding:8px 18px;border-radius:10px;text-decoration:none;font-size:0.92rem;display:inline-flex;align-items:center;gap:6px;"><?= htmlspecialchars($b['cta_text'] ?? 'Lihat Event') ?> &rarr;</a>
+            <?php endif; ?>
+          </div>
+        <?php endif; ?>
+      </div>
+    <?php endforeach; ?>
     <button type="button" class="banner-arrow prev" id="bannerPrev" aria-label="Slide sebelumnya">‹</button>
     <button type="button" class="banner-arrow next" id="bannerNext" aria-label="Slide berikutnya">›</button>
-    <div class="banner-dots" id="bannerDots" aria-hidden="true"><span class="on"></span><span></span><span></span></div>
+    <div class="banner-dots" id="bannerDots" aria-hidden="true">
+      <?php for ($i = 0; $i < count($activeBanners); $i++): ?>
+        <span class="<?= $i === (count($activeBanners) - 1) ? 'on' : '' ?>"></span>
+      <?php endfor; ?>
+    </div>
   </div>
 </section>
 
@@ -186,20 +229,35 @@
   var next = document.getElementById("bannerNext");
   var stack = document.querySelector(".banner-stack");
   if (!slides.length || !prev || !next) return;
+  var total = slides.length;
   var pos = ["back", "mid", "front"];
-  var cur = 2;
+  var cur = total >= 3 ? 2 : 0;
   function render(){
     slides.forEach(function(s, i){
       s.classList.remove("back", "mid", "front");
-      s.classList.add(pos[(i - cur + 5) % 3]);
+      if (total === 3) {
+        s.classList.add(pos[(i - cur + 5) % 3]);
+        s.style.display = "";
+      } else {
+        if (i === cur) {
+          s.classList.add("front");
+          s.style.display = "";
+        } else if (i === (cur - 1 + total) % total) {
+          s.classList.add("mid");
+          s.style.display = "";
+        } else if (i === (cur - 2 + total) % total) {
+          s.classList.add("back");
+          s.style.display = "";
+        } else {
+          s.style.display = "none";
+        }
+      }
     });
     dots.forEach(function(d, i){ d.classList.toggle("on", i === cur); });
   }
   render();
 
-  /* Auto-slide: putar tumpukan tiap 4 detik (loop).
-     Pause saat kursor di atas banner atau kontrol banner difokuskan.
-     Tidak jalan kalau pengguna memakai reduced-motion. */
+  /* Auto-slide: putar tumpukan tiap 4 detik (loop). */
   var DELAY = 4000;
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var timer = null;
@@ -211,10 +269,10 @@
   function startAuto(){
     stopAuto();
     if (reduced || hovering || focused) return;
-    timer = setInterval(function(){ cur = (cur + 1) % 3; render(); }, DELAY);
+    timer = setInterval(function(){ cur = (cur + 1) % total; render(); }, DELAY);
   }
-  next.addEventListener("click", function(){ cur = (cur + 1) % 3; render(); startAuto(); });
-  prev.addEventListener("click", function(){ cur = (cur + 2) % 3; render(); startAuto(); });
+  next.addEventListener("click", function(){ cur = (cur + 1) % total; render(); startAuto(); });
+  prev.addEventListener("click", function(){ cur = (cur - 1 + total) % total; render(); startAuto(); });
   dots.forEach(function(d, i){
     d.style.cursor = "pointer";
     d.addEventListener("click", function(){ cur = i; render(); startAuto(); });
@@ -229,15 +287,19 @@
 })();
 </script>
 
+<?php if (!empty($secSeru['is_visible'])): ?>
 <!-- 2. EVENT SERU UNTUKMU (Carousel 10 Event) -->
 <section class="section alt" id="seru" aria-labelledby="seruTitle">
   <div class="wrap seru-wrap">
     <div class="section-head">
-      <h2 id="seruTitle"><svg class="seru-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 010 7M19 6a8.5 8.5 0 010 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Event Seru Untukmu</h2>
+      <h2 id="seruTitle"><svg class="seru-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 010 7M19 6a8.5 8.5 0 010 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><?= e($secSeru['title'] ?? 'Event Seru Untukmu') ?></h2>
     </div>
     <div class="seru-row reveal">
       <?php 
         $seruList = $eventsSeru ?? $seru ?? [];
+        if (!empty($secSeru['item_limit']) && (int)$secSeru['item_limit'] > 0) {
+            $seruList = array_slice($seruList, 0, (int)$secSeru['item_limit']);
+        }
         foreach ($seruList as $e): 
       ?>
         <article class="card seru-card">
@@ -258,6 +320,7 @@
     <button type="button" class="seru-arrow seru-next" aria-label="Event berikutnya">›</button>
   </div>
 </section>
+<?php endif; ?>
 
 <script>
 /* Carousel Event Seru Untukmu: panah ‹ › */
@@ -330,12 +393,19 @@ $categorySvgs = [
 ?>
 
 <div class="cover-stack">
+<?php if (!empty($secKat['is_visible'])): ?>
 <!-- 3. KATEGORI EVENT -->
 <section class="section kategori-sec" id="populer" aria-labelledby="katTitle">
   <div class="wrap">
-    <h2 class="kategori-title reveal" id="katTitle">Kategori Event</h2>
+    <h2 class="kategori-title reveal" id="katTitle"><?= e($secKat['title'] ?? 'Kategori Event') ?></h2>
     <div class="kategori-row">
-      <?php foreach ($categories as $c): ?>
+      <?php 
+        $catList = $categories ?? [];
+        if (!empty($secKat['item_limit']) && (int)$secKat['item_limit'] > 0) {
+            $catList = array_slice($catList, 0, (int)$secKat['item_limit']);
+        }
+        foreach ($catList as $c): 
+      ?>
         <a class="kategori-item reveal" href="<?= base_url('events?category=' . $c['id']) ?>" data-explore="<?= e($c['name']) ?>">
           <span class="kategori-circle"><?= $categorySvgs[$c['name']] ?? '' ?></span>
           <span class="kategori-pill"><?= e($c['name']) ?></span>
@@ -344,32 +414,37 @@ $categorySvgs = [
     </div>
   </div>
 </section>
+<?php endif; ?>
 
 <?php
-// Siapkan 4 event populer sesuai mockup (Midnight Jazz, Tulus, Nadin, Ghea) dari data database
-$mockupIds = [1, 2, 3, 4];
+// Siapkan event populer sesuai konfigurasi kurasi database atau default
 $popular = [];
-if (!empty($eventsSeru)) {
-    $eventsById = [];
-    foreach ($eventsSeru as $ev) {
-        $eventsById[$ev['id']] = $ev;
-    }
-    foreach ($mockupIds as $mId) {
-        if (isset($eventsById[$mId])) {
-            $popular[] = $eventsById[$mId];
+if (!empty($eventsPopular)) {
+    $popLimit = !empty($secPop['item_limit']) ? (int)$secPop['item_limit'] : 4;
+    $popular = array_slice($eventsPopular, 0, $popLimit);
+}
+if (empty($popular)) {
+    $mockupIds = [1, 2, 3, 4];
+    if (!empty($eventsSeru)) {
+        $eventsById = [];
+        foreach ($eventsSeru as $ev) {
+            $eventsById[$ev['id']] = $ev;
+        }
+        foreach ($mockupIds as $mId) {
+            if (isset($eventsById[$mId])) {
+                $popular[] = $eventsById[$mId];
+            }
         }
     }
 }
-if (count($popular) < 4 && !empty($eventsPopular)) {
-    $popular = array_slice($eventsPopular, 0, 4);
-}
 ?>
 
+<?php if (!empty($secPop['is_visible'])): ?>
 <!-- 4. EVENT POPULER -->
 <section class="section alt" id="minggu" aria-labelledby="mingguTitle">
   <div class="wrap">
     <div class="section-head">
-      <h2 id="mingguTitle"><svg class="seru-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Event Populer</h2>
+      <h2 id="mingguTitle"><svg class="seru-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><?= e($secPop['title'] ?? 'Event Populer') ?></h2>
     </div>
     <div class="minggu-scroll" id="mingguScroll">
       <div class="minggu-grid">
@@ -412,6 +487,7 @@ if (count($popular) < 4 && !empty($eventsPopular)) {
     </div>
   </div>
 </section>
+<?php endif; ?>
 </div><!-- /.cover-stack -->
 
 <script>
@@ -544,11 +620,12 @@ if (count($popular) < 4 && !empty($eventsPopular)) {
 })();
 </script>
 
+<?php if (!empty($secKota['is_visible'])): ?>
 <!-- 5. JELAJAHI EVENT DI KOTAMU -->
 <section class="section" id="kota" aria-labelledby="kotaTitle">
   <div class="wrap">
     <div class="section-head reveal">
-      <h2 id="kotaTitle"><svg class="seru-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s-7-5.6-7-11a7 7 0 1114 0c0 5.4-7 11-7 11z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="10" r="2.6" fill="currentColor"/></svg>Jelajahi Event di Kotamu</h2>
+      <h2 id="kotaTitle"><svg class="seru-icon" width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s-7-5.6-7-11a7 7 0 1114 0c0 5.4-7 11-7 11z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="10" r="2.6" fill="currentColor"/></svg><?= e($secKota['title'] ?? 'Jelajahi Event di Kotamu') ?></h2>
       <a class="kota-more" href="<?= base_url('kota') ?>">Lihat Semua ›</a>
     </div>
     <div class="kota-row">
@@ -560,7 +637,9 @@ if (count($popular) < 4 && !empty($eventsPopular)) {
           'surabaya'   => ['displayName' => 'Kota Surabaya', 'accent' => '#22C55E', 'photo' => 'patung-sura-baya-4k.webp'],
           'yogyakarta' => ['displayName' => 'Yogyakarta',    'accent' => '#EC4899', 'photo' => 'tugu-yogyakarta-4k.webp'],
         ];
-        foreach ($cities as $ci):
+        $kotaLimit = !empty($secKota['item_limit']) ? (int)$secKota['item_limit'] : 6;
+        $cityList = array_slice($cities ?? [], 0, $kotaLimit);
+        foreach ($cityList as $ci):
           $slug = strtolower($ci['slug']);
           $cfg = $cityConfig[$slug] ?? [];
           $displayName = $cfg['displayName'] ?? $ci['name'];
@@ -577,3 +656,4 @@ if (count($popular) < 4 && !empty($eventsPopular)) {
     </div>
   </div>
 </section>
+<?php endif; ?>

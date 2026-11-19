@@ -23,6 +23,8 @@ require_once __DIR__ . '/../app/models/Refund.php';
 require_once __DIR__ . '/../app/models/Withdrawal.php';
 require_once __DIR__ . '/../app/models/Notification.php';
 require_once __DIR__ . '/../app/models/ActivityLog.php';
+require_once __DIR__ . '/../app/models/Banner.php';
+require_once __DIR__ . '/../app/models/HomepageSection.php';
 
 // Pastikan sesi aktif untuk pengujian keamanan
 Security::startSession();
@@ -190,6 +192,61 @@ it("Tahap 3 Notifikasi: checkAndCreateStockAlerts() berjalan tanpa error", is_in
 $logModel = new ActivityLog();
 $logs = $logModel->paginate(1, 20, ['search' => 'test']);
 it("Tahap 3 Log: paginate() mendukung filter kustom dan struktur paginasi 20 item", isset($logs['data']) && $logs['perPage'] === 20);
+
+// 51. Skema Database: Tabel banners
+$hasBannersTable = $db->query("SHOW TABLES LIKE 'banners'")->rowCount() > 0;
+it("Tahap 4 Skema: Tabel banners tersedia di database", $hasBannersTable);
+
+// 52. Skema Database: Tabel homepage_sections
+$hasSectionsTable = $db->query("SHOW TABLES LIKE 'homepage_sections'")->rowCount() > 0;
+it("Tahap 4 Skema: Tabel homepage_sections tersedia di database", $hasSectionsTable);
+
+// 53. Skema Database: Tabel featured_events
+$hasFeaturedTable = $db->query("SHOW TABLES LIKE 'featured_events'")->rowCount() > 0;
+it("Tahap 4 Skema: Tabel featured_events tersedia di database", $hasFeaturedTable);
+
+// 54. Model Banner: allActive()
+$bannerModel = new Banner();
+$activeBanners = $bannerModel->allActive();
+it("Tahap 4 Banner: allActive() mengembalikan daftar banner aktif", is_array($activeBanners) && count($activeBanners) >= 1);
+
+// 55. Model Banner: getNextSortOrder()
+$nextOrder = $bannerModel->getNextSortOrder();
+it("Tahap 4 Banner: getNextSortOrder() mengembalikan integer urutan berikutnya", is_int($nextOrder) && $nextOrder > 0);
+
+// 56. Model Banner: toggleActive()
+$firstBanner = $bannerModel->find(1);
+$origStatus = (int)($firstBanner['is_active'] ?? 1);
+$bannerModel->toggleActive(1);
+$toggledBanner = $bannerModel->find(1);
+$isToggled = (int)$toggledBanner['is_active'] === (1 - $origStatus);
+$bannerModel->toggleActive(1); // restore
+it("Tahap 4 Banner: toggleActive() berhasil mengubah status aktif slide", $isToggled);
+
+// 57. Model HomepageSection: allSections()
+$secModel = new HomepageSection();
+$sections = $secModel->allSections();
+it("Tahap 4 HomepageSection: allSections() memuat 4 konfigurasi section", count($sections) >= 4 && isset($sections['event_seru'], $sections['kategori']));
+
+// 58. Model HomepageSection: updateSection()
+$origTitle = $sections['event_seru']['title'];
+$secModel->updateSection('event_seru', ['title' => 'Event Seru Terpilih']);
+$updatedSec = $secModel->findByKey('event_seru');
+$secModel->updateSection('event_seru', ['title' => $origTitle]); // restore
+it("Tahap 4 HomepageSection: updateSection() berhasil memperbarui konfigurasi section", $updatedSec['title'] === 'Event Seru Terpilih');
+
+// 59. Model HomepageSection: setFeaturedEvents() & getFeaturedEvents()
+$testEventIds = [1, 2, 3];
+$secModel->setFeaturedEvents('event_seru', $testEventIds);
+$featuredIds = $secModel->getFeaturedEventIds('event_seru');
+it("Tahap 4 HomepageSection: setFeaturedEvents() dan getFeaturedEvents() konsisten", $featuredIds === $testEventIds);
+
+// 60. Core Upload: Method image() mendukung parameter subfolder kustom
+$refClass = new ReflectionClass('Upload');
+$method = $refClass->getMethod('image');
+$params = $method->getParameters();
+$hasSubfolderParam = count($params) >= 2 && $params[1]->getName() === 'subfolder';
+it("Tahap 4 Upload: Method image() mendukung parameter subfolder kustom", $hasSubfolderParam);
 
 echo "=======================================================\n";
 echo sprintf("HASIL PENGUJIAN: Lulus: %d | Gagal: %d\n", $passed, $failed);

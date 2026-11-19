@@ -1196,4 +1196,293 @@ class DashboardController extends Controller {
         $this->flash('success', "Pengumuman '{$title}' berhasil disiarkan.");
         $this->redirect('dashboard/reports/notifications');
     }
+
+    /* =========================================================================
+     * TAHAP 4: HOMEPAGE (BANNER & TAMPILAN HOMEPAGE)
+     * ========================================================================= */
+
+    /**
+     * Halaman Pengelolaan Slide Banner Homepage
+     */
+    public function banners(): void {
+        $this->authorize('dashboard.view');
+
+        $bannerModel = $this->model('Banner');
+        $banners = $bannerModel->allBanners();
+        $sidebarCounts = $this->getSidebarCounts();
+
+        $this->view('dashboard/banners', [
+            'pageTitle'     => 'NOVA LIVE — Banner Homepage',
+            'activeNav'     => 'banners',
+            'activeMenu'    => 'homepage',
+            'activeTab'     => 'banners',
+            'banners'       => $banners,
+            'sidebarCounts' => $sidebarCounts
+        ], false);
+    }
+
+    /**
+     * Tambah Slide Banner Baru (POST)
+     */
+    public function storeBanner(): void {
+        $this->authorize('dashboard.view');
+        $this->validateCsrf();
+
+        $title = trim((string)post_data('title', ''));
+        $subtitle = trim((string)post_data('subtitle', ''));
+        $linkUrl = trim((string)post_data('link_url', ''));
+        $ctaText = trim((string)post_data('cta_text', 'Lihat Event'));
+        $bgColor = trim((string)post_data('bg_color', '#15497A'));
+        $startDate = post_data('start_date', '') ?: null;
+        $endDate = post_data('end_date', '') ?: null;
+        $isActive = isset($_POST['is_active']) ? 1 : 0;
+
+        $imagePath = null;
+        if (!empty($_FILES['image']['name'])) {
+            try {
+                $imagePath = Upload::image('image', 'banners');
+            } catch (\Exception $e) {
+                $this->flash('error', $e->getMessage());
+                $this->redirect('dashboard/homepage/banners');
+            }
+        }
+
+        $bannerModel = $this->model('Banner');
+        $sortOrder = $bannerModel->getNextSortOrder();
+
+        $newId = $bannerModel->create([
+            'title'      => $title !== '' ? $title : null,
+            'subtitle'   => $subtitle !== '' ? $subtitle : null,
+            'image'      => $imagePath,
+            'link_url'   => $linkUrl !== '' ? $linkUrl : null,
+            'cta_text'   => $ctaText !== '' ? $ctaText : 'Lihat Event',
+            'bg_color'   => $bgColor !== '' ? $bgColor : '#15497A',
+            'start_date' => $startDate,
+            'end_date'   => $endDate,
+            'sort_order' => $sortOrder,
+            'is_active'  => $isActive
+        ]);
+
+        $this->logActivity('banner.create', 'banner', $newId, 'Menambahkan slide banner baru: "' . ($title ?: 'Slide #' . $newId) . '"');
+
+        $this->flash('success', 'Slide banner baru berhasil ditambahkan.');
+        $this->redirect('dashboard/homepage/banners');
+    }
+
+    /**
+     * Perbarui Slide Banner (POST)
+     */
+    public function updateBanner(int $id): void {
+        $this->authorize('dashboard.view');
+        $this->validateCsrf();
+
+        $bannerModel = $this->model('Banner');
+        $banner = $bannerModel->find($id);
+
+        if (!$banner) {
+            $this->flash('error', 'Slide banner tidak ditemukan.');
+            $this->redirect('dashboard/homepage/banners');
+        }
+
+        $title = trim((string)post_data('title', ''));
+        $subtitle = trim((string)post_data('subtitle', ''));
+        $linkUrl = trim((string)post_data('link_url', ''));
+        $ctaText = trim((string)post_data('cta_text', 'Lihat Event'));
+        $bgColor = trim((string)post_data('bg_color', '#15497A'));
+        $startDate = post_data('start_date', '') ?: null;
+        $endDate = post_data('end_date', '') ?: null;
+        $isActive = isset($_POST['is_active']) ? 1 : 0;
+
+        $imagePath = $banner['image'];
+        if (!empty($_FILES['image']['name'])) {
+            try {
+                $newImage = Upload::image('image', 'banners');
+                if ($newImage) {
+                    Upload::delete($banner['image']);
+                    $imagePath = $newImage;
+                }
+            } catch (\Exception $e) {
+                $this->flash('error', $e->getMessage());
+                $this->redirect('dashboard/homepage/banners');
+            }
+        }
+
+        $bannerModel->update($id, [
+            'title'      => $title !== '' ? $title : null,
+            'subtitle'   => $subtitle !== '' ? $subtitle : null,
+            'image'      => $imagePath,
+            'link_url'   => $linkUrl !== '' ? $linkUrl : null,
+            'cta_text'   => $ctaText !== '' ? $ctaText : 'Lihat Event',
+            'bg_color'   => $bgColor !== '' ? $bgColor : '#15497A',
+            'start_date' => $startDate,
+            'end_date'   => $endDate,
+            'is_active'  => $isActive
+        ]);
+
+        $this->logActivity('banner.update', 'banner', $id, 'Memperbarui slide banner #' . $id . ': "' . ($title ?: 'Slide #' . $id) . '"');
+
+        $this->flash('success', 'Slide banner "' . ($title ?: 'Slide #' . $id) . '" berhasil diperbarui.');
+        $this->redirect('dashboard/homepage/banners');
+    }
+
+    /**
+     * Ubah Status Aktif / Nonaktif Slide Banner (POST)
+     */
+    public function toggleBanner(int $id): void {
+        $this->authorize('dashboard.view');
+        $this->validateCsrf();
+
+        $bannerModel = $this->model('Banner');
+        $banner = $bannerModel->find($id);
+
+        if (!$banner) {
+            $this->flash('error', 'Slide banner tidak ditemukan.');
+            $this->redirect('dashboard/homepage/banners');
+        }
+
+        $bannerModel->toggleActive($id);
+        $this->logActivity('banner.toggle', 'banner', $id, 'Mengubah status aktif slide banner #' . $id);
+
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+            $this->json(['success' => true]);
+        }
+
+        $this->flash('success', 'Status slide banner berhasil diubah.');
+        $this->redirect('dashboard/homepage/banners');
+    }
+
+    /**
+     * Tukar Urutan Slide Banner Naik / Turun (POST)
+     */
+    public function reorderBanner(int $id, string $direction = 'up'): void {
+        $this->authorize('dashboard.view');
+        $this->validateCsrf();
+
+        $bannerModel = $this->model('Banner');
+        $bannerModel->reorder($id, $direction);
+
+        $this->logActivity('banner.reorder', 'banner', $id, 'Mengubah urutan slide banner #' . $id . ' (' . $direction . ')');
+
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+            $this->json(['success' => true]);
+        }
+
+        $this->flash('success', 'Urutan slide banner berhasil diperbarui.');
+        $this->redirect('dashboard/homepage/banners');
+    }
+
+    /**
+     * Hapus Slide Banner (POST)
+     */
+    public function deleteBanner(int $id): void {
+        $this->authorize('dashboard.view');
+        $this->validateCsrf();
+
+        $bannerModel = $this->model('Banner');
+        $banner = $bannerModel->find($id);
+
+        if (!$banner) {
+            $this->flash('error', 'Slide banner tidak ditemukan.');
+            $this->redirect('dashboard/homepage/banners');
+        }
+
+        $bannerTitle = $banner['title'] ?? ('Slide #' . $id);
+        $bannerModel->deleteSlide($id);
+
+        $this->logActivity('banner.delete', 'banner', $id, 'Menghapus slide banner #' . $id . ' ("' . $bannerTitle . '")');
+
+        $this->flash('success', 'Slide banner "' . $bannerTitle . '" berhasil dihapus.');
+        $this->redirect('dashboard/homepage/banners');
+    }
+
+    /**
+     * Halaman Tata Letak Homepage & Kurasi Featured Events
+     */
+    public function homepageLayout(): void {
+        $this->authorize('dashboard.view');
+
+        $sectionModel = $this->model('HomepageSection');
+        $eventModel = $this->model('Event');
+
+        $sections = $sectionModel->allSections();
+        if (empty($sections)) {
+            $sections = [
+                'event_seru'    => ['section_key' => 'event_seru', 'title' => 'Event Seru Untukmu', 'is_visible' => 1, 'sort_order' => 1, 'item_limit' => 10],
+                'kategori'      => ['section_key' => 'kategori', 'title' => 'Kategori Event', 'is_visible' => 1, 'sort_order' => 2, 'item_limit' => 8],
+                'event_populer' => ['section_key' => 'event_populer', 'title' => 'Event Populer', 'is_visible' => 1, 'sort_order' => 3, 'item_limit' => 4],
+                'jelajahi_kota' => ['section_key' => 'jelajahi_kota', 'title' => 'Jelajahi Event di Kotamu', 'is_visible' => 1, 'sort_order' => 4, 'item_limit' => 6]
+            ];
+        }
+
+        $allEvents = $eventModel->all();
+        $seruFeaturedIds = $sectionModel->getFeaturedEventIds('event_seru');
+        $popFeaturedIds = $sectionModel->getFeaturedEventIds('event_populer');
+
+        $sidebarCounts = $this->getSidebarCounts();
+
+        $this->view('dashboard/layout', [
+            'pageTitle'       => 'NOVA LIVE — Tata Letak Homepage',
+            'activeNav'       => 'layout',
+            'activeMenu'      => 'homepage',
+            'activeTab'       => 'layout',
+            'sections'        => $sections,
+            'events'          => $allEvents,
+            'seruFeaturedIds' => $seruFeaturedIds,
+            'popFeaturedIds'  => $popFeaturedIds,
+            'sidebarCounts'   => $sidebarCounts
+        ], false);
+    }
+
+    /**
+     * Simpan Pengaturan Tata Letak Section Homepage (POST)
+     */
+    public function updateHomepageLayout(): void {
+        $this->authorize('dashboard.view');
+        $this->validateCsrf();
+
+        $sectionModel = $this->model('HomepageSection');
+        $postedSections = $_POST['sections'] ?? [];
+
+        if (is_array($postedSections)) {
+            foreach ($postedSections as $key => $data) {
+                $title = trim((string)($data['title'] ?? ''));
+                $isVisible = isset($data['is_visible']) ? 1 : 0;
+                $sortOrder = (int)($data['sort_order'] ?? 0);
+                $itemLimit = !empty($data['item_limit']) ? (int)$data['item_limit'] : null;
+
+                $sectionModel->updateSection($key, [
+                    'title'      => $title,
+                    'is_visible' => $isVisible,
+                    'sort_order' => $sortOrder,
+                    'item_limit' => $itemLimit
+                ]);
+            }
+        }
+
+        $this->logActivity('homepage.layout_update', 'homepage_sections', null, 'Memperbarui pengaturan tata letak section homepage');
+
+        $this->flash('success', 'Pengaturan tata letak section homepage berhasil disimpan.');
+        $this->redirect('dashboard/homepage/layout');
+    }
+
+    /**
+     * Simpan Kurasi Featured Events untuk Event Seru & Populer (POST)
+     */
+    public function updateFeaturedEvents(): void {
+        $this->authorize('dashboard.view');
+        $this->validateCsrf();
+
+        $sectionModel = $this->model('HomepageSection');
+
+        $seruEvents = isset($_POST['seru_events']) ? (array)$_POST['seru_events'] : [];
+        $popEvents = isset($_POST['pop_events']) ? (array)$_POST['pop_events'] : [];
+
+        $sectionModel->setFeaturedEvents('event_seru', $seruEvents);
+        $sectionModel->setFeaturedEvents('event_populer', $popEvents);
+
+        $this->logActivity('homepage.featured_update', 'featured_events', null, 'Memperbarui kurasi featured events Event Seru (' . count($seruEvents) . ' event) & Event Populer (' . count($popEvents) . ' event)');
+
+        $this->flash('success', 'Kurasi daftar event homepage berhasil disimpan.');
+        $this->redirect('dashboard/homepage/layout');
+    }
 }
