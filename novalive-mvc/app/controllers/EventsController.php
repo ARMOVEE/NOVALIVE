@@ -9,17 +9,18 @@ class EventsController extends Controller {
      * Halaman Jelajahi Event dengan filter & paginasi
      */
     public function index(): void {
-        $whitelistPerPage = [5, 10, 20, 50, 100];
-        $perPageParam = (int)query_param('perPage', 10);
-        $perPage = in_array($perPageParam, $whitelistPerPage, true) ? $perPageParam : 10;
+        $whitelistPerPage = [5, 10, 12, 20, 50, 100];
+        $perPageParam = (int)query_param('perPage', 12);
+        $perPage = in_array($perPageParam, $whitelistPerPage, true) ? $perPageParam : 12;
         $page = max(1, (int)query_param('page', 1));
 
         $filters = [
-            'search'   => query_param('search', ''),
-            'category' => query_param('category', ''),
+            'search'   => query_param('search', query_param('q', '')),
+            'category' => query_param('category', query_param('cat', '')),
             'city'     => query_param('city', ''),
             'price'    => query_param('price', ''),
-            'sort'     => query_param('sort', 'dateAsc')
+            'time'     => query_param('time', query_param('waktu', '')),
+            'sort'     => query_param('sort', 'date')
         ];
 
         $eventModel = $this->model('Event');

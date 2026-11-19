@@ -67,8 +67,11 @@ class Event extends Model {
 
         // Filter kata kunci pencarian (judul, penyelenggara, lokasi)
         if (!empty($filters['search'])) {
-            $conditions[] = "(e.title LIKE :search OR e.organizer LIKE :search OR e.venue LIKE :search)";
-            $params[':search'] = '%' . trim($filters['search']) . '%';
+            $conditions[] = "(e.title LIKE :search1 OR e.organizer LIKE :search2 OR e.venue LIKE :search3)";
+            $searchVal = '%' . trim($filters['search']) . '%';
+            $params[':search1'] = $searchVal;
+            $params[':search2'] = $searchVal;
+            $params[':search3'] = $searchVal;
         }
 
         // Filter kategori (ID atau nama)
@@ -88,8 +91,11 @@ class Event extends Model {
                 $conditions[] = "e.city_id = :city";
                 $params[':city'] = (int)$filters['city'];
             } else {
-                $conditions[] = "(LOWER(ci.slug) = LOWER(:city) OR LOWER(ci.name) = LOWER(:city) OR LOWER(ci.search_alias) = LOWER(:city))";
-                $params[':city'] = trim($filters['city']);
+                $conditions[] = "(LOWER(ci.slug) = :city_slug OR LOWER(ci.name) = :city_name OR LOWER(ci.search_alias) = :city_alias)";
+                $cityVal = strtolower(trim($filters['city']));
+                $params[':city_slug'] = $cityVal;
+                $params[':city_name'] = $cityVal;
+                $params[':city_alias'] = $cityVal;
             }
         }
 
@@ -99,6 +105,49 @@ class Event extends Model {
                 $conditions[] = "e.price = 0";
             } elseif ($filters['price'] === 'berbayar') {
                 $conditions[] = "e.price > 0";
+            }
+        }
+
+        // Filter waktu (minggu-ini, minggu-depan, bulan-ini, bulan-depan)
+        if (!empty($filters['time'])) {
+            $today = new DateTime('today');
+            $timeVal = strtolower(trim($filters['time']));
+            if ($timeVal === 'minggu-ini') {
+                $startOfWeek = clone $today;
+                $dayOfWeek = (int)$today->format('N');
+                $startOfWeek->modify('-' . ($dayOfWeek - 1) . ' days');
+                $endOfWeek = clone $startOfWeek;
+                $endOfWeek->modify('+6 days');
+                $conditions[] = "e.event_date >= :time_start AND e.event_date <= :time_end";
+                $params[':time_start'] = $startOfWeek->format('Y-m-d');
+                $params[':time_end'] = $endOfWeek->format('Y-m-d');
+            } elseif ($timeVal === 'minggu-depan') {
+                $startOfWeek = clone $today;
+                $dayOfWeek = (int)$today->format('N');
+                $startOfWeek->modify('-' . ($dayOfWeek - 1) . ' days');
+                $startOfNextWeek = clone $startOfWeek;
+                $startOfNextWeek->modify('+7 days');
+                $endOfNextWeek = clone $startOfNextWeek;
+                $endOfNextWeek->modify('+6 days');
+                $conditions[] = "e.event_date >= :time_start AND e.event_date <= :time_end";
+                $params[':time_start'] = $startOfNextWeek->format('Y-m-d');
+                $params[':time_end'] = $endOfNextWeek->format('Y-m-d');
+            } elseif ($timeVal === 'bulan-ini') {
+                $startOfMonth = clone $today;
+                $startOfMonth->modify('first day of this month');
+                $endOfMonth = clone $today;
+                $endOfMonth->modify('last day of this month');
+                $conditions[] = "e.event_date >= :time_start AND e.event_date <= :time_end";
+                $params[':time_start'] = $startOfMonth->format('Y-m-d');
+                $params[':time_end'] = $endOfMonth->format('Y-m-d');
+            } elseif ($timeVal === 'bulan-depan') {
+                $startOfNextMonth = clone $today;
+                $startOfNextMonth->modify('first day of next month');
+                $endOfNextMonth = clone $today;
+                $endOfNextMonth->modify('last day of next month');
+                $conditions[] = "e.event_date >= :time_start AND e.event_date <= :time_end";
+                $params[':time_start'] = $startOfNextMonth->format('Y-m-d');
+                $params[':time_end'] = $endOfNextMonth->format('Y-m-d');
             }
         }
 
@@ -113,6 +162,10 @@ class Event extends Model {
                     break;
                 case 'priceDesc':
                     $orderBy = "e.price DESC, e.event_date ASC";
+                    break;
+                case 'name':
+                case 'nameAsc':
+                    $orderBy = "e.title ASC";
                     break;
                 case 'dateDesc':
                     $orderBy = "e.event_date DESC, e.id DESC";
