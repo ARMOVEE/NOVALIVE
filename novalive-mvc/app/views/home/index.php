@@ -108,6 +108,45 @@
   @media(max-width:760px){ :root{--navh:131px} }
   @media(prefers-reduced-motion:reduce){ #populer{position:relative} #minggu{border-radius:0;box-shadow:none} }
 
+  /* EVENT MINGGU INI / EVENT POPULER */
+  .minggu-more{color:var(--accent-ink);font-weight:700;text-decoration:none;white-space:nowrap;padding:10px 0}
+  .minggu-grid{display:grid;grid-template-columns:390px 1fr;gap:38px;align-items:start}
+  .minggu-panel{background:var(--navy);border-radius:16px;padding:0;position:relative;overflow:hidden;min-height:440px;border:2px solid var(--gold)}
+  .minggu-posters{position:relative;width:100%;height:440px;overflow:hidden;background:var(--navy2)}
+  .minggu-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.07);transition:opacity .55s ease,transform .55s ease}
+  .minggu-poster.on{opacity:1;transform:none}
+  @media(max-width:760px){.minggu-panel{min-height:380px}.minggu-posters{height:380px}}
+  .minggu-pills{display:flex;gap:12px;margin-bottom:8px;flex-wrap:wrap}
+  .minggu-pills .chip.active{background:var(--navy);color:var(--gold);border-color:var(--navy)}
+  .minggu-row{display:flex;gap:16px;align-items:flex-start;padding:18px 0;border-bottom:1px solid var(--line);cursor:pointer}
+  .minggu-row:last-child{border-bottom:0}
+  .minggu-date{flex:0 0 70px;background:#fff;border:1px solid var(--line);border-radius:10px;text-align:center;padding:10px 6px;line-height:1.25}
+  .minggu-date .m{display:block;font-size:.7rem;font-weight:700;color:var(--muted)}
+  .minggu-date .d{display:block;font-size:1.35rem;font-weight:800;color:var(--navy)}
+  .minggu-date .w{display:block;font-size:.7rem;color:var(--muted)}
+  .minggu-info{flex:1;min-width:0}
+  .minggu-info h3{font-size:1.08rem;margin:4px 0}
+  .minggu-info h3 a{text-decoration:none;color:inherit}
+  .minggu-info h3 a:hover{color:var(--brand)}
+  .minggu-info .meta{font-size:13px;color:var(--muted);margin-top:4px}
+  .minggu-thumb{flex:0 0 150px}
+  .minggu-thumb img, .minggu-thumb .minggu-placeholder{width:150px;height:80px;object-fit:cover;border-radius:8px}
+  @media(max-width:1024px){.minggu-grid{grid-template-columns:1fr}}
+  @media(max-width:560px){.minggu-row{flex-wrap:wrap}.minggu-thumb{flex-basis:100%}.minggu-thumb img, .minggu-thumb .minggu-placeholder{width:100%;height:130px}}
+
+  /* EVENT MINGGU INI: mode scroll bertahap (desktop, ala Bank Jago): grid terpaku, poster kiri berganti, baris kanan muncul satu per satu.
+     Setelah baris terakhir tampil dan tertahan sebentar, Jelajahi naik menutupi panel yang masih terpaku. */
+  @media(min-width:1025px){
+    .minggu-scroll.scrollfx{height:340vh}
+    .minggu-scroll.scrollfx .minggu-grid{position:sticky;top:84px}
+    .minggu-scroll.scrollfx .minggu-row{opacity:0;transform:translateY(26px);visibility:hidden;transition:opacity .5s ease,transform .5s ease,visibility 0s linear .5s}
+    .minggu-scroll.scrollfx .minggu-row.on{opacity:1;transform:none;visibility:visible;transition:opacity .5s ease,transform .5s ease}
+    .minggu-scroll.scrollfx .minggu-row.current .minggu-date{background:var(--navy);border-color:var(--navy);color:#fff}
+    .minggu-scroll.scrollfx .minggu-row.current .minggu-date .d{color:var(--gold)}
+    .minggu-scroll.scrollfx .minggu-row.current .minggu-date .m,
+    .minggu-scroll.scrollfx .minggu-row.current .minggu-date .w{color:rgba(255,255,255,.8)}
+  }
+
   /* Kotamu Grid */
   .kota-grid {
     display: grid;
@@ -343,51 +382,70 @@ $categorySvgs = [
   </div>
 </section>
 
-<!-- 4. EVENT POPULER (4 Event Terlaris) -->
-<section class="section alt" id="minggu" style="margin-bottom:0;">
-  <div class="wrap">
-    <div class="section-header">
-      <div>
-        <h2>Event Populer Minggu Ini</h2>
-        <p style="font-size:14px;color:var(--muted);margin-top:4px;">Tiket paling cepat diburu pengunjung</p>
-      </div>
-      <a href="<?= base_url('events?sort=popular') ?>" class="section-link">
-        Lihat Urutan Populer
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
-      </a>
-    </div>
+<?php
+// Siapkan 4 event populer sesuai mockup (Midnight Jazz, Tulus, Nadin, Ghea) dari data database
+$mockupIds = [1, 2, 3, 4];
+$popular = [];
+if (!empty($eventsSeru)) {
+    $eventsById = [];
+    foreach ($eventsSeru as $ev) {
+        $eventsById[$ev['id']] = $ev;
+    }
+    foreach ($mockupIds as $mId) {
+        if (isset($eventsById[$mId])) {
+            $popular[] = $eventsById[$mId];
+        }
+    }
+}
+if (count($popular) < 4 && !empty($eventsPopular)) {
+    $popular = array_slice($eventsPopular, 0, 4);
+}
+?>
 
-    <div class="event-grid">
-      <?php foreach ($eventsPopular as $e): ?>
-        <a href="<?= base_url('events/show/' . $e['id']) ?>" class="event-card">
-          <div class="event-media">
-            <?php $pUrl = poster_url($e['photo']); ?>
-            <?php if ($pUrl): ?>
-              <img src="<?= e($pUrl) ?>" alt="<?= e($e['title']) ?>" loading="lazy">
-            <?php else: ?>
-              <div style="background:linear-gradient(135deg, #0E3254 0%, #23649A 100%);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:800;width:100%;height:100%;">
+<!-- 4. EVENT POPULER -->
+<section class="section alt" id="minggu" aria-labelledby="mingguTitle">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="mingguTitle"><svg class="seru-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Event Populer</h2>
+    </div>
+    <div class="minggu-scroll" id="mingguScroll">
+      <div class="minggu-grid">
+        <div class="minggu-panel" aria-hidden="true">
+          <div class="minggu-posters">
+            <?php foreach ($popular as $idx => $e): ?>
+              <div class="minggu-poster <?= $idx === 0 ? 'on' : '' ?>" style="background:linear-gradient(135deg, #0E3254 0%, #23649A 100%);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:72px;font-weight:800;">
                 <?= strtoupper(mb_substr($e['title'], 0, 1)) ?>
               </div>
-            <?php endif; ?>
-            <span class="event-badge-tag" style="background:#C5221F;color:#fff;">🔥 <?= (int)$e['sold'] ?> Terjual</span>
+            <?php endforeach; ?>
           </div>
-          <div class="event-body">
-            <div class="event-city-meta"><?= e($e['city_name'] ?? 'Indonesia') ?></div>
-            <h3 class="event-title"><?= e($e['title']) ?></h3>
-            <div class="event-date-row">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-              <span><?= tanggal($e['event_date']) ?></span>
-            </div>
-            <div class="event-footer">
-              <div>
-                <span class="event-price-label">Mulai dari</span>
-                <span class="event-price-val"><?= (float)$e['price'] > 0 ? rupiah($e['price']) : 'Gratis' ?></span>
-              </div>
-              <span style="font-size:12px;font-weight:700;color:var(--brand);"><?= e($e['category_name'] ?? '') ?></span>
-            </div>
+        </div>
+        <div>
+          <div class="minggu-list">
+            <?php 
+            $dayNames = ['MIN', 'SEN', 'SEL', 'RAB', 'KAM', 'JUM', 'SAB'];
+            $monthNames = [1 => 'JAN', 2 => 'FEB', 3 => 'MAR', 4 => 'APR', 5 => 'MEI', 6 => 'JUN', 7 => 'JUL', 8 => 'AGU', 9 => 'SEP', 10 => 'OKT', 11 => 'NOV', 12 => 'DES'];
+            foreach ($popular as $idx => $e): 
+              $ts = strtotime($e['event_date']);
+              $mShort = $monthNames[(int)date('n', $ts)] ?? strtoupper(date('M', $ts));
+              $dNum = date('j', $ts);
+              $wShort = $dayNames[(int)date('w', $ts)] ?? '';
+            ?>
+              <article class="minggu-row">
+                <div class="minggu-date"><span class="m"><?= $mShort ?></span><span class="d"><?= $dNum ?></span><span class="w"><?= $wShort ?></span></div>
+                <div class="minggu-info">
+                  <h3><a href="<?= base_url('events/show/' . $e['id']) ?>"><?= e($e['title']) ?></a></h3>
+                  <p class="meta"><?= tanggal($e['event_date']) ?> • <?= e($e['venue'] ?? ($e['city_name'] ?? 'Indonesia')) ?></p>
+                </div>
+                <a class="minggu-thumb" href="<?= base_url('events/show/' . $e['id']) ?>" aria-label="<?= e($e['title']) ?>">
+                  <div class="minggu-placeholder" style="background:linear-gradient(135deg, #0E3254 0%, #23649A 100%);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;">
+                    <?= strtoupper(mb_substr($e['title'], 0, 1)) ?>
+                  </div>
+                </a>
+              </article>
+            <?php endforeach; ?>
           </div>
-        </a>
-      <?php endforeach; ?>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -420,8 +478,85 @@ $categorySvgs = [
   window.addEventListener("scroll", onCoverScroll, { passive: true });
   window.addEventListener("resize", onCoverScroll);
   updateCover();
+})();
 
-  /* Observe reveals across entire page */
+/* Event Minggu Ini / Event Populer: mode scroll bertahap (desktop) */
+(function initMingguScroll() {
+  var mScroll = document.getElementById("mingguScroll");
+  var mRows = Array.prototype.slice.call(document.querySelectorAll(".minggu-row"));
+  var mPosters = Array.prototype.slice.call(document.querySelectorAll(".minggu-poster"));
+  var mDesktop = window.matchMedia("(min-width: 1025px)");
+  var mStep = -1, mTicking = false;
+
+  function mingguEnabled() {
+    var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    return mDesktop.matches && !reduced;
+  }
+
+  function setMingguStep(step) {
+    if (step === mStep) return;
+    mStep = step;
+    mRows.forEach(function(r, i) {
+      r.classList.toggle("on", i <= step);
+      r.classList.toggle("current", i === step);
+    });
+    mPosters.forEach(function(p, i) {
+      p.classList.toggle("on", i === step);
+    });
+  }
+
+  function updateMinggu() {
+    mTicking = false;
+    if (!mScroll) return;
+    if (!mingguEnabled()) {
+      if (mScroll.classList.contains("scrollfx")) {
+        mScroll.classList.remove("scrollfx");
+        mStep = -1;
+        mRows.forEach(function(r) {
+          r.classList.remove("on");
+          r.classList.remove("current");
+        });
+        mPosters.forEach(function(p, i) {
+          p.classList.toggle("on", i === 0);
+        });
+      }
+      return;
+    }
+    if (!mScroll.classList.contains("scrollfx")) mScroll.classList.add("scrollfx");
+    var grid = mScroll.querySelector(".minggu-grid");
+    var travel = mScroll.offsetHeight - grid.offsetHeight;
+    var p = travel > 0 ? (-mScroll.getBoundingClientRect().top) / travel : 0;
+    p = Math.max(0, Math.min(1, p));
+    /* Keempat baris sudah lengkap di 80% lintasan; sisanya menahan baris terakhir sebentar sebelum grid lepas. */
+    var q = Math.min(1, p * 1.25);
+    setMingguStep(Math.min(mRows.length - 1, Math.floor(q * mRows.length)));
+  }
+
+  function onMingguScroll() {
+    if (!mTicking) {
+      mTicking = true;
+      requestAnimationFrame(updateMinggu);
+    }
+  }
+
+  window.addEventListener("scroll", onMingguScroll, { passive: true });
+  window.addEventListener("resize", onMingguScroll);
+  if (mDesktop.addEventListener) {
+    mDesktop.addEventListener("change", onMingguScroll);
+  } else if (mDesktop.addListener) {
+    mDesktop.addListener(onMingguScroll);
+  }
+  updateMinggu();
+
+  mRows.forEach(function(row, idx) {
+    row.addEventListener("click", function() {
+      setMingguStep(idx);
+    });
+  });
+})();
+
+/* Reveal */
+(function initReveals() {
   var reveals = document.querySelectorAll(".reveal");
   if ("IntersectionObserver" in window && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     var io = new IntersectionObserver(function(entries) {
