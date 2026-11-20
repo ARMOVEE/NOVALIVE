@@ -135,7 +135,7 @@ class HomepageSection extends Model {
         }
 
         if ($sectionKey === 'event_populer') {
-            return $eventModel->popular($limit ?: 4);
+            return $eventModel->upcoming($limit ?: 4);
         }
 
         return [];

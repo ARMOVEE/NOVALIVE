@@ -52,15 +52,15 @@ class HomeController extends Controller {
             $eventsSeru = $eventModel->seru($seruLimit);
         }
 
-        // Ambil event populer: terkurasi jika ada, jika kosong otomatis query penjualan tertinggi
+        // Ambil event populer: terkurasi jika ada, jika kosong otomatis query 4 event terdekat
         $eventsPopular = [];
         try {
             $eventsPopular = $sectionModel->getSectionEvents('event_populer', $popularLimit, $eventModel);
         } catch (\Throwable $e) {
-            $eventsPopular = $eventModel->popular($popularLimit);
+            $eventsPopular = $eventModel->upcoming($popularLimit);
         }
         if (empty($eventsPopular)) {
-            $eventsPopular = $eventModel->popular($popularLimit);
+            $eventsPopular = $eventModel->upcoming($popularLimit);
         }
 
         $categories = $categoryModel->all();

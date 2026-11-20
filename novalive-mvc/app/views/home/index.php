@@ -104,7 +104,7 @@
   .cover-stack{position:relative}
   #populer{background:#fff;position:sticky;top:var(--navh);z-index:1}
   #populer .wrap{transform-origin:50% 0;will-change:transform,opacity}
-  #minggu{position:relative;z-index:2;background:var(--cream);border-radius:26px 26px 0 0;box-shadow:0 -18px 38px rgba(14,50,84,.18)}
+  #minggu{position:relative;z-index:2;background:var(--cream);border-radius:26px 26px 0 0;box-shadow:0 -18px 38px rgba(14,50,84,.18);scroll-margin-top:84px}
   @media(max-width:760px){ :root{--navh:131px} }
   @media(prefers-reduced-motion:reduce){ #populer{position:relative} #minggu{border-radius:0;box-shadow:none} }
 
@@ -148,7 +148,7 @@
   }
 
   /* JELAJAHI EVENT DI KOTAMU */
-  #kota{background:#fff}
+  #kota{background:#fff;position:relative;z-index:20;box-shadow:0 -18px 38px rgba(14,50,84,.18);padding-bottom:60px}
   .kota-more{color:var(--accent-ink);font-weight:700;text-decoration:none;white-space:nowrap;padding:10px 0}
   .kota-row{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
   .kota-card{position:relative;display:block;text-decoration:none;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:16px 14px;min-height:118px;cursor:pointer;font-family:var(--font-body);color:var(--ink);overflow:hidden;transition:transform .2s,box-shadow .2s,border-color .2s}
@@ -163,6 +163,12 @@
   @media(max-width:640px){.kota-row{grid-template-columns:repeat(2,1fr)}.kota-card{min-height:108px}}
   @media(max-width:420px){.kota-row{grid-template-columns:1fr}}
   @media (prefers-reduced-motion: reduce){ .kota-card:hover{transform:none} }
+
+  /* RANTAI COVER (desktop, tanpa reduced-motion): Jelajahi menutupi Event Minggu Ini, footer menutupi Jelajahi */
+  @media(min-width:1025px) and (prefers-reduced-motion:no-preference){
+    #kota{position:relative;z-index:20;margin-top:calc(-119vh + 214px);padding-bottom:180px;box-shadow:0 -18px 38px rgba(14,50,84,.18)}
+    .footer{position:relative;z-index:30;margin-top:-120px;box-shadow:0 -18px 38px rgba(14,50,84,.18)}
+  }
 </style>
 
 <?php
