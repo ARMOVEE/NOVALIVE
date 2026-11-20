@@ -104,10 +104,6 @@
     .nav-auth-group{display:flex;align-items:center;gap:10px;flex-shrink:0}
     .nav-user-chip{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);color:#fff;padding:8px 14px;border-radius:999px;font-weight:700;font-size:.92rem;white-space:nowrap;text-decoration:none}
     .nav-user-chip:hover{background:rgba(255,255,255,.2)}
-    .nav-btn-dash{background:var(--gold);color:var(--navy2);border-radius:999px;padding:9px 16px;font-weight:700;font-size:.92rem;text-decoration:none;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
-    .nav-btn-dash:hover{background:var(--gold-deep)}
-    .nav-btn-logout{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.32);border-radius:999px;padding:8px 15px;font-weight:700;font-size:.92rem;text-decoration:none;white-space:nowrap;display:inline-flex;align-items:center}
-    .nav-btn-logout:hover{background:rgba(255,255,255,.12);border-color:#fff}
 
     /* BURGER & DRAWER MOBILE */
     .burger{display:none;background:none;border:0;font-size:1.5rem;cursor:pointer;color:#fff;padding:8px;min-width:2.75rem}
@@ -210,12 +206,10 @@
 
     <?php if (!empty($currentUser)): ?>
       <div class="nav-auth-group">
-        <a class="nav-user-chip" href="<?= base_url('dashboard') ?>">
+        <a class="nav-user-chip" href="<?= base_url('dashboard') ?>" title="Dashboard">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           <span><?= e($currentUser['full_name']) ?></span>
         </a>
-        <a class="nav-btn-dash" href="<?= base_url('dashboard') ?>">Dashboard</a>
-        <a class="nav-btn-logout" href="<?= base_url('auth/logout') ?>">Keluar</a>
       </div>
     <?php else: ?>
       <a class="nav-account" href="<?= base_url('login') ?>">

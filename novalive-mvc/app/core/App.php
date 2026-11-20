@@ -22,6 +22,10 @@ class App {
             $this->controller = 'AuthController';
             $this->method = 'login';
             $this->params = array_slice($url, 1);
+        } elseif ($url[0] === 'logout') {
+            $this->controller = 'AuthController';
+            $this->method = 'logout';
+            $this->params = array_slice($url, 1);
         } elseif ($url[0] === 'kategori') {
             $this->controller = 'CategoriesController';
             $this->method = 'index';
