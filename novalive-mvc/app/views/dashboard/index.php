@@ -381,7 +381,11 @@ if (strlen($userInitials) < 2) $userInitials = 'AD';
       .topbar{display:flex}
       .topnav{margin:0 auto}
       .top-actions{margin-left:auto}
-      .grid{grid-template-columns:290px minmax(0,1fr);grid-template-areas:"ticket chart" "kpi kpi" "saldo side" "history history"}
+      .grid{grid-template-columns:290px minmax(0,1fr);grid-template-areas:"ticket chart" "kpi kpi" "saldo side" "history history";align-items:start}
+      .grid>.card{height:auto}
+      .ticket-card, .chart-card, .saldo-card, .history-card, .side-card{height:auto}
+      .ticket-card .weekly{margin-top:12px}
+      .side-card .sub-card{margin-top:12px}
       .kpi-strip{grid-template-columns:repeat(2,minmax(0,1fr))}
     }
     @media (max-width:900px){
@@ -390,8 +394,8 @@ if (strlen($userInitials) < 2) $userInitials = 'AD';
     @media (max-width:820px){
       .topnav{display:none}
       .frame{padding:16px 18px 20px}
-      .grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"ticket" "chart" "kpi" "saldo" "history" "side"}
-      .kpi-strip{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"ticket" "chart" "kpi" "saldo" "history" "side";align-items:start}
+      .grid>.card{height:auto}
       .layout{flex-direction:column}
       .rail{
         flex-direction:row;flex-wrap:wrap;width:100%;border-radius:22px;padding:10px 12px;
