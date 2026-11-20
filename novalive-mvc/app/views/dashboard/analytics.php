@@ -61,11 +61,12 @@ foreach ($categorySales as $c) {
     button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
     a{text-decoration:none;color:inherit}
     .frame{
-      max-width:1680px;margin:0 auto;
+      width:100%;max-width:none;margin:0;
       background:var(--panel);
       border-radius:30px;
-      padding:20px 32px 26px;
+      padding:20px 24px 26px;
       box-shadow:0 24px 60px rgba(14,50,84,.10);
+      box-sizing:border-box;
     }
     .topbar{
       display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:18px;

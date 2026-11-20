@@ -69,8 +69,8 @@ $popIds = !empty($popFeaturedIds) ? $popFeaturedIds : array_slice(array_keys($ev
       font-family:var(--font-body);-webkit-font-smoothing:antialiased;
     }
     .frame{
-      max-width:1680px;margin:0 auto;background:var(--panel);border-radius:30px;
-      padding:20px 32px 26px;box-shadow:0 24px 60px rgba(14,50,84,.10);
+      width:100%;max-width:none;margin:0;background:var(--panel);border-radius:30px;
+      padding:20px 24px 26px;box-shadow:0 24px 60px rgba(14,50,84,.10);box-sizing:border-box;
     }
     .topbar{
       display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:18px;

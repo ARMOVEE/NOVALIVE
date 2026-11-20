@@ -168,15 +168,27 @@ if (empty($shellFooter)):
         </div>
       </div>
 
-      <!-- Shared Tabs Styling & Desktop 1680px Layout Override -->
+      <!-- Shared Tabs Styling & Desktop Full-Width Layout -->
       <style>
         html,body{margin:0!important;padding:0!important}
-        body{background:var(--page)!important;padding:22px 18px 30px!important}
+        body{
+          background:var(--page)!important;
+          padding:16px 20px 24px!important;
+          box-sizing:border-box!important;
+        }
+        @media (max-width:1024px){
+          body{padding:16px 16px 20px!important}
+        }
+        @media (max-width:640px){
+          body{padding:12px 12px 16px!important}
+        }
         .frame{
-          max-width:1680px!important;margin:0 auto!important;
+          width:100%!important;
+          max-width:none!important;
+          margin:0!important;
           background:var(--panel)!important;
           border-radius:30px!important;
-          padding:20px 32px 26px!important;
+          padding:20px 24px 26px!important;
           box-shadow:0 24px 60px rgba(14,50,84,.10)!important;
           box-sizing:border-box!important;
         }

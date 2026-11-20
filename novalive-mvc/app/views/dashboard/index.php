@@ -54,18 +54,25 @@ if (strlen($userInitials) < 2) $userInitials = 'AD';
       color:var(--ink);
       -webkit-font-smoothing:antialiased;
       min-height:100vh;
-      padding:22px 18px 30px;
+      padding:16px 20px 24px;
       box-sizing:border-box;
+    }
+    @media (max-width:1024px){
+      body{padding:16px 16px 20px}
+    }
+    @media (max-width:640px){
+      body{padding:12px 12px 16px}
     }
     h1,h2,h3,.pj{font-family:'Plus Jakarta Sans','Inter',sans-serif}
     button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
     a{text-decoration:none;color:inherit}
     .frame{
-      max-width:1680px;
-      margin:0 auto;
+      width:100%;
+      max-width:none;
+      margin:0;
       background:var(--panel);
       border-radius:30px;
-      padding:20px 32px 26px;
+      padding:20px 24px 26px;
       box-shadow:0 24px 60px rgba(14,50,84,.10);
       box-sizing:border-box;
     }
@@ -191,6 +198,9 @@ if (strlen($userInitials) < 2) $userInitials = 'AD';
       display:grid;gap:18px;align-items:stretch;
       grid-template-columns:340px minmax(0,1fr) 340px;
       grid-template-areas:"ticket chart saldo" "kpi kpi kpi" "history history side";
+    }
+    @media (min-width:2001px){
+      .grid{grid-template-columns:380px minmax(0,1fr) 380px}
     }
     .grid>.card{min-width:0;height:100%}
     .ticket-card{grid-area:ticket;display:flex;flex-direction:column}
