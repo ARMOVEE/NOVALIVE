@@ -11,13 +11,17 @@ print('Contains Event Populer:', 'Event Populer' in html)
 print('Contains Jelajahi Event di Kotamu:', 'Jelajahi Event di Kotamu' in html)
 print('Contains Event Seru Untukmu:', 'Event Seru Untukmu' in html)
 print('Contains Kategori Event:', 'Kategori Event' in html)
-print('Contains footer:', 'class="footer"' in html or 'footer' in html)
+
+pos_kat = html.find('id="populer"')
+pos_seru = html.find('id="seru"')
+print(f'Index Kategori: {pos_kat}, Index Event Seru: {pos_seru}')
 
 assert 'id="minggu"' not in html, "id='minggu' should not be in homepage"
 assert 'id="kota"' not in html, "id='kota' should not be in homepage"
 assert 'Event Populer' not in html, "'Event Populer' should not be in homepage"
 assert 'Jelajahi Event di Kotamu' not in html, "'Jelajahi Event di Kotamu' should not be in homepage"
-assert 'Event Seru Untukmu' in html, "'Event Seru Untukmu' should be in homepage"
-assert 'Kategori Event' in html, "'Kategori Event' should be in homepage"
+assert pos_kat > 0, "Kategori Event section not found"
+assert pos_seru > 0, "Event Seru Untukmu section not found"
+assert pos_kat < pos_seru, f"Kategori ({pos_kat}) harus sebelum Event Seru ({pos_seru})"
 
-print("\n[VERIFIKASI SUKSES] Section Event Populer dan Jelajahi Event di Kotamu telah berhasil dihapus dari homepage!")
+print("\n[VERIFIKASI SUKSES] Kategori Event berhasil dipindahkan ke atas Event Seru Untukmu!")

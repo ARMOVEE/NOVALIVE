@@ -98,7 +98,7 @@
     .kategori-pill{padding:5px 12px;font-size:.8rem}
   }
 
-  #populer{background:#fff;padding-bottom:60px}
+  #populer{background:#fff}
 </style>
 
 <?php
@@ -221,8 +221,44 @@ while (count($activeBanners) < 3) {
 })();
 </script>
 
+<?php
+$categorySvgs = [
+  'Musik'     => '<svg width="46" height="46" viewBox="0 0 48 48" fill="none" aria-hidden="true"><g fill="currentColor"><rect x="29.5" y="2.5" width="5.5" height="19" rx="2" transform="rotate(38 32 12)"/><circle cx="16.5" cy="33.5" r="10.5"/><circle cx="23.5" cy="24.5" r="7.5"/></g><circle cx="18.5" cy="31.5" r="3.2" fill="var(--katbg)"/></svg>',
+  'Pameran'   => '<svg width="46" height="46" viewBox="0 0 48 48" fill="none" aria-hidden="true"><rect x="7" y="6" width="34" height="19" rx="2.5" fill="currentColor"/><path d="M14 20.5l5-6.5 3.5 4 3-3.2 4.5 5.7z" fill="var(--katbg)"/><circle cx="31.5" cy="12" r="2" fill="var(--katbg)"/><g fill="currentColor"><circle cx="13" cy="31" r="2.7"/><circle cx="24" cy="31" r="2.7"/><circle cx="35" cy="31" r="2.7"/><path d="M7.5 41c.6-3.4 2.7-5 5.5-5s4.9 1.6 5.5 5zM18.5 41c.6-3.4 2.7-5 5.5-5s4.9 1.6 5.5 5zM29.5 41c.6-3.4 2.7-5 5.5-5s4.9 1.6 5.5 5z"/></g></svg>',
+  'Teater'    => '<svg width="46" height="46" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 4c8.5 0 15 5.4 15 13.2C39 27 32.8 40 24 40S9 27 9 17.2C9 9.4 15.5 4 24 4z" fill="currentColor"/><circle cx="17.5" cy="17" r="2.6" fill="var(--katbg)"/><circle cx="30.5" cy="17" r="2.6" fill="var(--katbg)"/><path d="M16 25c2.4 3.4 5.2 5 8 5s5.6-1.6 8-5" stroke="var(--katbg)" stroke-width="3" stroke-linecap="round"/></svg>',
+  'Olahraga'  => '<svg width="46" height="46" viewBox="0 0 48 48" fill="none" aria-hidden="true"><rect x="5" y="11" width="38" height="26" rx="3" fill="currentColor"/><path d="M24 11v26M5 18.5h6v11H5M43 18.5h-6v11h6" stroke="var(--katbg)" stroke-width="2.5" fill="none"/><circle cx="24" cy="24" r="5" fill="none" stroke="var(--katbg)" stroke-width="2.5"/></svg>',
+  'Wisata'    => '<svg width="46" height="46" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 3.5c-6.3 0-10.8 4.4-10.8 10.2C13.2 21.5 24 33 24 33s10.8-11.5 10.8-19.3C34.8 7.9 30.3 3.5 24 3.5z" fill="currentColor"/><circle cx="24" cy="13.8" r="4.2" fill="var(--katbg)"/><path d="M8 38.5l10.5-3 11 3L40 35.5v6.5l-10.5 3-11-3L8 45z" fill="currentColor" opacity=".5"/></svg>',
+  'Talkshow'  => '<svg width="46" height="46" viewBox="0 0 48 48" fill="none" aria-hidden="true"><rect x="19" y="5" width="10" height="20" rx="5" fill="currentColor"/><path d="M13.5 19a10.5 10.5 0 0021 0" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/><path d="M24 29.5V38M16.5 43h15" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg>',
+  'Workshop'  => '<svg width="46" height="46" viewBox="0 0 48 48" fill="none" aria-hidden="true"><rect x="6" y="6" width="36" height="23" rx="2.5" fill="currentColor"/><circle cx="24" cy="14.5" r="3" fill="var(--katbg)"/><path d="M16.5 25c.8-3.6 3.6-5.4 7.5-5.4s6.7 1.8 7.5 5.4z" fill="var(--katbg)"/><path d="M24 29v5M14 42l6.5-8M34 42l-6.5-8" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/></svg>',
+  'Kompetisi' => '<svg width="46" height="46" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M15 5h18v7.5c0 5-4 9-9 9s-9-4-9-9z" fill="currentColor"/><path d="M15 9H10a5.5 5.5 0 005 6.5M33 9h5a5.5 5.5 0 01-5 6.5" fill="none" stroke="currentColor" stroke-width="3"/><path d="M24 9.6l1.2 2.5 2.7.4-2 1.9.5 2.7-2.4-1.3-2.4 1.3.5-2.7-2-1.9 2.7-.4z" fill="var(--katbg)"/><path d="M24 21.5V27" stroke="currentColor" stroke-width="4"/><rect x="20" y="27" width="8" height="4.5" fill="currentColor"/><rect x="14.5" y="34" width="19" height="4.5" rx="2" fill="currentColor"/></svg>'
+];
+?>
+
+<?php if (!empty($secKat['is_visible'])): ?>
+<!-- 2. KATEGORI EVENT -->
+<section class="section kategori-sec" id="populer" aria-labelledby="katTitle">
+  <div class="wrap">
+    <h2 class="kategori-title reveal" id="katTitle"><?= e($secKat['title'] ?? 'Kategori Event') ?></h2>
+    <div class="kategori-row">
+      <?php 
+        $catList = $categories ?? [];
+        if (!empty($secKat['item_limit']) && (int)$secKat['item_limit'] > 0) {
+            $catList = array_slice($catList, 0, (int)$secKat['item_limit']);
+        }
+        foreach ($catList as $c): 
+      ?>
+        <a class="kategori-item reveal" href="<?= base_url('events?category=' . $c['id']) ?>" data-explore="<?= e($c['name']) ?>">
+          <span class="kategori-circle"><?= $categorySvgs[$c['name']] ?? '' ?></span>
+          <span class="kategori-pill"><?= e($c['name']) ?></span>
+        </a>
+      <?php endforeach; ?>
+    </div>
+  </div>
+</section>
+<?php endif; ?>
+
 <?php if (!empty($secSeru['is_visible'])): ?>
-<!-- 2. EVENT SERU UNTUKMU (Carousel 10 Event) -->
+<!-- 3. EVENT SERU UNTUKMU (Carousel 10 Event) -->
 <section class="section alt" id="seru" aria-labelledby="seruTitle">
   <div class="wrap seru-wrap">
     <div class="section-head">
@@ -294,60 +330,8 @@ while (count($activeBanners) < 3) {
     window.addEventListener("resize", updateSeruArrows);
     updateSeruArrows();
   }
-
-  /* Reveal */
-  var reveals = document.querySelectorAll(".reveal");
-  if ("IntersectionObserver" in window && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    var io = new IntersectionObserver(function(entries) {
-      entries.forEach(function(en) {
-        if (en.isIntersecting) {
-          en.target.classList.add("visible");
-          io.unobserve(en.target);
-        }
-      });
-    }, { threshold: 0.1 });
-    reveals.forEach(function(el) { io.observe(el); });
-  } else {
-    reveals.forEach(function(el) { el.classList.add("visible"); });
-  }
 })();
 </script>
-
-<?php
-$categorySvgs = [
-  'Musik'     => '<svg width="46" height="46" viewBox="0 0 48 48" fill="none" aria-hidden="true"><g fill="currentColor"><rect x="29.5" y="2.5" width="5.5" height="19" rx="2" transform="rotate(38 32 12)"/><circle cx="16.5" cy="33.5" r="10.5"/><circle cx="23.5" cy="24.5" r="7.5"/></g><circle cx="18.5" cy="31.5" r="3.2" fill="var(--katbg)"/></svg>',
-  'Pameran'   => '<svg width="46" height="46" viewBox="0 0 48 48" fill="none" aria-hidden="true"><rect x="7" y="6" width="34" height="19" rx="2.5" fill="currentColor"/><path d="M14 20.5l5-6.5 3.5 4 3-3.2 4.5 5.7z" fill="var(--katbg)"/><circle cx="31.5" cy="12" r="2" fill="var(--katbg)"/><g fill="currentColor"><circle cx="13" cy="31" r="2.7"/><circle cx="24" cy="31" r="2.7"/><circle cx="35" cy="31" r="2.7"/><path d="M7.5 41c.6-3.4 2.7-5 5.5-5s4.9 1.6 5.5 5zM18.5 41c.6-3.4 2.7-5 5.5-5s4.9 1.6 5.5 5zM29.5 41c.6-3.4 2.7-5 5.5-5s4.9 1.6 5.5 5z"/></g></svg>',
-  'Teater'    => '<svg width="46" height="46" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 4c8.5 0 15 5.4 15 13.2C39 27 32.8 40 24 40S9 27 9 17.2C9 9.4 15.5 4 24 4z" fill="currentColor"/><circle cx="17.5" cy="17" r="2.6" fill="var(--katbg)"/><circle cx="30.5" cy="17" r="2.6" fill="var(--katbg)"/><path d="M16 25c2.4 3.4 5.2 5 8 5s5.6-1.6 8-5" stroke="var(--katbg)" stroke-width="3" stroke-linecap="round"/></svg>',
-  'Olahraga'  => '<svg width="46" height="46" viewBox="0 0 48 48" fill="none" aria-hidden="true"><rect x="5" y="11" width="38" height="26" rx="3" fill="currentColor"/><path d="M24 11v26M5 18.5h6v11H5M43 18.5h-6v11h6" stroke="var(--katbg)" stroke-width="2.5" fill="none"/><circle cx="24" cy="24" r="5" fill="none" stroke="var(--katbg)" stroke-width="2.5"/></svg>',
-  'Wisata'    => '<svg width="46" height="46" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 3.5c-6.3 0-10.8 4.4-10.8 10.2C13.2 21.5 24 33 24 33s10.8-11.5 10.8-19.3C34.8 7.9 30.3 3.5 24 3.5z" fill="currentColor"/><circle cx="24" cy="13.8" r="4.2" fill="var(--katbg)"/><path d="M8 38.5l10.5-3 11 3L40 35.5v6.5l-10.5 3-11-3L8 45z" fill="currentColor" opacity=".5"/></svg>',
-  'Talkshow'  => '<svg width="46" height="46" viewBox="0 0 48 48" fill="none" aria-hidden="true"><rect x="19" y="5" width="10" height="20" rx="5" fill="currentColor"/><path d="M13.5 19a10.5 10.5 0 0021 0" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/><path d="M24 29.5V38M16.5 43h15" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg>',
-  'Workshop'  => '<svg width="46" height="46" viewBox="0 0 48 48" fill="none" aria-hidden="true"><rect x="6" y="6" width="36" height="23" rx="2.5" fill="currentColor"/><circle cx="24" cy="14.5" r="3" fill="var(--katbg)"/><path d="M16.5 25c.8-3.6 3.6-5.4 7.5-5.4s6.7 1.8 7.5 5.4z" fill="var(--katbg)"/><path d="M24 29v5M14 42l6.5-8M34 42l-6.5-8" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/></svg>',
-  'Kompetisi' => '<svg width="46" height="46" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M15 5h18v7.5c0 5-4 9-9 9s-9-4-9-9z" fill="currentColor"/><path d="M15 9H10a5.5 5.5 0 005 6.5M33 9h5a5.5 5.5 0 01-5 6.5" fill="none" stroke="currentColor" stroke-width="3"/><path d="M24 9.6l1.2 2.5 2.7.4-2 1.9.5 2.7-2.4-1.3-2.4 1.3.5-2.7-2-1.9 2.7-.4z" fill="var(--katbg)"/><path d="M24 21.5V27" stroke="currentColor" stroke-width="4"/><rect x="20" y="27" width="8" height="4.5" fill="currentColor"/><rect x="14.5" y="34" width="19" height="4.5" rx="2" fill="currentColor"/></svg>'
-];
-?>
-
-<?php if (!empty($secKat['is_visible'])): ?>
-<!-- 3. KATEGORI EVENT -->
-<section class="section kategori-sec" id="populer" aria-labelledby="katTitle">
-  <div class="wrap">
-    <h2 class="kategori-title reveal" id="katTitle"><?= e($secKat['title'] ?? 'Kategori Event') ?></h2>
-    <div class="kategori-row">
-      <?php 
-        $catList = $categories ?? [];
-        if (!empty($secKat['item_limit']) && (int)$secKat['item_limit'] > 0) {
-            $catList = array_slice($catList, 0, (int)$secKat['item_limit']);
-        }
-        foreach ($catList as $c): 
-      ?>
-        <a class="kategori-item reveal" href="<?= base_url('events?category=' . $c['id']) ?>" data-explore="<?= e($c['name']) ?>">
-          <span class="kategori-circle"><?= $categorySvgs[$c['name']] ?? '' ?></span>
-          <span class="kategori-pill"><?= e($c['name']) ?></span>
-        </a>
-      <?php endforeach; ?>
-    </div>
-  </div>
-</section>
-<?php endif; ?>
 
 <script>
 /* Reveal */
